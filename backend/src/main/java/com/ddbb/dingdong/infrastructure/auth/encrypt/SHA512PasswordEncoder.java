@@ -21,6 +21,7 @@ public class SHA512PasswordEncoder {
 
     public boolean matches(String rawPassword, String encryptedPassword) {
         String[] parts = encryptedPassword.split("\\$");
+        if(parts.length != 2) { return false; }
         int iterations = Integer.parseInt(parts[0]);
         byte[] salt = Base64.getDecoder().decode(parts[1]);
         String expectedHash = encodePassword(rawPassword, salt, iterations);

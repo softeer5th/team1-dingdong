@@ -1,6 +1,7 @@
 package com.ddbb.dingdong.simulator.subscription.subscriber;
 
 import com.ddbb.dingdong.simulator.subscription.BusSubscriptionManager;
+import com.ddbb.dingdong.util.FormatUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +42,7 @@ public class SocketSubscriber extends CancelableSubscriber<Point> {
             this.busSubscriptionManager.unsubscribe(busId, userId);
             return ;
         }
-        String message = String.format("%.15f %.15f", item.getY(), item.getY());
+        String message = FormatUtil.format(busId, item.getY(), item.getX());
         try {
             webSocketSession.sendMessage(new TextMessage(message));
         } catch (IOException e) {

@@ -75,7 +75,7 @@ public class ElkiClusteringService {
         Database db = initializeElkiDatabase(data);
 
         // ELKI DBSCAN에 사용할 매개변수 초기화
-        DBSCAN<NumberVector> dbscan = new DBSCAN<>(HaversineDistanceFunction.getInstance(), radius, minPts);
+        DBSCAN<NumberVector> dbscan = new DBSCAN<>(haversineDistanceFunction, radius, minPts);
 
         // ELKI DBSCAN 수행 (초기 값: eps = 3.0(3km), minPts = 2)
         Clustering<Model> result = dbscan.run(db);

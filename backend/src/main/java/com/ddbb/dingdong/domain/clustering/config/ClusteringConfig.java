@@ -1,6 +1,5 @@
 package com.ddbb.dingdong.domain.clustering.config;
 
-import com.ddbb.dingdong.domain.clustering.util.HaversineDistanceFunction;
 import de.lmu.ifi.dbs.elki.algorithm.clustering.kmeans.initialization.RandomUniformGeneratedInitialMeans;
 import de.lmu.ifi.dbs.elki.utilities.random.RandomFactory;
 import org.springframework.context.annotation.Bean;
@@ -11,11 +10,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class ClusteringConfig {
-
-    @Bean
-    public HaversineDistanceFunction haversineDistanceFunction() {
-        return HaversineDistanceFunction.getInstance();
-    }
 
     @Bean
     public RandomUniformGeneratedInitialMeans randomUniformGeneratedInitialMeans() {

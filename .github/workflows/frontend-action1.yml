@@ -1,0 +1,46 @@
+name: Sync Organization Branch to Personal Repo
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - frontend
+
+jobs:
+  sync-repo:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Checkout Organization Repo
+        uses: actions/checkout@v3
+        with:
+          repository: softeer5th/team1-dingdong
+          ref: frontend
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+      - name: Add Personal Repository as Remote
+        run: |
+          git remote add personal https://x-access-token:${{ secrets.CLASSIC_PERSONAL_ACCESS_TOKEN }}@github.com/vavoya/ding-dong.git
+          git fetch personal main || true
+          git checkout -b sync-upstream personal/main || git checkout sync-upstream
+          git merge --no-edit frontend
+          git push personal sync-upstream --force
+      - name: Create Pull Request in Personal Repository
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.CLASSIC_PERSONAL_ACCESS_TOKEN }}
+          commit-message: "🔄 Sync from Organization Repository"
+          branch: sync-upstream
+          delete-branch: true
+          base: main
+          title: "🔄 Sync from Organization Repository"
+          body: "조직 저장소에서 최신 변경 사항을 가져왔습니다."
+      - name: Auto Merge Pull Request in Personal Repository
+        uses: pascalgn/automerge-action@v0.15.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.CLASSIC_PERSONAL_ACCESS_TOKEN }}
+        with:
+          mergeMethod: merge
+          approve: true
+          deleteBranchAfterMerge: true

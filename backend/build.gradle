@@ -27,6 +27,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// 클러스터링 관련
+	implementation 'com.github.haifengl:smile-core:3.1.0'
+	implementation 'de.lmu.ifi.dbs.elki:elki:0.7.5'
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'

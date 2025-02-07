@@ -1,9 +1,7 @@
-package com.ddbb.dingdong.simulator.subscription.subscriber;
+package com.ddbb.dingdong.domain.transportation.simulator.subscription.subscriber;
 
-import com.ddbb.dingdong.simulator.subscription.BusSubscriptionManager;
+import com.ddbb.dingdong.domain.transportation.simulator.subscription.BusSubscriptionManager;
 import com.ddbb.dingdong.util.FormatUtil;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.Point;
 import org.springframework.web.socket.TextMessage;

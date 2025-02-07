@@ -1,4 +1,4 @@
-package com.ddbb.dingdong.simulator.segment.impl;
+package com.ddbb.dingdong.domain.transportation.simulator.segment.impl;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -10,8 +10,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Component;
 
-import com.ddbb.dingdong.simulator.RouteSegment;
-import com.ddbb.dingdong.simulator.segment.RouteSegmentProvider;
+import com.ddbb.dingdong.domain.transportation.simulator.RouteSegment;
+import com.ddbb.dingdong.domain.transportation.simulator.segment.RouteSegmentProvider;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

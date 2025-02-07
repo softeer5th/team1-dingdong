@@ -1,4 +1,4 @@
-package com.ddbb.dingdong.simulator.subscription.subscriber;
+package com.ddbb.dingdong.domain.transportation.simulator.subscription.subscriber;
 
 import java.util.concurrent.Flow;
 

@@ -2,10 +2,10 @@ package com.ddbb.dingdong.domain.transportation.service;
 
 import com.ddbb.dingdong.domain.common.exception.DomainException;
 import com.ddbb.dingdong.infrastructure.webSocket.repository.SocketRepository;
-import com.ddbb.dingdong.simulator.subscription.BusSubscriptionManager;
-import com.ddbb.dingdong.simulator.subscription.UserSubscription;
-import com.ddbb.dingdong.simulator.subscription.subscriber.CancelableSubscriber;
-import com.ddbb.dingdong.simulator.subscription.subscriber.SocketSubscriber;
+import com.ddbb.dingdong.domain.transportation.simulator.subscription.BusSubscriptionManager;
+import com.ddbb.dingdong.domain.transportation.simulator.subscription.UserSubscription;
+import com.ddbb.dingdong.domain.transportation.simulator.subscription.subscriber.CancelableSubscriber;
+import com.ddbb.dingdong.domain.transportation.simulator.subscription.subscriber.SocketSubscriber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;

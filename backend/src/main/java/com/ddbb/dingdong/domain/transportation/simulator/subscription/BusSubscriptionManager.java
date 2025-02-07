@@ -1,4 +1,4 @@
-package com.ddbb.dingdong.simulator.subscription;
+package com.ddbb.dingdong.domain.transportation.simulator.subscription;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.Point;

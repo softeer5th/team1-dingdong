@@ -1,6 +1,6 @@
-package com.ddbb.dingdong.simulator.segment;
+package com.ddbb.dingdong.domain.transportation.simulator.segment;
 
-import com.ddbb.dingdong.simulator.RouteSegment;
+import com.ddbb.dingdong.domain.transportation.simulator.RouteSegment;
 
 import java.time.LocalDateTime;
 import java.util.List;

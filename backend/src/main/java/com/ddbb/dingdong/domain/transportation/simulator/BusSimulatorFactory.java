@@ -1,14 +1,14 @@
-package com.ddbb.dingdong.simulator;
+package com.ddbb.dingdong.domain.transportation.simulator;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ddbb.dingdong.simulator.subscription.source.BusSimulator;
+import com.ddbb.dingdong.domain.transportation.simulator.subscription.source.BusSimulator;
 import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
 
-import com.ddbb.dingdong.simulator.segment.RouteSegmentProvider;
+import com.ddbb.dingdong.domain.transportation.simulator.segment.RouteSegmentProvider;
 import com.ddbb.dingdong.util.GeoUtil;
 
 import lombok.RequiredArgsConstructor;

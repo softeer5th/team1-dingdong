@@ -4,6 +4,7 @@ import com.ddbb.dingdong.infrastructure.auth.AuthUser;
 import com.ddbb.dingdong.infrastructure.webSocket.CustomCloseStatus;
 import com.ddbb.dingdong.infrastructure.webSocket.repository.SocketRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketMessage;
@@ -11,6 +12,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class SocketHandler extends TextWebSocketHandler {
@@ -31,6 +33,7 @@ public class SocketHandler extends TextWebSocketHandler {
         if (webSocketSession != null) {
             webSocketSession.close(CustomCloseStatus.DUPLICATE_WEBSOCKET);
         }
+        log.debug("user({}) connected is established", authUser.id());
     }
 
     @Override
@@ -41,6 +44,7 @@ public class SocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
         AuthUser authUser = (AuthUser)session.getAttributes().get(SESSION_NAME);
 
+        log.debug("user({}) disconnected", authUser.id());
         if (closeStatus != CustomCloseStatus.DUPLICATE_WEBSOCKET) {
             socketRepository.remove(authUser.id());
         }

@@ -1,5 +1,6 @@
 package com.ddbb.dingdong.simulator.subscription;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
 
@@ -8,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.locks.StampedLock;
 
+@Slf4j
 @Service
 public class BusSubscriptionManager {
     private final Map<Long, StampedLock> lockMap = new ConcurrentHashMap<>();
@@ -23,6 +25,7 @@ public class BusSubscriptionManager {
         if (!set.contains(subscription)) {
             set.add(subscription);
         }
+        log.debug("user ({}) subscribe bus ({})", subscription.getUserId(), busId);
 
         publishers.computeIfPresent(busId, (key, publisher) -> {
            publisher.subscribe(subscription.getSubscriber());
@@ -34,7 +37,6 @@ public class BusSubscriptionManager {
     public void addPublishers(Long busId, SubmissionPublisher<Point> publisher) {
         StampedLock lock = lockMap.computeIfAbsent(busId, id -> new StampedLock());
         long stamp = lock.writeLock();
-
         if (!publishers.containsKey(busId)) {
             Set<UserSubscription> subscriberSet = subscribers.computeIfAbsent(busId, (id) -> new TreeSet<>());
             for (UserSubscription subscription : subscriberSet) {
@@ -52,6 +54,7 @@ public class BusSubscriptionManager {
         subscribers.computeIfPresent(busId, (id, subscriberSet) -> {
             subscriberSet.removeIf(subscription -> {
                 if (subscription.getUserId().equals(userId)) {
+                    log.debug("user ({}) unsubscribe bus ({})", subscription.getUserId(), busId);
                     subscription.getSubscriber().cancel();
                     return true;
                 }

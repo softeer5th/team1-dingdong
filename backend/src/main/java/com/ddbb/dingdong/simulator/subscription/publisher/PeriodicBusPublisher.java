@@ -1,10 +1,12 @@
 package com.ddbb.dingdong.simulator.subscription.publisher;
 
 import com.ddbb.dingdong.simulator.subscription.BusSubscriptionManager;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.*;
 import java.util.function.Supplier;
 
+@Slf4j
 public class PeriodicBusPublisher<T> extends SubmissionPublisher<T> {
     private final BusSubscriptionManager manager;
     private final long busId;
@@ -38,5 +40,6 @@ public class PeriodicBusPublisher<T> extends SubmissionPublisher<T> {
         periodicTask.cancel(false);
         scheduler.shutdown();
         super.close();
+        log.info("Bus {} publisher is closed", busId);
     }
 }

@@ -9,3 +9,23 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+server:
+  servlet:
+    session:
+      cookie:
+        domain: localhost
+        same-site: strict
+        path: /
+
+client:
+  schema: http
+  ip: localhost
+  port: 5173
+
+api:
+  tmap:
+    apikeys:
+      - T126OQYUY39p2KUNHbPXu4YSrF545F3e8BZb92y1
+      - nNA3xYEQxu9msU3roPCCX20tZ7RKsLGa1CoFwcq9
+      - ZPaOi1XYpSaGxutZBwbzw53zKlG8gq9ca8AnqoAB

@@ -25,8 +25,4 @@ public class Home {
     private Double stationLongitude;
 
     private String stationName;
-
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
 }

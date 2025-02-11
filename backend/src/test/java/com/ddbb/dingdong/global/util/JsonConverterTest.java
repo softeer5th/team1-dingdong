@@ -1,9 +1,9 @@
 package com.ddbb.dingdong.global.util;
 
-import com.ddbb.dingdong.domain.clustering.model.Coordinate;
-import com.ddbb.dingdong.domain.clustering.model.dto.RequestRouteOptimizationDTO;
-import com.ddbb.dingdong.domain.clustering.model.dto.ResponseRouteOptimizationDTO;
-import com.ddbb.dingdong.domain.clustering.util.CoordinateDeserializer;
+import com.ddbb.dingdong.infrastructure.routing.model.Coordinate;
+import com.ddbb.dingdong.infrastructure.routing.model.dto.RequestRouteOptimizationDTO;
+import com.ddbb.dingdong.infrastructure.routing.model.dto.ResponseRouteOptimizationDTO;
+import com.ddbb.dingdong.infrastructure.routing.util.CoordinateDeserializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;

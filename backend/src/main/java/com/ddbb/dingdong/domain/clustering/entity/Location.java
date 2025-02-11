@@ -1,36 +1,29 @@
 package com.ddbb.dingdong.domain.clustering.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Entity
 @Getter
 @Setter
-@Entity
-@Table(name = "locations")
-public class Location implements Comparable<Location> {
-
+@AllArgsConstructor
+@NoArgsConstructor
+public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private double latitude;   // 위도
-    private double longitude;  // 경도
-    private Integer clusterLabel; // 클러스터 라벨
 
-    public Location() {}
+    private String clusterLabel;
 
-    public Location(double latitude, double longitude) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
+    @Column(nullable = false)
+    private Long reservationId;
 
-    @Override
-    public int compareTo(Location other) {
-        if (this.clusterLabel < other.clusterLabel) {
-            return -1;
-        } else {
-            if (this.clusterLabel > other.clusterLabel) return 1;
-            return 0;
-        }
-    }
+    @Column(nullable = false)
+    private Double longitude;
+
+    @Column(nullable = false)
+    private Double latitude;
 }

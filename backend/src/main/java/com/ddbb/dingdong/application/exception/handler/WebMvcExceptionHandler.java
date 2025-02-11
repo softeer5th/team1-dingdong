@@ -35,7 +35,7 @@ public class WebMvcExceptionHandler extends ResponseEntityExceptionHandler {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         } else {
             ErrorResponse response = new ErrorResponse(
-                    "Unknown error",
+                    e.getMessage(),
                     LocalDateTime.now()
             );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

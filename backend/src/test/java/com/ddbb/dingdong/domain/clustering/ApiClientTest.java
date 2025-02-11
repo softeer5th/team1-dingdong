@@ -1,6 +1,6 @@
 package com.ddbb.dingdong.domain.clustering;
 
-import com.ddbb.dingdong.domain.clustering.api.TmapApiKeyManager;
+import com.ddbb.dingdong.infrastructure.routing.api.TmapApiKeyManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

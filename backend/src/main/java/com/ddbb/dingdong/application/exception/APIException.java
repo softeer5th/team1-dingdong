@@ -14,9 +14,8 @@ public class APIException extends RuntimeException {
         this.status = status;
     }
 
-    public APIException(ErrorInfo error, HttpStatus status) {
-        super(error.getMessage());
-        this.error = error;
+    public APIException(Exception ex, HttpStatus status) {
+        super(ex.getMessage());
         this.status = status;
     }
 }

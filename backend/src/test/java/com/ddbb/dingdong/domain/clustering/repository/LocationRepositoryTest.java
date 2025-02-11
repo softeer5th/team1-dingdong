@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @SpringBootTest
@@ -24,7 +24,7 @@ class LocationRepositoryTest {
     @DisplayName("Location DB 가져오기 테스트")
     void findAll() {
         List<Location> locations = locationRepository.findAll();
-        Collections.sort(locations);
+        locations.sort(Comparator.comparing(Location::getClusterLabel));
 
         locations.forEach(location -> System.out.println(location.getClusterLabel()));
     }

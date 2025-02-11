@@ -4,11 +4,13 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class School {
@@ -23,8 +25,8 @@ public class School {
     private String roadNameAddress;
 
     @Column(nullable = false)
-    private BigDecimal latitude;
+    private Double latitude;
 
     @Column(nullable = false)
-    private BigDecimal longitude;
+    private Double longitude;
 }

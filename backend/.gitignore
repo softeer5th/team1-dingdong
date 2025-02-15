@@ -43,3 +43,6 @@ application-prod.yml
 src/main/resources/static/map.html
 src/main/resources/response.json
 .DS_Store
+
+### FCM Secret Key ###
+ding-dong-firebase.json

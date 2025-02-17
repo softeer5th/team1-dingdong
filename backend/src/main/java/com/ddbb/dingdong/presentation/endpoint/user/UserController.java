@@ -1,24 +1,24 @@
 package com.ddbb.dingdong.presentation.endpoint.user;
 
 import com.ddbb.dingdong.application.exception.APIException;
+import com.ddbb.dingdong.application.usecase.user.EnrollFCMTokenUseCase;
 import com.ddbb.dingdong.application.usecase.user.GetUserInfoUseCase;
 import com.ddbb.dingdong.application.usecase.user.GetWalletBalanceUseCase;
 import com.ddbb.dingdong.application.usecase.user.GetWalletHistoryUseCase;
 import com.ddbb.dingdong.domain.common.exception.DomainException;
 import com.ddbb.dingdong.infrastructure.auth.security.AuthUser;
 import com.ddbb.dingdong.infrastructure.auth.security.annotation.LoginUser;
+import com.ddbb.dingdong.presentation.endpoint.user.exchanges.EnrollFCMTokenRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import static com.ddbb.dingdong.application.usecase.user.GetUserInfoUseCase.Param;
-import static com.ddbb.dingdong.application.usecase.user.GetUserInfoUseCase.Result;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,13 +27,28 @@ public class UserController {
     private final GetUserInfoUseCase getUserInfoUseCase;
     private final GetWalletBalanceUseCase getWalletBalanceUseCase;
     private final GetWalletHistoryUseCase getWalletHistoryUseCase;
+    private final EnrollFCMTokenUseCase enrollFCMTokenUseCase;
 
     @GetMapping("/me")
-    public Result getUserInfo(
+    public GetUserInfoUseCase.Result getUserInfo(
             @LoginUser AuthUser authUser
     ) {
         try {
-            return getUserInfoUseCase.execute(new Param(authUser.id()));
+            return getUserInfoUseCase.execute(new GetUserInfoUseCase.Param(authUser.id()));
+        } catch (DomainException e) {
+            throw new APIException(e, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping("/fcm-token")
+    public ResponseEntity<Void> fcmToken(
+            @LoginUser AuthUser authUser,
+            @RequestBody EnrollFCMTokenRequest request
+    ) {
+        try {
+            EnrollFCMTokenUseCase.Param param = new EnrollFCMTokenUseCase.Param(authUser.id(), request.getToken());
+            enrollFCMTokenUseCase.execute(param);
+            return ResponseEntity.ok().build();
         } catch (DomainException e) {
             throw new APIException(e, HttpStatus.NOT_FOUND);
         }

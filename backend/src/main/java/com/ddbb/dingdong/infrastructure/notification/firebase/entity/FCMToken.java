@@ -1,4 +1,4 @@
-package com.ddbb.dingdong.infrastructure.firebase.entity;
+package com.ddbb.dingdong.infrastructure.notification.firebase.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

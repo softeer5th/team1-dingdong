@@ -1,6 +1,6 @@
-package com.ddbb.dingdong.infrastructure.firebase.repository;
+package com.ddbb.dingdong.infrastructure.notification.firebase.repository;
 
-import com.ddbb.dingdong.infrastructure.firebase.entity.FCMToken;
+import com.ddbb.dingdong.infrastructure.notification.firebase.entity.FCMToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

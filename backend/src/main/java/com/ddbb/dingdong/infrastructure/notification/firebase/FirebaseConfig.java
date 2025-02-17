@@ -1,4 +1,4 @@
-package com.ddbb.dingdong.infrastructure.firebase;
+package com.ddbb.dingdong.infrastructure.notification.firebase;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;

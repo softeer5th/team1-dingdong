@@ -1,9 +1,9 @@
-package com.ddbb.dingdong.infrastructure.firebase;
+package com.ddbb.dingdong.infrastructure.notification.firebase;
 
-import com.ddbb.dingdong.infrastructure.firebase.entity.FCMToken;
-import com.ddbb.dingdong.infrastructure.firebase.error.FCMError;
-import com.ddbb.dingdong.infrastructure.firebase.error.FCMException;
-import com.ddbb.dingdong.infrastructure.firebase.repository.FCMTokenRepository;
+import com.ddbb.dingdong.infrastructure.notification.firebase.entity.FCMToken;
+import com.ddbb.dingdong.infrastructure.notification.firebase.error.FCMError;
+import com.ddbb.dingdong.infrastructure.notification.firebase.error.FCMException;
+import com.ddbb.dingdong.infrastructure.notification.firebase.repository.FCMTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;

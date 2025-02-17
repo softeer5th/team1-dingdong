@@ -1,4 +1,4 @@
-package com.ddbb.dingdong.infrastructure.firebase.error;
+package com.ddbb.dingdong.infrastructure.notification.firebase.error;
 
 import com.ddbb.dingdong.domain.common.exception.ErrorInfo;
 

@@ -29,3 +29,9 @@ api:
       - ${API_KEY_1}
       - ${API_KEY_2}
       - ${API_KEY_3}
+
+fcm:
+  renotify: ${FCM_RENOTIFIY}
+  silent: ${FCM_SILENT}
+  requireInteraction: ${FCM_REQUIRE_INTERACTION}
+  link: ${FCM_TOUCH_LINK}

@@ -1,10 +1,7 @@
 package com.ddbb.dingdong.domain.user.repository;
 
 import com.ddbb.dingdong.domain.user.entity.User;
-import com.ddbb.dingdong.domain.user.repository.projection.HomeLocationProjection;
-import com.ddbb.dingdong.domain.user.repository.projection.HomeStationProjection;
-import com.ddbb.dingdong.domain.user.repository.projection.SchoolIDProjection;
-import com.ddbb.dingdong.domain.user.repository.projection.UserStaticOnly;
+import com.ddbb.dingdong.domain.user.repository.projection.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,7 +20,7 @@ public interface UserQueryRepository extends JpaRepository<User, Long> {
     Optional<HomeLocationProjection> queryHomeLocationByUserId(@Param("userId") Long userId);
 
     @Query("SELECT u.school.id as schoolId FROM User u WHERE u.id = :userId")
-    Optional<SchoolIDProjection> findSchoolIDByUserId(@Param("userId") Long userId);
+    Optional<SchoolIdProjection> findSchoolIDByUserId(@Param("userId") Long userId);
 
     @Query("SELECT u.school.id as schoolId, u.home.stationLatitude as stationLatitude, u.home.stationLongitude as stationLongitude " +
             "FROM User u " +

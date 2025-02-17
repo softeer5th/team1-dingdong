@@ -2,7 +2,7 @@ package com.ddbb.dingdong.application.usecase.auth;
 
 import com.ddbb.dingdong.application.common.Params;
 import com.ddbb.dingdong.application.common.UseCase;
-import com.ddbb.dingdong.application.usecase.auth.errors.AuthParamErrors;
+import com.ddbb.dingdong.application.usecase.auth.errors.AuthInvalidParamErrors;
 import com.ddbb.dingdong.domain.auth.service.AuthManagement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,8 +31,8 @@ public class LoginUseCase implements UseCase<LoginUseCase.Param,Void> {
 
         @Override
         public boolean validate() {
-            if (email.isBlank()) throw AuthParamErrors.EMAIL_REQUIRED.toException();
-            if (rawPassword.isBlank()) throw AuthParamErrors.PASSWORD_REQUIRED.toException();
+            if (email.isBlank()) throw AuthInvalidParamErrors.EMAIL_REQUIRED.toException();
+            if (rawPassword.isBlank()) throw AuthInvalidParamErrors.PASSWORD_REQUIRED.toException();
 
             return true;
         }

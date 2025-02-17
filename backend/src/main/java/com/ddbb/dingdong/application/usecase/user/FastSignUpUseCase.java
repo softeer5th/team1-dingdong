@@ -7,6 +7,7 @@ import com.ddbb.dingdong.domain.payment.entity.Wallet;
 import com.ddbb.dingdong.domain.payment.repository.WalletRepository;
 import com.ddbb.dingdong.domain.user.entity.Home;
 import com.ddbb.dingdong.domain.user.entity.School;
+import com.ddbb.dingdong.domain.user.entity.Timetable;
 import com.ddbb.dingdong.domain.user.entity.User;
 import com.ddbb.dingdong.domain.user.entity.vo.Role;
 import com.ddbb.dingdong.domain.user.repository.SchoolRepository;
@@ -16,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ public class FastSignUpUseCase implements UseCase<FastSignUpUseCase.Param, Void>
     private final PasswordEncoder passwordEncoder;
     private final WalletRepository walletRepository;
 
+    @Transactional
     @Override
     public Void execute(Param param) {
         String password = passwordEncoder.encode(param.getPassword());
@@ -41,11 +44,14 @@ public class FastSignUpUseCase implements UseCase<FastSignUpUseCase.Param, Void>
                 "Test Station",
                 param.houseRoadNameAddress
         );
+        Timetable timetable = new Timetable();
+
         User user = new User(
                 null, param.name, param.email, password, Role.USER, LocalDateTime.now(),
                 school,
-                home
+                home, timetable
         );
+
         user = userRepository.save(user);
         Wallet wallet = new Wallet(null, user.getId(), INFINITE_MONEY, LocalDateTime.now(), new ArrayList<>());
         walletRepository.save(wallet);

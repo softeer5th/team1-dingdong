@@ -16,7 +16,7 @@ import com.ddbb.dingdong.domain.transportation.repository.projection.BusReserved
 import com.ddbb.dingdong.domain.transportation.service.BusStopQueryService;
 import com.ddbb.dingdong.domain.user.repository.UserQueryRepository;
 import com.ddbb.dingdong.domain.user.repository.projection.HomeStationProjection;
-import com.ddbb.dingdong.domain.user.service.UserErrors;
+import com.ddbb.dingdong.domain.user.service.error.UserErrors;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

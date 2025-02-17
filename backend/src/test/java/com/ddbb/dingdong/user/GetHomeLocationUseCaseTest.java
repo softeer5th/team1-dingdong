@@ -5,7 +5,7 @@ import com.ddbb.dingdong.application.usecase.user.GetHomeLocationUseCase.Param;
 import com.ddbb.dingdong.application.usecase.user.GetHomeLocationUseCase.Result;
 import com.ddbb.dingdong.domain.user.repository.UserQueryRepository;
 import com.ddbb.dingdong.domain.user.repository.projection.HomeLocationProjection;
-import com.ddbb.dingdong.domain.user.service.UserErrors;
+import com.ddbb.dingdong.domain.user.service.error.UserErrors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -2,7 +2,7 @@ package com.ddbb.dingdong.application.usecase.auth;
 
 import com.ddbb.dingdong.application.common.Params;
 import com.ddbb.dingdong.application.common.UseCase;
-import com.ddbb.dingdong.application.usecase.auth.errors.AuthParamErrors;
+import com.ddbb.dingdong.application.usecase.auth.errors.AuthInvalidParamErrors;
 import com.ddbb.dingdong.util.ParamValidator;
 import com.ddbb.dingdong.domain.auth.service.AuthManagement;
 import com.ddbb.dingdong.presentation.endpoint.auth.exchanges.CheckEmailDto;
@@ -33,9 +33,9 @@ public class CheckEmailUseCase implements UseCase<CheckEmailUseCase.Param, Void>
         public boolean validate() {
             String email = dto.getEmail();
             if (email == null || email.isBlank()) {
-                throw AuthParamErrors.EMAIL_REQUIRED.toException();
+                throw AuthInvalidParamErrors.EMAIL_REQUIRED.toException();
             } else if (!ParamValidator.isValidEmail(email)) {
-                throw AuthParamErrors.INVALID_EMAIL_FORMAT.toException();
+                throw AuthInvalidParamErrors.INVALID_EMAIL_FORMAT.toException();
             }
             return true;
         }

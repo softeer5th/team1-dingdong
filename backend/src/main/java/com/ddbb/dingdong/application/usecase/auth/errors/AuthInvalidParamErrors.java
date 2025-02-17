@@ -2,7 +2,7 @@ package com.ddbb.dingdong.application.usecase.auth.errors;
 
 import com.ddbb.dingdong.application.exception.InvalidParamErrorInfo;
 
-public enum AuthParamErrors implements InvalidParamErrorInfo {
+public enum AuthInvalidParamErrors implements InvalidParamErrorInfo {
     INVALID_NAME("이름이 올바르지 않습니다.", "name"),
     USER_NOT_FOUND("해당 유저를 찾을 수 없습니다.", "email"),
     EMAIL_REQUIRED("이메일이 설정되지 않았습니다.", "email"),
@@ -21,7 +21,7 @@ public enum AuthParamErrors implements InvalidParamErrorInfo {
     private final String desc;
     private final String field;
 
-    AuthParamErrors(String desc, String field) {
+    AuthInvalidParamErrors(String desc, String field) {
         this.desc = desc;
         this.field = field;
     }

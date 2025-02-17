@@ -2,7 +2,7 @@ package com.ddbb.dingdong.application.usecase.auth;
 
 import com.ddbb.dingdong.application.common.Params;
 import com.ddbb.dingdong.application.common.UseCase;
-import com.ddbb.dingdong.application.usecase.auth.errors.AuthParamErrors;
+import com.ddbb.dingdong.application.usecase.auth.errors.AuthInvalidParamErrors;
 import com.ddbb.dingdong.domain.user.entity.User;
 import com.ddbb.dingdong.infrastructure.auth.security.AuthUser;
 import com.ddbb.dingdong.infrastructure.auth.security.AuthenticationManager;
@@ -45,19 +45,19 @@ public class SignUpUseCase implements UseCase<SignUpUseCase.Param, Void> {
         @Override
         public boolean validate() {
             if (!ParamValidator.isValidName(name)) {
-                throw AuthParamErrors.INVALID_NAME.toException();
+                throw AuthInvalidParamErrors.INVALID_NAME.toException();
             } else if (!ParamValidator.isValidEmail(email)) {
-                throw AuthParamErrors.INVALID_EMAIL_FORMAT.toException();
+                throw AuthInvalidParamErrors.INVALID_EMAIL_FORMAT.toException();
             } else if (!ParamValidator.isValidPassword(password)) {
-                throw AuthParamErrors.INVALID_PASSWORD_FORMAT.toException();
+                throw AuthInvalidParamErrors.INVALID_PASSWORD_FORMAT.toException();
             } else if (!ParamValidator.isValidLatitude(home.getHouseLatitude())) {
-                throw AuthParamErrors.INVALID_HOME_LATITUDE.toException();
+                throw AuthInvalidParamErrors.INVALID_HOME_LATITUDE.toException();
             } else if (!ParamValidator.isValidLongitude(home.getHouseLongitude())) {
-                throw AuthParamErrors.INVALID_HOME_LONGITUDE.toException();
+                throw AuthInvalidParamErrors.INVALID_HOME_LONGITUDE.toException();
             } else if (!ParamValidator.isValidName(home.getHouseRoadNameAddress())) {
-                throw AuthParamErrors.INVALID_ROAD_NAME_ADDRESS.toException();
+                throw AuthInvalidParamErrors.INVALID_ROAD_NAME_ADDRESS.toException();
             } else if (schoolId == null) {
-                throw AuthParamErrors.INVALID_SCHOOL_ID.toException();
+                throw AuthInvalidParamErrors.INVALID_SCHOOL_ID.toException();
             }
             return true;
         }

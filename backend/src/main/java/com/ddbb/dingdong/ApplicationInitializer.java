@@ -4,6 +4,7 @@ import com.ddbb.dingdong.domain.payment.entity.Wallet;
 import com.ddbb.dingdong.domain.payment.repository.WalletRepository;
 import com.ddbb.dingdong.domain.user.entity.Home;
 import com.ddbb.dingdong.domain.user.entity.School;
+import com.ddbb.dingdong.domain.user.entity.Timetable;
 import com.ddbb.dingdong.domain.user.entity.User;
 import com.ddbb.dingdong.domain.user.entity.vo.Role;
 import com.ddbb.dingdong.domain.user.repository.SchoolRepository;
@@ -50,7 +51,8 @@ public class ApplicationInitializer {
 
     private void adminSignUp() {
         Home home = new Home(null, 37.5143, 127.0294, 37.513716, 127.029790, "에티버스" ,"학동로 180");
-        User user = new User(null, "admin", "admin@admin.com", "abcd1234!@", Role.ADMIN, LocalDateTime.now(), school, null);
+        Timetable timetable = new Timetable();
+        User user = new User(null, "admin", "admin@admin.com", "abcd1234!@", Role.ADMIN, LocalDateTime.now(), school, null, timetable);
         user.associateHome(home);
         user = userRepository.save(user);
         Wallet wallet = new Wallet(null, user.getId(), 1000000, LocalDateTime.now(), new ArrayList<>());
@@ -60,7 +62,8 @@ public class ApplicationInitializer {
     private void autoSignUp(int testId, String password) {
         Home home = new Home(null, 37.5143, 127.0294, 37.513716, 127.029790, "에티버스" ,"학동로 180");
         String email = testId == 0 ? "test@test.com" : "test" +testId + "@test.com";
-        User user = new User(null, "test", email, password, Role.USER, LocalDateTime.now(), school, null);
+        Timetable timetable = new Timetable();
+        User user = new User(null, "test", email, password, Role.USER, LocalDateTime.now(), school, null,timetable);
         user.associateHome(home);
         user = userRepository.save(user);
         Wallet wallet = new Wallet(null, user.getId(), 50000, LocalDateTime.now(), new ArrayList<>());

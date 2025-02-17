@@ -6,16 +6,16 @@ import com.ddbb.dingdong.domain.payment.entity.Wallet;
 import com.ddbb.dingdong.domain.payment.repository.WalletRepository;
 import com.ddbb.dingdong.domain.user.entity.Home;
 import com.ddbb.dingdong.domain.user.entity.School;
+import com.ddbb.dingdong.domain.user.entity.Timetable;
 import com.ddbb.dingdong.domain.user.entity.User;
 import com.ddbb.dingdong.domain.user.entity.vo.Role;
 import com.ddbb.dingdong.domain.user.repository.SchoolRepository;
 import com.ddbb.dingdong.domain.user.repository.UserRepository;
+import com.ddbb.dingdong.infrastructure.auth.encrypt.PasswordEncoder;
 import com.ddbb.dingdong.infrastructure.auth.security.AuthUser;
 import com.ddbb.dingdong.infrastructure.auth.security.AuthenticationManager;
-import com.ddbb.dingdong.infrastructure.auth.encrypt.PasswordEncoder;
 import com.ddbb.dingdong.presentation.endpoint.auth.exchanges.SignUpRequestDto;
 import com.ddbb.dingdong.util.ParamValidator;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -37,6 +37,7 @@ public class AuthManagement {
 
     public User signUp(String name, String email, String password, SignUpRequestDto.Home home, Long schoolId) {
         School school = schoolRepository.findById(schoolId).orElseThrow(AuthErrors.SCHOOL_NOT_FOUND::toException);
+        Timetable timetable = new Timetable();
         User user = User.builder()
                 .name(name)
                 .email(email)
@@ -53,6 +54,7 @@ public class AuthManagement {
                 .createdAt(LocalDateTime.now())
                 .school(school)
                 .role(Role.USER)
+                .timetable(timetable)
                 .build();
         user = userRepository.save(user);
         Wallet wallet = new Wallet(null, user.getId(), WELCOME_MONEY, LocalDateTime.now(), new ArrayList<>());

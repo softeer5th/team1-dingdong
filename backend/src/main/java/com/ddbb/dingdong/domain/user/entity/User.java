@@ -42,6 +42,9 @@ public class User {
     @OneToOne(cascade = CascadeType.ALL)
     private Home home;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private Timetable timetable;
+
     public void associateHome(Home home) {
         this.home = home;
     }
@@ -51,5 +54,18 @@ public class User {
         this.home.setStationLongitude(longitude);
         this.home.setStationName(stationName);
         this.home.setStationRoadAddressName(roadAddressName);
+    }
+
+    public void changeTimetable(Timetable timetable) {
+        this.timetable.setMonStartTime(timetable.getMonStartTime());
+        this.timetable.setMonEndTime(timetable.getMonEndTime());
+        this.timetable.setTueStartTime(timetable.getTueStartTime());
+        this.timetable.setTueEndTime(timetable.getTueEndTime());
+        this.timetable.setWedStartTime(timetable.getWedStartTime());
+        this.timetable.setWedEndTime(timetable.getWedEndTime());
+        this.timetable.setThuStartTime(timetable.getThuStartTime());
+        this.timetable.setThuEndTime(timetable.getThuEndTime());
+        this.timetable.setFriStartTime(timetable.getFriStartTime());
+        this.timetable.setFriEndTime(timetable.getFriEndTime());
     }
 }

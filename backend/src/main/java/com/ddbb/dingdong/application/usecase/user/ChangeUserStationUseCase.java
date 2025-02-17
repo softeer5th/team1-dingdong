@@ -2,8 +2,8 @@ package com.ddbb.dingdong.application.usecase.user;
 
 import com.ddbb.dingdong.application.common.Params;
 import com.ddbb.dingdong.application.common.UseCase;
+import com.ddbb.dingdong.application.usecase.user.error.UserInvalidParamErrors;
 import com.ddbb.dingdong.domain.user.entity.User;
-import com.ddbb.dingdong.domain.user.service.HomeErrors;
 import com.ddbb.dingdong.domain.user.service.UserManagement;
 import com.ddbb.dingdong.util.ParamValidator;
 import lombok.AllArgsConstructor;
@@ -44,16 +44,16 @@ public class ChangeUserStationUseCase implements UseCase<ChangeUserStationUseCas
         @Override
         public boolean validate() {
             if(roadAddressName == null || roadAddressName.isEmpty()) {
-                throw HomeErrors.REQUIRED_STATION_ROAD_ADDRESS_NAME.toException();
+                throw UserInvalidParamErrors.REQUIRED_STATION_ROAD_ADDRESS_NAME.toException();
             }
             if(stationName == null || stationName.isBlank()) {
-                throw HomeErrors.REQUIRED_STATION_NAME.toException();
+                throw UserInvalidParamErrors.REQUIRED_STATION_NAME.toException();
             }
             if(!ParamValidator.isValidLatitude(latitude)) {
-                throw HomeErrors.INVALID_STATION_LATITUDE_RANGE.toException();
+                throw UserInvalidParamErrors.INVALID_STATION_LATITUDE_RANGE.toException();
             }
             if(!ParamValidator.isValidLongitude(longitude)) {
-                throw HomeErrors.INVALID_STATION_LONGITUDE_RANGE.toException();
+                throw UserInvalidParamErrors.INVALID_STATION_LONGITUDE_RANGE.toException();
             }
 
             return true;

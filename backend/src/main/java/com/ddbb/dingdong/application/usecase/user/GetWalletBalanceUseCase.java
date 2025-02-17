@@ -4,7 +4,7 @@ import com.ddbb.dingdong.application.common.Params;
 import com.ddbb.dingdong.application.common.UseCase;
 import com.ddbb.dingdong.domain.payment.repository.WalletQueryRepository;
 import com.ddbb.dingdong.domain.payment.repository.projection.BalanceProjection;
-import com.ddbb.dingdong.domain.user.service.UserErrors;
+import com.ddbb.dingdong.domain.user.service.error.UserErrors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

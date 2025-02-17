@@ -3,6 +3,7 @@ package com.ddbb.dingdong.presentation.endpoint.reservation;
 import com.ddbb.dingdong.application.exception.APIException;
 import com.ddbb.dingdong.application.usecase.reservation.*;
 import com.ddbb.dingdong.domain.common.exception.DomainException;
+import com.ddbb.dingdong.domain.reservation.entity.vo.Direction;
 import com.ddbb.dingdong.infrastructure.auth.security.AuthUser;
 import com.ddbb.dingdong.infrastructure.auth.security.annotation.LoginUser;
 import com.ddbb.dingdong.presentation.endpoint.reservation.exchanges.*;
@@ -11,9 +12,11 @@ import com.ddbb.dingdong.presentation.endpoint.reservation.exchanges.enums.SortT
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.time.YearMonth;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +28,7 @@ public class ReservationController {
     private final MakeGeneralReservationUseCase makeGeneralReservationUseCase;
     private final MakeTogetherReservationUseCase makeTogetherReservationUseCase;
     private final CancelReservationUseCase cancelReservationUseCase;
+    private final SuggestReservationUseCase suggestReservationUseCase;
 
     @GetMapping
     public ResponseEntity<GetReservationsUseCase.Result> getReservations(
@@ -45,6 +49,27 @@ public class ReservationController {
         }
 
         return ResponseEntity.ok(result);
+    }
+    @GetMapping("/suggestions")
+    public ResponseEntity<SuggestReservationUseCase.Result> getReservations(
+        @LoginUser AuthUser user,
+        @RequestParam Direction direction,
+        @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth
+    ) {
+        Long userId = user.id();
+        SuggestReservationUseCase.Param param = new SuggestReservationUseCase.Param(
+                userId,
+                direction,
+                yearMonth
+        );
+        SuggestReservationUseCase.Result result;
+        try {
+            result = suggestReservationUseCase.execute(param);
+        } catch (DomainException ex) {
+            throw new APIException(ex, HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok().body(result);
     }
 
     @DeleteMapping("/{reservationId}")

@@ -4,7 +4,7 @@ import com.ddbb.dingdong.application.common.Params;
 import com.ddbb.dingdong.application.common.UseCase;
 import com.ddbb.dingdong.domain.user.repository.UserQueryRepository;
 import com.ddbb.dingdong.domain.user.repository.projection.HomeLocationProjection;
-import com.ddbb.dingdong.domain.user.service.UserErrors;
+import com.ddbb.dingdong.domain.user.service.error.UserErrors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

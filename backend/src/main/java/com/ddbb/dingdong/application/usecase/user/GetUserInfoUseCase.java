@@ -5,7 +5,7 @@ import com.ddbb.dingdong.application.common.UseCase;
 import com.ddbb.dingdong.domain.common.exception.DomainException;
 import com.ddbb.dingdong.domain.user.repository.UserQueryRepository;
 import com.ddbb.dingdong.domain.user.repository.projection.UserStaticOnly;
-import com.ddbb.dingdong.domain.user.service.UserErrors;
+import com.ddbb.dingdong.domain.user.service.error.UserErrors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -6,7 +6,7 @@ import com.ddbb.dingdong.domain.reservation.entity.vo.Direction;
 import com.ddbb.dingdong.domain.transportation.repository.BusScheduleQueryRepository;
 import com.ddbb.dingdong.domain.transportation.repository.projection.ScheduleTimeProjection;
 import com.ddbb.dingdong.domain.user.repository.UserQueryRepository;
-import com.ddbb.dingdong.domain.user.service.UserErrors;
+import com.ddbb.dingdong.domain.user.service.error.UserErrors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

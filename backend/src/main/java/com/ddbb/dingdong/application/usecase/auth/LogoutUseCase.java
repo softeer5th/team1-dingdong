@@ -2,7 +2,6 @@ package com.ddbb.dingdong.application.usecase.auth;
 
 import com.ddbb.dingdong.application.common.Params;
 import com.ddbb.dingdong.application.common.UseCase;
-import com.ddbb.dingdong.application.usecase.auth.errors.AuthParamErrors;
 import com.ddbb.dingdong.domain.auth.service.AuthManagement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

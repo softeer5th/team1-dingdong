@@ -1,4 +1,4 @@
-package com.ddbb.dingdong.domain.user.service;
+package com.ddbb.dingdong.domain.user.service.error;
 
 import com.ddbb.dingdong.domain.common.exception.ErrorInfo;
 

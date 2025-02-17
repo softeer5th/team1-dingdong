@@ -24,6 +24,9 @@ public class FCMPushNotificationSender implements NotificationSender {
         List<FCMToken> tokenEntities = fcmTokenRepository.findActiveTokens(userIds);
         List<String> tokens = tokenEntities.stream().map(FCMToken::getToken).toList();
 
+        if (tokens.isEmpty()) {
+            return;
+        }
         MulticastMessage multicastMessage = messageFactory.createMulticastMessage(title, content, tokens);
         try {
             final int size = tokens.size();

@@ -98,7 +98,7 @@ public class BusScheduleManagement {
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void publishDepartureEvent(List<UserBusStopTime> userBusStopTimes) {
         for (UserBusStopTime userBusStopTime : userBusStopTimes) {
-            eventPublisher.publishEvent(new BusDepartureEvent(userBusStopTime.getTime(), userBusStopTime.getUserIds()));
+            eventPublisher.publishEvent(new BusDepartureEvent(userBusStopTime.getTime(), userBusStopTime.getUserReservationIds()));
         }
     }
 }

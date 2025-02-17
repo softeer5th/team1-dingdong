@@ -1,5 +1,6 @@
 package com.ddbb.dingdong.domain.transportation.service.event;
 
+import com.ddbb.dingdong.domain.transportation.service.dto.UserBusStopTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,5 +11,5 @@ import java.util.List;
 @AllArgsConstructor
 public class BusDepartureEvent {
     private LocalDateTime arrivalTime;
-    private List<Long> userIds;
+    private List<UserBusStopTime.UserReservationId> userReservationIds;
 }

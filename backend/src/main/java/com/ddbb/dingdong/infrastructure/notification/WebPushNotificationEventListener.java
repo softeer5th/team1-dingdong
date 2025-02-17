@@ -2,6 +2,7 @@ package com.ddbb.dingdong.infrastructure.notification;
 
 import com.ddbb.dingdong.domain.reservation.service.event.AllocationFailedEvent;
 import com.ddbb.dingdong.domain.reservation.service.event.AllocationSuccessEvent;
+import com.ddbb.dingdong.domain.transportation.service.dto.UserBusStopTime;
 import com.ddbb.dingdong.domain.transportation.service.event.BusDepartureEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -35,6 +36,10 @@ public class WebPushNotificationEventListener {
     @EventListener
     protected void sendBusStartNotification(BusDepartureEvent event) {
         NotificationMessage message = messageFormatter.busDeparture(event.getArrivalTime(), LocalDateTime.now());
-        notificationSender.send(message.title(), message.content(), event.getUserIds());
+        List<Long> userIds = event.getUserReservationIds()
+                .stream()
+                .map(UserBusStopTime.UserReservationId::userId)
+                .toList();
+        notificationSender.send(message.title(), message.content(), userIds);
     }
 }

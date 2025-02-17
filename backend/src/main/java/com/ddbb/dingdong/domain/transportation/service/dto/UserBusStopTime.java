@@ -10,21 +10,23 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class UserBusStopTime {
+    public record UserReservationId(Long userId, Long busStopId) {}
+
     private Long busStopId;
     private LocalDateTime time;
-    private List<Long> userIds;
+    private List<UserReservationId> userReservationIds;
 
     public UserBusStopTime(Long busStopId, LocalDateTime time) {
         this.busStopId = busStopId;
         this.time = time;
-        this.userIds = new ArrayList<>();
+        this.userReservationIds = new ArrayList<>();
     }
 
     public UserBusStopTime ofTime(LocalDateTime time) {
-        return new UserBusStopTime(busStopId, time, userIds);
+        return new UserBusStopTime(busStopId, time, userReservationIds);
     }
 
-    public void addUserId(Long userId) {
-        userIds.add(userId);
+    public void addUserReservation(Long userId, Long reservationId) {
+        userReservationIds.add(new UserReservationId(userId, reservationId));
     }
 }

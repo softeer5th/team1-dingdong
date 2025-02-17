@@ -42,7 +42,7 @@ public class StartBusUseCase implements UseCase<StartBusUseCase.Param, Void> {
                 busStopTimeMap.put(proj.getBusStopId(), new UserBusStopTime(proj.getBusStopId(), proj.getBusStopArrivalTime()));
             }
             busStopTimeMap.computeIfPresent(proj.getBusStopId(), (k, v) ->  {
-                v.addUserId(proj.getUserId());
+                v.addUserReservation(proj.getUserId(), proj.getReservationId());
                 return v;
             });
         }

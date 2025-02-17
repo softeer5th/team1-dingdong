@@ -5,61 +5,107 @@ export interface users_me_interface {
   email: string;
   schoolName: string;
 }
-export const users_me = createQueryFactory("/api/users/me");
+export const users_me = createQueryFactory<users_me_interface>("/api/users/me");
 
-export interface users_reservations_interface {
-  reservationInfos: {
-    content: {
-      reservationId: number;
-      startDate: string;
-      busStopName: string;
-      direction: "TO_SCHOOL" | "TO_HOME";
-      expectedArrivalTime: string | null;
-      expectedDepartureTime: string | null;
-      reservationStatus:
-        | "PENDING"
-        | "ALLOCATED"
-        | "FAIL_ALLOCATED"
-        | "CANCELED";
-      operationInfo: {
+
+
+/**
+ * 🚍 학교에서 집으로 가는 버스 예약이 완료된 경우
+ * @property {"TO_HOME"} direction 버스 이동 방향 (학교 → 집)
+ * @property {string} expectedDepartureTime 학교에서 버스 출발 시간 (탑승 시간) @format HH:mm
+ * @property {"ALLOCATED"} reservationStatus 예약 상태 (배정 완료)
+ * @property {object} operationInfo 배정된 버스 정보
+ * @property {number} operationInfo.busScheduleId 버스 일정 ID
+ * @property {"READY" | "RUNNING" | "ENDED"} operationInfo.busStatus 현재 버스 상태
+ * @property {string} operationInfo.busName 버스 이름
+ * @property {string} operationInfo.busStopArrivalTime 집 도착 시간 (하차 시간) @format HH:mm
+ */
+export interface TO_HOME_ALLOCATED {
+    direction: "TO_HOME";
+    expectedDepartureTime: string;
+    reservationStatus: "ALLOCATED";
+    operationInfo: {
         busScheduleId: number;
         busStatus: "READY" | "RUNNING" | "ENDED";
         busName: string;
         busStopArrivalTime: string;
-      } | null;
-    }[];
-    empty: boolean;
-    first: boolean;
-    last: boolean;
-    number: number;
-    numberOfElements: number;
-    pageable: {
-      offset: number;
-      pageNumber: number;
-      pageSize: number;
-      paged: boolean;
-      sort: {
-        empty: boolean;
-        sorted: boolean;
-        unsorted: boolean;
-      };
     };
-    size: number;
-    totalElements: number;
-    totalPages: number;
-    sort: {
-      empty: boolean;
-      sorted: boolean;
-      unsorted: boolean;
-    };
-  };
 }
-export const users_reservations = createQueryFactory("/api/users/reservations");
+
+/**
+ * 🚍 학교에서 집으로 가는 버스 예약이 아직 배정되지 않은 경우
+ * @property {"TO_HOME"} direction 버스 이동 방향 (학교 → 집)
+ * @property {string} expectedDepartureTime 학교에서 버스 출발 시간 (탑승 시간) @format HH:mm
+ * @property {"PENDING" | "FAIL_ALLOCATED" | "CANCELED"} reservationStatus 예약 상태 (배정 대기, 배정 실패, 취소)
+ */
+export interface TO_HOME_NOT_ALLOCATED {
+    direction: "TO_HOME";
+    expectedDepartureTime: string;
+    reservationStatus: "PENDING" | "FAIL_ALLOCATED" | "CANCELED";
+}
+
+/**
+ * 🚍 집에서 학교로 가는 버스 예약이 완료된 경우
+ * @property {"TO_SCHOOL"} direction 버스 이동 방향 (집 → 학교)
+ * @property {string} expectedArrivalTime 집에서 버스 출발 시간 (탑승 시간) @format HH:mm
+ * @property {"ALLOCATED"} reservationStatus 예약 상태 (배정 완료)
+ * @property {object} operationInfo 배정된 버스 정보
+ * @property {number} operationInfo.busScheduleId 버스 일정 ID
+ * @property {"READY" | "RUNNING" | "ENDED"} operationInfo.busStatus 현재 버스 상태
+ * @property {string} operationInfo.busName 버스 이름
+ * @property {string} operationInfo.busStopArrivalTime 학교 도착 시간 (하차 시간) @format HH:mm
+ */
+export interface TO_SCHOOL_ALLOCATED {
+    direction: "TO_SCHOOL";
+    expectedArrivalTime: string;
+    reservationStatus: "ALLOCATED";
+    operationInfo: {
+        busScheduleId: number;
+        busStatus: "READY" | "RUNNING" | "ENDED";
+        busName: string;
+        busStopArrivalTime: string;
+    };
+}
+
+/**
+ * 🚍 집에서 학교로 가는 버스 예약이 아직 배정되지 않은 경우
+ * @property {"TO_SCHOOL"} direction 버스 이동 방향 (집 → 학교)
+ * @property {string} expectedArrivalTime 집에서 버스 출발 시간 (탑승 시간) @format HH:mm
+ * @property {"PENDING" | "FAIL_ALLOCATED" | "CANCELED"} reservationStatus 예약 상태 (배정 대기, 배정 실패, 취소)
+ */
+export interface TO_SCHOOL_NOT_ALLOCATED {
+    direction: "TO_SCHOOL";
+    expectedArrivalTime: string;
+    reservationStatus: "PENDING" | "FAIL_ALLOCATED" | "CANCELED";
+}
+
+export interface users_reservations_interface {
+    reservationInfos: {
+        content: ({
+            reservationId: number;
+            startDate: string;
+            busStopName: string;
+        } & (
+            TO_SCHOOL_NOT_ALLOCATED
+            | TO_HOME_NOT_ALLOCATED
+            | TO_SCHOOL_ALLOCATED
+            | TO_HOME_ALLOCATED
+            )
+        )[]
+        page: {
+            size: number,
+            number: number,
+            totalElements: number,
+            totalPages: number
+        }
+    }
+}
+export const users_reservations = createQueryFactory<users_reservations_interface>("/api/users/reservations");
 
 export interface users_notifications_checkUnread_interface {
   hasUnreadNotifications: boolean;
 }
-export const users_notifications_checkUnread = createQueryFactory(
+export const users_notifications_checkUnread = createQueryFactory<users_notifications_checkUnread_interface>(
   "/api/users/notifications/check-unread"
 );
 
@@ -74,6 +120,13 @@ export interface users_home_locations_interface {
     name: string;
   };
 }
-export const users_home_locations = createQueryFactory(
+export const users_home_locations = createQueryFactory<users_home_locations_interface>(
   "/api/users/home/locations"
 );
+
+export interface users_wallet_balances_interface {
+    balance: number
+}
+export const users_wallet_balances = createQueryFactory<users_wallet_balances_interface>(
+    "/api/users/wallet/balance"
+)

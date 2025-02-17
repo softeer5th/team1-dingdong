@@ -1,22 +1,24 @@
 import styled from 'styled-components';
 import {colors} from "@/styles/colors.ts";
-import {Body2Medium, Body2Regular, Body2SemiBold, Detail1Regular} from "@/styles/typography.ts";
+import {Body1Regular, Body2Medium, Body2Regular, Body2SemiBold, Detail1Regular} from "@/styles/typography.ts";
 
 export const Wrapper = styled.section`
     display: flex;
     flex-direction: column;
     width: 100%;
-    min-height: 0;
     height: 100%;
 `;
 
 export const FilterPanel = styled.div`
-    position: relative;
+    position: sticky;
+    z-index: 1;
+    background-color: ${colors.gray0};
+    overflow:scroll;
+    top: 59px;
     padding: 20px 0;
     width: 100%;
     min-width: 0;
     min-height: 82px;
-    overflow: scroll;
     white-space: nowrap; /* 자식 요소들이 줄바꿈되지 않도록 설정 */
     &::-webkit-scrollbar {
         display: none; /* Chrome, Safari에서 스크롤바 숨기기 */
@@ -33,6 +35,10 @@ export const FilterScroll = styled.ul`
 `;
 
 export const SortIndicator = styled.div`
+    position: sticky;
+    z-index: 1;
+    background-color: ${colors.gray0};
+    top: 140px;
     padding: 0 20px 3px;
     text-align: right;
 `;
@@ -47,9 +53,9 @@ export const SortText = styled(Body2Regular)`
 
 export const HistoryScroll = styled.div`
     min-height: 0;
-    overflow: scroll;
+    //overflow: scroll;
 
-    mask-image: linear-gradient(to bottom, rgba(255, 255, 255, 0), white 20px, white calc(100% - 20px), rgba(255, 255, 255, 0));
+    //mask-image: linear-gradient(to bottom, rgba(255, 255, 255, 0), white 20px, white calc(100% - 20px), rgba(255, 255, 255, 0));
 `;
 
 export const HistoryList = styled.ul`
@@ -137,3 +143,16 @@ export const Divide = styled.div`
     height: 0;
     border: 0.5px solid ${colors.gray20};
 `;
+
+
+export const NoItemWrapper = styled.div`
+    width: 100%;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
+
+export const NoItemText = styled(Body1Regular)`
+    color: ${colors.gray100};
+`

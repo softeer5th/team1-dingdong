@@ -10,9 +10,11 @@ import {
     PageTitle,
     PageWrapper
 } from "@/pages/Payment/Success/styles.ts";
+import {useNavigate} from "react-router-dom";
 
 
 export default function Page() {
+    const navigate = useNavigate();
 
     const defaultOptions = {
         loop: true,
@@ -41,12 +43,12 @@ export default function Page() {
             </PageMain>
             <RefundPolicy />
             <ActionButtonBox>
-                <ActionButtonHome>
+                <ActionButtonHome onClick={() => navigate('/home')}>
                     <ActionButtonText isWhite={true}>
                         홈으로
                     </ActionButtonText>
                 </ActionButtonHome>
-                <ActionButtonReservations>
+                <ActionButtonReservations onClick={() => navigate('/reservations')}>
                     <ActionButtonText>
                         예매 내역 확인
                     </ActionButtonText>

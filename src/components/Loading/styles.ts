@@ -13,7 +13,9 @@ export const Backdrop = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(0, 0, 0, 0.50);
+    inset: 0;
+    background: rgba(255, 255, 255, 0.1); /* 반투명 */
+    backdrop-filter: blur(10px); /* 블러 효과 */
 `
 
 export const Modal = styled.div`

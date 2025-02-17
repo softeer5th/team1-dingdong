@@ -11,39 +11,22 @@ import {
 } from "@/pages/Payment/Reservation/components/BookingSchedule/styles.ts";
 import {colors} from "@/styles/colors.ts";
 import ArrowRight2 from "@/components/designSystem/Icons/Payment/ArrowRight2.tsx";
+import {ScheduleInterface} from "@/route/loader/payment/reservation/loader.tsx";
+import {formatKstDate} from "@/utils/time/formatKstDate.ts";
+import {formatKstTime} from "@/utils/time/formatKstTime.ts";
 
 
-export default function BookingSchedule() {
+
+interface BookingScheduleProps {
+    schedule: ScheduleInterface,
+    borderingPoint: string
+
+}
+export default function BookingSchedule({schedule, borderingPoint}: BookingScheduleProps) {
     const COLUMN_NAME_LIST = [
         "날짜",
         "탑승지",
         "도착 시간"
-    ]
-    const temp = [
-        {
-            date: '02.15 (수)',
-            borderingPoint: '부산',
-            arrivedAt: '11:00'
-        },
-        {
-            date: '02.15 (수)',
-            borderingPoint: '부산',
-            arrivedAt: '11:00'
-        },
-        {
-            date: '02.15 (수)',
-            borderingPoint: '부산',
-            arrivedAt: '11:00'
-        },
-        {
-            date: '02.15 (수)',
-            borderingPoint: '부산',
-            arrivedAt: '11:00'
-        },{
-            date: '02.15 (수)',
-            borderingPoint: '부산',
-            arrivedAt: '11:00'
-        }
     ]
 
 
@@ -65,7 +48,7 @@ export default function BookingSchedule() {
         ]
     }
     const row: RowInterace = {
-        count: temp.length + 1,
+        count: schedule.timeSchedule.length + 1,
     }
 
 
@@ -92,30 +75,57 @@ export default function BookingSchedule() {
             </InfoBox>
             <DirectionBox>
                 <DirectionType>
-                    <DirectionTypeText>등교</DirectionTypeText>
+                    <DirectionTypeText>
+                        {
+                            schedule.direction === 'TO_HOME' ?
+                                '하교' : null
+                        }
+                        {
+                            schedule.direction === 'TO_SCHOOL' ?
+                                '등교' : null
+                        }
+                    </DirectionTypeText>
                 </DirectionType>
-                <DirectionText>집</DirectionText>
+                <DirectionText>
+                    {
+                        schedule.direction === 'TO_HOME' ?
+                            '학교' : null
+                    }
+                    {
+                        schedule.direction === 'TO_SCHOOL' ?
+                            '집' : null
+                    }
+                </DirectionText>
                 <ArrowRight2 />
-                <DirectionText>학교</DirectionText>
+                <DirectionText>
+                    {
+                        schedule.direction === 'TO_HOME' ?
+                            '집' : null
+                    }
+                    {
+                        schedule.direction === 'TO_SCHOOL' ?
+                            '학교' : null
+                    }
+                </DirectionText>
             </DirectionBox>
             <TableWrapper>
                 <EasyTable column={colum} row={row}>
                     {
-                        temp.map((row, index) => (
+                        schedule.timeSchedule.map((time, index) => (
                             <Fragment key={index}>
                                 <TableBody>
                                     <TableText color={colors.gray100}>
-                                        {row.date}
+                                        {formatKstDate(time, 1)}
                                     </TableText>
                                 </TableBody>
                                 <TableBody>
                                     <TableText color={colors.gray100}>
-                                        {row.borderingPoint}
+                                        {borderingPoint}
                                     </TableText>
                                 </TableBody>
                                 <TableBody textAlignLeft={false}>
                                     <TableText color={colors.gray100}>
-                                        {row.arrivedAt}
+                                        {formatKstTime(time)}
                                     </TableText>
                                 </TableBody>
                             </Fragment>

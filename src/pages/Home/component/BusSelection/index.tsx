@@ -11,14 +11,17 @@ import {
 // 컴포넌트
 import BusSelectionIconA from "@/components/designSystem/Icons/Home/BusSelectionIconA.tsx";
 import BusSelectionIconB from "@/components/designSystem/Icons/Home/BusSelectionIconB.tsx";
+import {useNavigate} from "react-router-dom";
 
 
 export default function BusSelection() {
-
+    const navigate = useNavigate();
 
     return (
         <Wrapper>
-            <LeftButton>
+            <LeftButton onClick={() => {
+                navigate('/custom-bus-booking')
+            }}>
                 <Content>
                     <Info>
                         <Title>
@@ -33,7 +36,9 @@ export default function BusSelection() {
                     </SvgContainer>
                 </Content>
             </LeftButton>
-            <RightButton>
+            <RightButton onClick={() => {
+                navigate('/fixed-bus-booking')
+            }}>
                 <Content>
                     <Info>
                         <Title>

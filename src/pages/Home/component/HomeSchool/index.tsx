@@ -4,9 +4,15 @@ import {Content, Row, Wrapper, Text, Button, Title, Divider} from "@/pages/Home/
 import HomeIcon from "@/components/designSystem/Icons/HomeIcon.tsx";
 import ArrowRightIcon from "@/components/designSystem/Icons/Home/ArrowRightIcon.tsx";
 import UniversityIcon from "@/components/designSystem/Icons/Home/UniversityIcon.tsx";
+import {useNavigate} from "react-router-dom";
 
 
-export default function HomeSchool() {
+interface HomeSchoolProps {
+    stationName: string;
+    schoolName: string;
+}
+export default function HomeSchool({stationName, schoolName}: HomeSchoolProps) {
+    const navigate = useNavigate();
 
     return (
         <Wrapper>
@@ -14,14 +20,16 @@ export default function HomeSchool() {
                 <Row>
                     <HomeIcon/>
                     <Text>
-                        집 위치
+                        탑승 위치
                     </Text>
-                    <Button>
+                    <Button onClick={() => {
+                        navigate('/set-home-location')
+                    }}>
                         <ArrowRightIcon/>
                     </Button>
                 </Row>
                 <Title>
-                    우리집
+                    {stationName}
                 </Title>
             </Content>
             <Divider/>
@@ -33,7 +41,7 @@ export default function HomeSchool() {
                     </Text>
                 </Row>
                 <Title>
-                    서울대학교
+                    {schoolName}
                 </Title>
             </Content>
         </Wrapper>

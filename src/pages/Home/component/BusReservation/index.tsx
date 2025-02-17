@@ -8,10 +8,13 @@ import {
     Wrapper,
     Title
 } from "@/pages/Home/component/BusReservation/styles.ts";
+import {useNavigate} from "react-router-dom";
 
 
 
 export default function BusReservation() {
+    const navigate = useNavigate();
+
     return (
         <Wrapper>
             <TextBox>
@@ -22,7 +25,9 @@ export default function BusReservation() {
                     아직 예매 내역이 없어요!
                 </Detail>
             </TextBox>
-            <ReserveButton>
+            <ReserveButton onClick={() => {
+                navigate('/custom-bus-booking')
+            }}>
                 <ReserveButtonText>
                     예매하러 가기
                 </ReserveButtonText>

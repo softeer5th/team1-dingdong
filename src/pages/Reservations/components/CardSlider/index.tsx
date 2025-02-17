@@ -6,13 +6,19 @@ import LocationIcon from "@/components/designSystem/Icons/Reservations/LocationI
 import CalenderIcon from "@/components/designSystem/Icons/Reservations/CalenderIcon"
 import ClockIcon from "@/components/designSystem/Icons/Reservations/ClockIcon"
 import ArrowRight2Icon from "@/components/designSystem/Icons/Reservations/ArrowRight2Icon"
+import {TO_HOME_ALLOCATED, TO_SCHOOL_ALLOCATED, users_reservations_interface} from "@/api/query/users";
+import {formatKstDate} from "@/utils/time/formatKstDate.ts";
+import {formatKstTime} from "@/utils/time/formatKstTime.ts";
 
 const PREV = -1;
 const CURRENT = 0;
 const NEXT = 1;
 
 // @ts-ignore data 때문에 임시로
-export default function CardSlider({data}) {
+interface CardSliderProps {
+    contents: Extract< users_reservations_interface['reservationInfos']['content'][number], TO_SCHOOL_ALLOCATED | TO_HOME_ALLOCATED>[];
+}
+export default function CardSlider({contents}: CardSliderProps) {
     const countRef = useRef<number[]>([PREV, CURRENT, NEXT]);
     const slideCurrent = useRef<number>(0);
     const [slideState, setSlideState] = useState<{ isNext: boolean } | null>(null);
@@ -30,7 +36,7 @@ export default function CardSlider({data}) {
     const slideNext = () => {
         if (slideBlock.current) return;
         slideBlock.current = true;
-        slideCurrent.current = slideCurrent.current < data.length - 1 ? slideCurrent.current + 1 : 0;
+        slideCurrent.current = slideCurrent.current < contents.length - 1 ? slideCurrent.current + 1 : 0;
         countRef.current.unshift(countRef.current.pop() as number);
         setSlideState({
             isNext: true
@@ -40,12 +46,13 @@ export default function CardSlider({data}) {
     const slidePrev = () => {
         if (slideBlock.current) return;
         slideBlock.current = true;
-        slideCurrent.current = slideCurrent.current > 0 ? slideCurrent.current - 1 : data.length - 1;
+        slideCurrent.current = slideCurrent.current > 0 ? slideCurrent.current - 1 : contents.length - 1;
         countRef.current.push(countRef.current.shift() as number);
         setSlideState({
             isNext: false
         });
     }
+
 
     return (
         <ScheduledDepartures.Wrapper>
@@ -56,13 +63,18 @@ export default function CardSlider({data}) {
                         slideCurrent,
                         slideState,
                         countRef,
-                        data: data
+                        data: contents.map(content => ({
+                            direction: content.direction,
+                            date: content.direction === 'TO_HOME' ? formatKstDate(content.operationInfo.busStopArrivalTime, 1) : formatKstDate(content.expectedArrivalTime, 1),
+                            location: content.busStopName,
+                            time: `${content.direction === 'TO_HOME' ? formatKstTime(content.expectedDepartureTime) : formatKstTime(content.operationInfo.busStopArrivalTime)} 탑승`
+                        }))
                     })
                 }
             </ScheduledDepartures.Slider>
             <ScheduledDepartures.SliderControls>
                 {
-                    data.length > 1 ?
+                    contents.length > 1 ?
                         <ScheduledDepartures.SlideButton onClick={slidePrev}>
                             <ArrowLeftIcon />
                         </ScheduledDepartures.SlideButton>:
@@ -75,10 +87,10 @@ export default function CardSlider({data}) {
                     /
                 </ScheduledDepartures.SlideCounter>
                 <ScheduledDepartures.SlideCounter>
-                    {data.length}
+                    {contents.length}
                 </ScheduledDepartures.SlideCounter>
                 {
-                    data.length > 1 ?
+                    contents.length > 1 ?
                         <ScheduledDepartures.SlideButton onClick={slideNext}>
                             <ArrowRightIcon />
                         </ScheduledDepartures.SlideButton> :
@@ -161,6 +173,7 @@ interface renderCardsProps {
     slideState: { isNext: boolean } | null,
     countRef: React.MutableRefObject<number[]>,
     data: {
+        direction: users_reservations_interface['reservationInfos']['content'][number]['direction'];
         date: string,
         location: string,
         time: string
@@ -174,17 +187,17 @@ function renderCards({slideCurrent, slideState, countRef, data}: renderCardsProp
     return countRef.current.map((count, index) => {
         if (count === PREV) {
             return (
-                <Card key={index} isHidden={!slideState?.isNext} count={count} toUniversity={true} date={data[prev].date} location={data[prev].location} time={data[prev].time}/>
+                <Card key={index} isHidden={!slideState?.isNext} count={count} toUniversity={data[current].direction === 'TO_SCHOOL'} date={data[prev].date} location={data[prev].location} time={data[prev].time}/>
             )
         }
         if (count === CURRENT) {
             return (
-                <Card key={index} count={count} toUniversity={true} date={data[current].date} location={data[current].location} time={data[current].time}/>
+                <Card key={index} count={count} toUniversity={data[current].direction === 'TO_SCHOOL'} date={data[current].date} location={data[current].location} time={data[current].time}/>
             )
         }
         if (count === NEXT) {
             return (
-                <Card key={index} isHidden={!!slideState?.isNext} count={count} toUniversity={true} date={data[next].date} location={data[next].location} time={data[next].time}/>
+                <Card key={index} isHidden={!!slideState?.isNext} count={count} toUniversity={data[current].direction === 'TO_SCHOOL'} date={data[next].date} location={data[next].location} time={data[next].time}/>
             )
         }
     })

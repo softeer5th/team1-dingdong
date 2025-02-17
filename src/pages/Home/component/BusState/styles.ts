@@ -19,8 +19,10 @@ export const HeaderLeftSection = styled.div`
     align-items: center;
     gap: 4px;
 `
-export const HeaderTitle = styled.span`
-    color: ${colors.gray100};
+export const HeaderTitle = styled.span.withConfig({
+    shouldForwardProp: (prop) => prop !== "isZero"
+})<{isZero?: boolean}>`
+    color: ${({isZero = true}) => isZero ? colors.gray100 : colors.orange900};
     font-family: Pretendard, serif;
     font-size: 18px;
     font-style: normal;
@@ -50,7 +52,7 @@ export const HeaderActionButton = styled.button`
 `
 export const CardList = styled.ul`
     display: flex;
-    padding: 0 20px;
+    padding: 0 20px 20px;
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;

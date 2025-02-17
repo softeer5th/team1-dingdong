@@ -25,7 +25,7 @@ export default defineConfig({
         target: "https://ding-dong-bus.shop",
         changeOrigin: true,
         ws: true,
-        secure: false,
+        secure: true,
         headers: {
           credentials: "include",
         },

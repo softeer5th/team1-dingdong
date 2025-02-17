@@ -10,12 +10,14 @@ import {
     UserProfile,
     UserProfileBox
 } from "@/pages/MyPage/styles.ts";
-import {useNavigate} from "react-router-dom";
+import {useLoaderData, useNavigate} from "react-router-dom";
 import ArrowRightIcon from "@/components/designSystem/Icons/MyPage/ArrowRightIcon.tsx";
+import {users_me_interface} from "@/api/query/users";
 
 
 export default function Page() {
     const navigate = useNavigate();
+    const [user]: [users_me_interface] = useLoaderData()
 
 
     return (
@@ -39,17 +41,17 @@ export default function Page() {
                     </UserProfile>
                     <UserInfo>
                         <UserName>
-                            김지현
+                            {user.userName}
                         </UserName>
                         <UserEmail>
-                            vavoya6324@gmail.com
+                            {user.email}
                         </UserEmail>
                     </UserInfo>
                 </UserProfileBox>
                 <ul>
                     <Item text={'예매 내역'} onClick={() => navigate('/reservations')}/>
-                    <Item text={'결제 수단 관리'}/>
-                    <Item text={'시간표 관리'}/>
+                    <Item text={'딩동 머니 충전'} onClick={() => navigate('/wallet')}/>
+                    <Item text={'시간표 관리'} onClick={() => navigate('/timetable-management')}/>
                     <ItemDivde />
                     <Item text={'비밀번호 재설정'}/>
                     <Item text={'알림 설정'}/>

@@ -137,7 +137,7 @@ function ApiTest() {
     try {
       await httpClient.post('/api/auth/login', {
         email: currentUser,
-        password: 'abcd1234!@',
+        password: 'Abcd1234!@',
       });
       setResult('로그인 성공');
     } catch (error) {

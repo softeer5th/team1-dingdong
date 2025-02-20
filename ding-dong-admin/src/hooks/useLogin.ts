@@ -10,7 +10,7 @@ export const useLogin = () => {
       try {
         await httpClient.post('/api/auth/login', {
           email: 'admin@admin.com',
-          password: 'abcd1234!@',
+          password: 'Abcd1234!@',
         });
       } catch (err) {
         setError('로그인에 실패했습니다.');

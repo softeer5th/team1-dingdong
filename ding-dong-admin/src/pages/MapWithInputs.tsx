@@ -71,6 +71,49 @@ const DateInput = styled.input`
   flex: 1;
 `;
 
+const TableContainer = styled.div`
+  margin: 20px 0;
+  overflow-x: auto;
+`;
+
+const ClusterTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+`;
+
+const Th = styled.th`
+  padding: 12px;
+  text-align: left;
+  background-color: #f5f5f5;
+  border-bottom: 2px solid #ddd;
+  font-weight: 600;
+`;
+
+const Td = styled.td`
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+`;
+
+const ClusterRow = styled.tr<{ isSelected: boolean }>`
+  cursor: pointer;
+  background-color: ${props => props.isSelected ? '#fff3e0' : 'transparent'};
+  &:hover {
+    background-color: #f5f5f5;
+  }
+`;
+
+const ColorIndicator = styled.div<{ color: string }>`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: ${props => props.color};
+  display: inline-block;
+  margin-right: 10px;
+  vertical-align: middle;
+`;
+
 const clusterColors: { [key: string]: string } = {};
 
 function getClusterColor(clusterLabel: string): string {
@@ -161,6 +204,9 @@ function MapWithInputs() {
     setSelectedMinute(e.target.value);
   };
 
+  // 클러스터별 사용자 수를 저장할 state 추가
+  const [clusterCounts, setClusterCounts] = useState<{ [key: string]: number }>({});
+
   const handleSearch = async () => {
     try {
       const response = await httpClient.post('/api/admin/reservations/pending/locations', {
@@ -170,6 +216,15 @@ function MapWithInputs() {
       
       const newClusters = response.data.locations;
       setClusters(newClusters);
+
+      // 클러스터별 사용자 수 계산
+      const counts: { [key: string]: number } = {};
+      newClusters.forEach((cluster: ClusterData) => {
+        if (cluster.clusterLabel) {
+          counts[cluster.clusterLabel] = (counts[cluster.clusterLabel] || 0) + 1;
+        }
+      });
+      setClusterCounts(counts);
 
       // 모든 마커가 보이도록 bounds 조정
       if (map && newClusters.length > 0 && !isMapCentered) {
@@ -230,6 +285,33 @@ function MapWithInputs() {
     }
   };
 
+  const handleClusterRowClick = (clusterLabel: string) => {
+    // 해당 클러스터의 모든 위치의 중심점 찾기
+    const clusterPoints = clusters.filter(c => c.clusterLabel === clusterLabel);
+    if (clusterPoints.length > 0 && map) {
+      const bounds = new google.maps.LatLngBounds();
+      clusterPoints.forEach(point => {
+        bounds.extend({ lat: point.latitude, lng: point.longitude });
+      });
+      map.fitBounds(bounds);
+      
+      // 줌 레벨이 너무 높아지는 것 방지
+      if (map.getZoom() > 17) {
+        map.setZoom(17);
+      }
+      
+      // 중심점으로 이동
+      const center = bounds.getCenter();
+      map.panTo(center);
+    }
+  };
+
+  // 고유한 클러스터 라벨 목록 생성
+  const uniqueClusterLabels = React.useMemo(() => {
+    const labels = new Set(clusters.map(c => c.clusterLabel).filter(Boolean));
+    return Array.from(labels).sort();
+  }, [clusters]);
+
   if (loading) {
     return <Container>로그인 중...</Container>;
   }
@@ -281,6 +363,42 @@ function MapWithInputs() {
         <Button onClick={handleClustering}>클러스터링</Button>
         <Button onClick={handleRouting}>경로 생성</Button>
       </InputContainer>
+      <TableContainer>
+        <ClusterTable>
+          <thead>
+            <tr>
+              <Th>클러스터</Th>
+              <Th>사용자 수</Th>
+              <Th>선택 상태</Th>
+            </tr>
+          </thead>
+          <tbody>
+            {uniqueClusterLabels.map((label) => (
+              <ClusterRow 
+                key={label} 
+                onClick={() => handleClusterRowClick(label)}
+                isSelected={selectedClusterLabels.includes(label)}
+              >
+                <Td>
+                  <ColorIndicator color={getClusterColor(label)} />
+                  {label}
+                </Td>
+                <Td>{clusterCounts[label] || 0}명</Td>
+                <Td>
+                  <Button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCircleClick(label);
+                    }}
+                  >
+                    {selectedClusterLabels.includes(label) ? '선택 해제' : '선택'}
+                  </Button>
+                </Td>
+              </ClusterRow>
+            ))}
+          </tbody>
+        </ClusterTable>
+      </TableContainer>
       <MapContainer>
         <GoogleMap
           mapContainerStyle={{ width: '100%', height: '100%' }}

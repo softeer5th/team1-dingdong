@@ -119,7 +119,7 @@ function BusScheduleTest() {
     try {
       await httpClient.post('/api/auth/login', {
         email,
-        password: 'abcd1234!@',
+        password: 'Abcd1234!@',
       });
       fetchAvailableTimes();
     } catch (error) {

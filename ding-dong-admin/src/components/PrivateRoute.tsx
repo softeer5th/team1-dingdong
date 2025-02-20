@@ -15,7 +15,7 @@ function PrivateRoute({ children }: PrivateRouteProps) {
       try {
         await httpClient.post('/api/auth/login', {
           email: 'admin@admin.com',
-          password: 'abcd1234!@',
+          password: 'Abcd1234!@',
         });
         setIsAuthenticated(true);
       } catch (loginError) {

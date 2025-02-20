@@ -115,7 +115,7 @@ function TestApi() {
     
     setSavedUsers(prev => [...prev, {
       email: newUserEmail,
-      password: 'abcd1234!@'
+      password: 'Abcd1234!@'
     }]);
     setNewUserEmail('');
   };
@@ -184,7 +184,7 @@ function TestApi() {
           }
           return [...prev, {
             email: email,
-            password: 'abcd1234!@'
+            password: 'Abcd1234!@'
           }];
         });
         setNewUserEmail('');

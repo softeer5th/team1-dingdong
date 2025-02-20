@@ -216,7 +216,7 @@ function Users() {
       try {
         await httpClient.post('/api/auth/login', {
           email: 'admin@admin.com',
-          password: 'abcd1234!@',
+          password: 'Abcd1234!@',
         });
         console.log('관리자 로그인 성공');
         // 최초 한 번만 유저 정보 조회

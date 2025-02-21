@@ -81,6 +81,31 @@ public interface ReservationQueryRepository extends JpaRepository<Reservation, L
     Page<UserReservationProjection> queryReservationsByUserId(@Param("userId") Long userId, @Param("category") int category, @Param("sort") int sort, Pageable p);
 
     @Query("""
+    SELECT DISTINCT l.stationName AS userHomeStationName,
+           r.id AS reservationId,
+           r.startDate AS startDate,
+           r.direction AS direction,
+           r.arrivalTime AS expectedArrivalTime,
+           r.departureTime AS expectedDepartureTime,
+           bs_arrival.departureTime AS realDepartureTime,
+           bs_arrival.arrivalTime AS realArrivalTime,
+           r.status AS reservationStatus,
+           bs_arrival.id AS busScheduleId,
+           b.id AS busId,
+           bs_arrival.status AS busStatus,
+           bs.roadNameAddress AS busStopRoadNameAddress,
+           bs.expectedArrivalTime AS busStopArrivalTime
+    FROM Reservation r
+    LEFT JOIN Ticket t ON r.id = t.reservation.id
+    LEFT JOIN BusStop bs ON t.busStopId = bs.id
+    LEFT JOIN BusSchedule bs_arrival ON bs_arrival.id = t.busScheduleId
+    LEFT JOIN Bus b ON bs_arrival.bus.id = b.id
+    LEFT JOIN Location l ON l.reservationId = r.id
+    WHERE r.id = :reservationId AND r.userId = :userId
+    """)
+    Optional<UserReservationProjection> queryReservationByReservationIdAndUserId(@Param("reservationId") Long reservationId, @Param("userId") Long userId);
+
+    @Query("""
         SELECT DISTINCT null AS userHomeStationName,
            t.reservation.id AS reservationId,
            t.reservation.startDate AS startDate,
@@ -127,4 +152,5 @@ public interface ReservationQueryRepository extends JpaRepository<Reservation, L
             (r.departureTime is not null and r.departureTime in :time))
     """)
     List<LocalDateTime> findDuplicatedReservationTime(@Param("userId") Long userId, @Param("time") List<LocalDateTime> times);
+
 }

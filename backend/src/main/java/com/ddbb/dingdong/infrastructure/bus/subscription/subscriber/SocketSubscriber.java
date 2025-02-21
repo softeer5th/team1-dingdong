@@ -36,7 +36,7 @@ public class SocketSubscriber extends CancelableSubscriber<Point> {
     @Override
     public void onNext(Point item) {
         WebSocketSession webSocketSession = weakRef.get();
-        if (webSocketSession == null) {
+        if (webSocketSession == null || !webSocketSession.isOpen()) {
             this.busSubscriptionManager.unsubscribe(busId, userId);
             return ;
         }

@@ -10,6 +10,7 @@ import com.ddbb.dingdong.infrastructure.auth.security.annotation.LoginUser;
 import com.ddbb.dingdong.presentation.endpoint.reservation.exchanges.*;
 import com.ddbb.dingdong.presentation.endpoint.reservation.exchanges.enums.ReservationCategory;
 import com.ddbb.dingdong.presentation.endpoint.reservation.exchanges.enums.SortType;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,7 @@ public class ReservationController {
     private final CancelReservationUseCase cancelReservationUseCase;
     private final SuggestReservationUseCase suggestReservationUseCase;
     private final GetUserBusScheduleInfoUseCase getUserBusScheduleInfoUseCase;
+    private final GetReservationUseCase getReservationUseCase;
 
     @GetMapping
     public ResponseEntity<GetReservationsUseCase.Result> getReservations(
@@ -219,6 +221,23 @@ public class ReservationController {
         GetUserBusScheduleInfoUseCase.Result result;
         try {
             result = getUserBusScheduleInfoUseCase.execute(param);
+        } catch (DomainException ex) {
+            throw new APIException(ex, HttpStatus.NOT_FOUND);
+        }
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @GetMapping("/{reservationId}")
+    public ResponseEntity<GetReservationUseCase.Result> getReservationInfo(
+            @LoginUser AuthUser user,
+            @PathVariable Long reservationId
+    ) {
+        Long userId = user.id();
+        GetReservationUseCase.Param param = new GetReservationUseCase.Param(userId, reservationId);
+        GetReservationUseCase.Result result;
+        try {
+            result = getReservationUseCase.execute(param);
         } catch (DomainException ex) {
             throw new APIException(ex, HttpStatus.NOT_FOUND);
         }

@@ -37,9 +37,10 @@ public class BusSubscriptionLockManager {
     }
 
     public void removeLock(long busScheduleId) {
-        StoppableLock lock = locks.remove(busScheduleId);
+        StoppableLock lock = locks.get(busScheduleId);
         if (lock != null) {
             lock.stopAndWait();
+            locks.remove(busScheduleId);
         }
     }
 }

@@ -5,25 +5,30 @@ import com.ddbb.dingdong.application.common.UseCase;
 import com.ddbb.dingdong.application.usecase.reservation.error.ReservationInvalidParamErrors;
 import com.ddbb.dingdong.domain.reservation.entity.vo.Direction;
 import com.ddbb.dingdong.domain.reservation.repository.BusStopRepository;
+import com.ddbb.dingdong.domain.reservation.service.ReservationConcurrencyManager;
 import com.ddbb.dingdong.domain.reservation.service.ReservationErrors;
 import com.ddbb.dingdong.domain.reservation.service.ReservationManagement;
 import com.ddbb.dingdong.domain.transportation.entity.BusSchedule;
 import com.ddbb.dingdong.domain.transportation.entity.BusStop;
 import com.ddbb.dingdong.domain.transportation.repository.BusScheduleRepository;
+import com.ddbb.dingdong.domain.transportation.service.BusErrors;
 import com.ddbb.dingdong.infrastructure.auth.encrypt.token.TokenManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RequestTogetherReservationUseCase implements UseCase<RequestTogetherReservationUseCase.Param, RequestTogetherReservationUseCase.Result> {
     private final TokenManager tokenManager;
-    private final BusScheduleRepository busScheduleRepository;
+    private final ReservationConcurrencyManager reservationConcurrencyManager;
     private final ReservationManagement reservationManagement;
+    private final BusScheduleRepository busScheduleRepository;
     private final BusStopRepository busStopRepository;
 
     @Override
@@ -31,8 +36,30 @@ public class RequestTogetherReservationUseCase implements UseCase<RequestTogethe
         param.validate();
         LocalDateTime hopeTime = extractTimeFromBusSchedule(param);
         checkHasDuplicatedReservation(param.userId, hopeTime);
-        String token = generateToken(param);
-        return new Result(token);
+        boolean acquired = false;
+        try {
+            acquired = acquireSemaphore(param.busScheduleId);
+            String token = generateToken(param);
+            addUserToTimeLimitCache(param.userId, param.busScheduleId);
+            return new Result(token);
+        } catch (Exception e) {
+            if (acquired && !(e.getMessage().equals(BusErrors.NO_SEATS.toException().getMessage()))) {
+                releaseSemaphore(param.busScheduleId);
+            }
+            throw e;
+        }
+    }
+
+    private boolean acquireSemaphore(Long busScheduleId) {
+        return reservationConcurrencyManager.acquireSemaphore(busScheduleId);
+    }
+
+    private void releaseSemaphore(Long busScheduleId) {
+        reservationConcurrencyManager.releaseSemaphore(busScheduleId);
+    }
+
+    private void addUserToTimeLimitCache(Long userId, Long busScheduleId) {
+        reservationConcurrencyManager.addUserToTimeLimitCache(userId, busScheduleId);
     }
 
     private String generateToken(Param param) {

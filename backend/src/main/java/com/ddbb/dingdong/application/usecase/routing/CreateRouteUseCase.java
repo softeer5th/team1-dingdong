@@ -7,6 +7,7 @@ import com.ddbb.dingdong.domain.clustering.service.ClusteringService;
 import com.ddbb.dingdong.domain.reservation.entity.Reservation;
 import com.ddbb.dingdong.domain.reservation.entity.Ticket;
 import com.ddbb.dingdong.domain.reservation.entity.vo.Direction;
+import com.ddbb.dingdong.domain.reservation.service.ReservationConcurrencyManager;
 import com.ddbb.dingdong.domain.reservation.service.ReservationManagement;
 import com.ddbb.dingdong.domain.transportation.entity.BusSchedule;
 import com.ddbb.dingdong.domain.transportation.entity.BusStop;
@@ -15,6 +16,7 @@ import com.ddbb.dingdong.domain.transportation.service.BusScheduleManagement;
 import com.ddbb.dingdong.domain.user.entity.School;
 import com.ddbb.dingdong.domain.user.service.UserManagement;
 import com.ddbb.dingdong.infrastructure.bus.simulator.BusSubscriptionLockManager;
+import com.ddbb.dingdong.infrastructure.cache.SimpleCache;
 import com.ddbb.dingdong.infrastructure.routing.BusRouteCreationService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,6 +31,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class CreateRouteUseCase implements UseCase<CreateRouteUseCase.Param, Void> {
     private final ReservationManagement reservationManagement;
+    private final ReservationConcurrencyManager reservationConcurrencyManager;
     private final ClusteringService clusteringService;
     private final BusScheduleManagement busScheduleManagement;
     private final BusRouteCreationService busRouteCreationService;
@@ -101,6 +104,7 @@ public class CreateRouteUseCase implements UseCase<CreateRouteUseCase.Param, Voi
             ticket.setBusStopId(busStop.getId());
             reservationManagement.allocate(reservation,ticket);
         }
+        reservationConcurrencyManager.initReservationData(busSchedule);
         busSubscriptionLockManager.addLock(busSchedule.getId());
     }
 

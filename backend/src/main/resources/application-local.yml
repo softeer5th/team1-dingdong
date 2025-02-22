@@ -18,6 +18,9 @@ server:
         same-site: strict
         path: /
 
+cache:
+  cleanupIntervalMinutes: 5
+
 client:
   schema: ${CLIENT_SCHEMA}
   ip: ${CLIENT_ADDRESS}

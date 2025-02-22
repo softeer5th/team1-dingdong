@@ -37,15 +37,18 @@ public class NotificationEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     protected void sendAllocationSuccessNotification(AllocationSuccessEvent event) {
         notificationManagement.sendNotification(NotificationType.ALLOCATION_SUCCESS, event.getUserId(), event.getReservationId(), null);
-        socketMessageSender.sendMessage(event.getUserId(), ALARM_SOCKET_MSG);
-    }
+        socketMessageSender.sendMessage(
+                event.getUserId(), String.format(ALARM_SOCKET_MSG + "_ready_%d", event.getReservationId()), 3
+        );    }
 
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     protected void sendAllocationFailNotification(AllocationFailedEvent event) {
         notificationManagement.sendNotification(NotificationType.ALLOCATION_FAILED, event.getUserId(), event.getReservationId(), TICKET_PRICE);
-        socketMessageSender.sendMessage(event.getUserId(), ALARM_SOCKET_MSG);
+        socketMessageSender.sendMessage(
+                event.getUserId(), String.format(ALARM_SOCKET_MSG + "_%d", event.getReservationId()), 3
+        );
     }
 
     @Async
@@ -64,7 +67,7 @@ public class NotificationEventListener {
         for(UserIdAndReservationIdProjection projection : projections) {
             notificationManagement.sendNotification(NotificationType.BUS_START, projection.getUserId(), projection.getReservationId(), null);
             socketMessageSender.sendMessage(
-                    projection.getUserId(), String.format(ALARM_SOCKET_MSG + "_%d", projection.getReservationId()), 3
+                    projection.getUserId(), String.format(ALARM_SOCKET_MSG + "_run_%d", projection.getReservationId()), 3
             );
         }
     }

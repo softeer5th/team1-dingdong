@@ -1,6 +1,6 @@
 package com.ddbb.dingdong.infrastructure.bus.simulator;
 
-import com.ddbb.dingdong.infrastructure.lock.StoppableLock;
+import com.ddbb.dingdong.infrastructure.lock.ChannelLock;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,11 +30,11 @@ class BusSubscriptionLockManagerTest {
                 try {
                     latch.await();
                     Thread.sleep(index * 10);
-                    StoppableLock lock = busSubscriptionLockManager.getLock(1L)
+                    ChannelLock lock = busSubscriptionLockManager.getLock(1L)
                             .orElseThrow(() -> new IllegalStateException("No Lock "));
                     try {
                         log.info("{} lock waited {}", index, System.currentTimeMillis());
-                        if (!lock.lock()) {
+                        if (!lock.entryLock()) {
                             log.info("{} Lock stopped", index);
                         } else {
                             log.info("{} Lock acquired", index);
@@ -84,11 +84,11 @@ class BusSubscriptionLockManagerTest {
                 try {
                     latch.await();
                     Thread.sleep(index * 5);
-                    StoppableLock lock = busSubscriptionLockManager.getLock(1L)
+                    ChannelLock lock = busSubscriptionLockManager.getLock(1L)
                             .orElseThrow(() -> new IllegalStateException("No Lock "));
                     try {
                         log.info("{} lock waited", index);
-                        if (!lock.lock()) {
+                        if (!lock.entryLock()) {
                             log.info("{} Lock stopped", index);
                         } else {
                             log.info("{} Lock acquired", index);
@@ -146,11 +146,11 @@ class BusSubscriptionLockManagerTest {
                 try {
                     latch.await();
                     Thread.sleep(index * 10);
-                    StoppableLock lock = busSubscriptionLockManager.getLock(1L)
+                    ChannelLock lock = busSubscriptionLockManager.getLock(1L)
                             .orElseThrow(() -> new IllegalStateException("No Lock "));
                     try {
                         log.info("{} lock waited {}", index, System.currentTimeMillis());
-                        if (!lock.lock()) {
+                        if (!lock.entryLock()) {
                             log.info("{} Lock stopped", index);
                         } else {
                             log.info("{} Lock acquired", index);

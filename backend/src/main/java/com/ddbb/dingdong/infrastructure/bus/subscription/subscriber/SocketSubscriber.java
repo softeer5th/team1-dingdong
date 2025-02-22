@@ -58,5 +58,7 @@ public class SocketSubscriber extends CancelableSubscriber<Point> {
 
     @Override
     public void onComplete() {
+        log.info("socket subscriber complete onComplete {} {}", busId, userId);
+        this.busSubscriptionManager.unsubscribe(busId, userId);
     }
 }

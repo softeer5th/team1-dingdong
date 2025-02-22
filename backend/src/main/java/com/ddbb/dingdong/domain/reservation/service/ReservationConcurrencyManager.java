@@ -29,7 +29,7 @@ public class ReservationConcurrencyManager {
     }
 
     public void addUserToTimeLimitCache(Long userId, Long busScheduleId) {
-        cache.put(userId, busScheduleId, Duration.ofSeconds(EXPIRATION_TIME_MINUTES));
+        cache.put(userId, busScheduleId, Duration.ofMinutes(EXPIRATION_TIME_MINUTES));
     }
 
     public void acquireSemaphore(Long busScheduleId) {

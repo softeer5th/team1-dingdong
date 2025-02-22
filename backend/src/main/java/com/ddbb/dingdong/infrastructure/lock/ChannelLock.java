@@ -60,12 +60,20 @@ public class ChannelLock {
     }
 
     /**
-     * isStopped 의 값은 lock을 얻었을 때 True로 변화시킬 수 있고,
-     * waitingCount 값은 lock을 얻었을 때 decrease 시킬 수 있고, 얻기 전엔 increase만 가능하다
-     * 따라서 stop 스레드가 해당 락에 대기 중인 개수를 세고 나서 waiting count가 줄어들 수 없다. (항상 lock을 얻어야 하기 때문)
-     * 따라서 stopAndWait 함수에서 적어도 실제 대기 중인 스레드가 없는데 기다리는 경우는 발생하지 않는다.
+     * 채널 정지 상태로 변경 후, 채널의 아이템이 모두 제거 될 때까지 스레드를 정지시킵니다.
+     * 이 메서드 호출 후에는 안전하게 동적인 락을 제어하는 컬렉션에게 제거 요청을 보낼 수 있습니다.
+     *
+     * isStopped를 락 전에 상태를 변경해도 락을 대기하던 스레드에서는 곧바로 락을 놓게 되며,
+     * 이 메서드가 호출된 이후에 실행되는 락 요청은 모두 거절된다.
+     *
+     * if 문 호출 전 락을 잡아 await 메서드 실행까지의 entryCount 상태를 보장하여
+     * entry 했지만 if 문에서 검출하지 못하여 이 아이템에 빠져나가기 전에 락이 삭제되거나
+     * exit 했지만 if 문에서 잡지 못하여 스레드가 무한대기 하는 상태를 방지함
      * **/
     public void stopAndWait() {
+        if (isStopped) {
+            return ;
+        }
         isStopped = true;
         try {
             lock.lock();

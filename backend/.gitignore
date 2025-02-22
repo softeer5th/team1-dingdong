@@ -47,3 +47,8 @@ src/main/resources/response.json
 
 ### FCM Secret Key ###
 ding-dong-firebase.json
+
+### For Simulate ###
+.simulate/.env.test
+.monitor/grafana/data/
+.monitor/grafana/provisioning/

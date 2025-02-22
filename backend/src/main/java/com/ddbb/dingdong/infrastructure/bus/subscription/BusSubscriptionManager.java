@@ -5,6 +5,7 @@ import com.ddbb.dingdong.domain.transportation.entity.vo.OperationStatus;
 import com.ddbb.dingdong.domain.transportation.service.BusErrors;
 import com.ddbb.dingdong.domain.transportation.service.BusScheduleManagement;
 import com.ddbb.dingdong.infrastructure.bus.simulator.BusSubscriptionLockManager;
+import com.ddbb.dingdong.infrastructure.bus.subscription.subscriber.CancelableSubscriber;
 import com.ddbb.dingdong.infrastructure.lock.StoppableLock;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,20 +22,21 @@ public class BusSubscriptionManager {
     private final BusSubscriptionLockManager lockManager;
     private final BusScheduleManagement busScheduleManagement;
     private final Map<Long, SubmissionPublisher<Point>> publishers = new HashMap<>();
-    private final Map<Long, Set<UserSubscription>> subscribers = new HashMap<>();
+    private final Map<Long, Map<Long, CancelableSubscriber<Point>>> subscribers = new HashMap<>();
 
 
     public void subscribe(long busId, UserSubscription subscription) {
         StoppableLock lock = lockManager.getLock(busId)
                 .orElseThrow(() -> new DomainException(BusErrors.BUS_NOT_INITIATED));
-        if (!lock.lock()) {
+        if (lock.isStopped()) {
             throw new DomainException(BusErrors.BUS_ALREADY_STOPPED);
         }
         try {
-            Set<UserSubscription> set = subscribers.computeIfAbsent(busId, id -> new TreeSet<>());
-            if (!set.add(subscription)) {
-                lock.unlock();
-                return;
+            lock.lock();
+            Map<Long, CancelableSubscriber<Point>> busChannel = subscribers.computeIfAbsent(busId, id -> new TreeMap<>());
+            CancelableSubscriber<Point> oldSub = busChannel.put(subscription.getUserId(), subscription.getSubscriber());
+            if (oldSub != null) {
+                oldSub.cancel();
             }
             publishers.computeIfPresent(busId, (key, publisher) -> {
                 publisher.subscribe(subscription.getSubscriber());
@@ -56,9 +58,9 @@ public class BusSubscriptionManager {
                 throw new DomainException(BusErrors.BUS_ALREADY_STOPPED);
             }
             if (!publishers.containsKey(busId)) {
-                Set<UserSubscription> subscriberSet = subscribers.computeIfAbsent(busId, (id) -> new TreeSet<>());
-                for (UserSubscription subscription : subscriberSet) {
-                    publisher.subscribe(subscription.getSubscriber());
+                Map<Long, CancelableSubscriber<Point>> subscriberSet = subscribers.computeIfAbsent(busId, (id) -> new TreeMap<>());
+                for (CancelableSubscriber<Point> subscriber : subscriberSet.values()) {
+                    publisher.subscribe(subscriber);
                 }
                 publishers.put(busId, publisher);
             }
@@ -78,15 +80,12 @@ public class BusSubscriptionManager {
             if (!lock.lock()) {
                 throw new DomainException(BusErrors.BUS_ALREADY_STOPPED);
             }
-            subscribers.computeIfPresent(busId, (id, subscriberSet) -> {
-                subscriberSet.removeIf(subscription -> {
-                    if (subscription.getUserId().equals(userId)) {
-                        subscription.getSubscriber().cancel();
-                        return true;
-                    }
-                    return false;
+            subscribers.computeIfPresent(busId, (id, busChannel) -> {
+                busChannel.computeIfPresent(userId, (key, subscriber) -> {
+                    subscriber.cancel();
+                    return null;
                 });
-                return subscriberSet;
+                return busChannel;
             });
         } catch (Exception e) {
             log.info(e.getMessage());
@@ -113,8 +112,8 @@ public class BusSubscriptionManager {
             SubmissionPublisher<Point> publisher = publishers.remove(busId);
             subscribers.remove(busId);
             busScheduleManagement.updateBusSchedule(busId, OperationStatus.ENDED);
-            lockManager.removeLock(busId);
             publisher.close();
+            lockManager.removeLock(busId);
         } catch (Exception e) {
             log.info(e.getMessage());
             throw new DomainException(BusErrors.STOP_BUS_ERROR);

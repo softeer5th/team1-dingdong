@@ -5,6 +5,7 @@ import com.ddbb.dingdong.application.common.UseCase;
 import com.ddbb.dingdong.application.usecase.reservation.error.ReservationInvalidParamErrors;
 import com.ddbb.dingdong.domain.reservation.entity.vo.Direction;
 import com.ddbb.dingdong.domain.reservation.repository.BusStopRepository;
+import com.ddbb.dingdong.domain.reservation.service.ReservationConcurrencyManager;
 import com.ddbb.dingdong.domain.reservation.service.ReservationErrors;
 import com.ddbb.dingdong.domain.reservation.service.ReservationManagement;
 import com.ddbb.dingdong.domain.transportation.entity.BusSchedule;
@@ -22,8 +23,9 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class RequestTogetherReservationUseCase implements UseCase<RequestTogetherReservationUseCase.Param, RequestTogetherReservationUseCase.Result> {
     private final TokenManager tokenManager;
-    private final BusScheduleRepository busScheduleRepository;
+    private final ReservationConcurrencyManager reservationConcurrencyManager;
     private final ReservationManagement reservationManagement;
+    private final BusScheduleRepository busScheduleRepository;
     private final BusStopRepository busStopRepository;
 
     @Override
@@ -31,8 +33,27 @@ public class RequestTogetherReservationUseCase implements UseCase<RequestTogethe
         param.validate();
         LocalDateTime hopeTime = extractTimeFromBusSchedule(param);
         checkHasDuplicatedReservation(param.userId, hopeTime);
-        String token = generateToken(param);
-        return new Result(token);
+        try {
+            acquireSemaphore(param.busScheduleId);
+            String token = generateToken(param);
+            addUserToTimeLimitCache(param.userId, param.busScheduleId);
+            return new Result(token);
+        } catch (Exception e) {
+            releaseSemaphore(param.busScheduleId);
+            throw e;
+        }
+    }
+
+    private void acquireSemaphore(Long busScheduleId) {
+        reservationConcurrencyManager.acquireSemaphore(busScheduleId);
+    }
+
+    private void releaseSemaphore(Long busScheduleId) {
+        reservationConcurrencyManager.releaseSemaphore(busScheduleId);
+    }
+
+    private void addUserToTimeLimitCache(Long userId, Long busScheduleId) {
+        reservationConcurrencyManager.addUserToTimeLimitCache(userId, busScheduleId);
     }
 
     private String generateToken(Param param) {

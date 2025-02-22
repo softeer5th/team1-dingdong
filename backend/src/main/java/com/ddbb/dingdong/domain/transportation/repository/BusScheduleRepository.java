@@ -25,4 +25,8 @@ public interface BusScheduleRepository extends JpaRepository<BusSchedule, Long> 
             @Param("busScheduleId") Long busScheduleId,
             @Param("status") OperationStatus status
     );
+
+    @Modifying
+    @Query("UPDATE BusSchedule b SET b.remainingSeats = b.remainingSeats - 1 WHERE b.id = :busScheduleId AND b.remainingSeats > 0")
+    int issueTicket(@Param("busScheduleId") Long busScheduleId);
 }

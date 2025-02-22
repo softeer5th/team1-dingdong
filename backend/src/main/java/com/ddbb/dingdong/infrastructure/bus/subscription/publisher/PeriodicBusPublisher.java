@@ -32,8 +32,8 @@ public class PeriodicBusPublisher<T> extends SubmissionPublisher<T> {
     }
 
     public void cleanRef() {
-        manager.removeRefOnly(busId);
         this.close();
+        manager.removeRefOnly(busId);
     }
 
     public void close() {

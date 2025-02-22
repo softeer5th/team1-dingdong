@@ -34,7 +34,7 @@ public class SimpleCache  {
     public void init() {
         System.out.println(cleanupIntervalMinutes);
         Duration cleanupInterval = Duration.ofMinutes(cleanupIntervalMinutes);
-        this.RANDOM_SELECT_SIZE = 50;
+        this.RANDOM_SELECT_SIZE = 100;
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(
                 this::cleanUp,
@@ -74,7 +74,8 @@ public class SimpleCache  {
     public Object get(Object key) {
         CacheEntry entry = map.get(key);
         if (entry != null && System.currentTimeMillis() > entry.expiryTimeMillis) {
-            return map.remove(key).value;
+            map.remove(key);
+            return null;
         }
         return entry != null ? entry.value : null;
     }
@@ -92,6 +93,18 @@ public class SimpleCache  {
             map.remove(key);
         }
         return entry != null;
+    }
+
+    /**
+     * 캐시에서 키에 해당하는 값을 삭제합니다.
+     *
+     * @param key
+     * @return 키에 해당하는 값이 있다면 해당 값, 없다면 {@code null}을 반환합니다.
+     */
+    public Object remove(Object key) {
+        CacheEntry entry = map.remove(key);
+        if (entry != null) return entry.value;
+        return null;
     }
 
     /**

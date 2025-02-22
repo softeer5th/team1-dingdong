@@ -5,6 +5,8 @@ import com.ddbb.dingdong.application.usecase.reservation.RequestTogetherReservat
 import com.ddbb.dingdong.domain.reservation.service.ReservationConcurrencyManager;
 import com.ddbb.dingdong.domain.transportation.entity.BusSchedule;
 import com.ddbb.dingdong.domain.transportation.repository.BusScheduleRepository;
+import com.ddbb.dingdong.infrastructure.cache.SimpleCache;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -12,10 +14,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,12 +37,20 @@ public class ReservationConcurrencyTest {
     @Autowired
     BusScheduleRepository busScheduleRepository;
 
+    @Autowired
+    SimpleCache simpleCache;
+
     private static final int MAX_USERS = 99;
     private static final int MAX_SUCCESS = 15;
     private final ExecutorService executor = Executors.newFixedThreadPool(MAX_USERS);
     @Autowired
     private ReservationConcurrencyManager reservationConcurrencyManager;
 
+    @BeforeEach
+    public void init() {
+        BusSchedule busSchedule = busScheduleRepository.findById(1L).get();
+        reservationConcurrencyManager.initReservationData(busSchedule);
+    }
 
     @Test
     @DisplayName("100명 예매 동시성 실험")
@@ -46,9 +58,6 @@ public class ReservationConcurrencyTest {
         AtomicInteger success = new AtomicInteger(1);
         AtomicInteger fail = new AtomicInteger(0);
         CountDownLatch countDownLatch = new CountDownLatch(1);
-
-        BusSchedule busSchedule = busScheduleRepository.findById(1L).get();
-        reservationConcurrencyManager.initReservationData(busSchedule);
 
         for (int i = 2; i <= MAX_USERS; i++) {
             int finalI = i;
@@ -84,5 +93,28 @@ public class ReservationConcurrencyTest {
 
         assertEquals(MAX_SUCCESS, success.get());
         assertEquals(MAX_USERS - 1, fail.get());
+    }
+
+    @Test
+    @DisplayName("자동 Clean Up 시, 세마포어가 만료되는지 확인")
+    void testCleanUp() throws InterruptedException {
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+
+        for (int i = 2; i <= MAX_USERS; i++) {
+            int finalI = i;
+            executor.submit(() -> {
+                try {
+                    countDownLatch.await();
+                    RequestTogetherReservationUseCase.Result result = requestTogetherReservationUseCase.execute(new RequestTogetherReservationUseCase.Param((long) finalI, 1L, 1L));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
+
+        countDownLatch.countDown();
+        Thread.sleep(15000);
+
+        assertEquals(14, ((Semaphore) simpleCache.get(Map.entry(1L, ReservationConcurrencyManager.Type.SEMAPHORE))).availablePermits());
     }
 }

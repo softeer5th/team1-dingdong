@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class ReservationConcurrencyManager {
     private final SimpleCache cache;
 
-    private enum Type { SEMAPHORE, LOCK };
+    public enum Type { SEMAPHORE, LOCK };
     private static final int EXPIRATION_TIME_MINUTES = 5;
     private static final int EXPIRATION_TIME_DAYS = 2;
 
@@ -29,16 +29,18 @@ public class ReservationConcurrencyManager {
     }
 
     public void addUserToTimeLimitCache(Long userId, Long busScheduleId) {
-        cache.put(userId, busScheduleId, Duration.ofMinutes(EXPIRATION_TIME_MINUTES));
+        cache.put(userId, busScheduleId, () -> {
+            releaseSemaphore(busScheduleId);
+        }, Duration.ofMinutes(EXPIRATION_TIME_MINUTES));
     }
 
-    public void acquireSemaphore(Long busScheduleId) {
+    public boolean acquireSemaphore(Long busScheduleId) {
         Semaphore semaphore = (Semaphore) cache.get(Map.entry(busScheduleId, Type.SEMAPHORE));
-        log.info("Acquired semaphore: {}", semaphore.availablePermits());
         try {
             if (!semaphore.tryAcquire(0, TimeUnit.SECONDS)) {
                 throw new InterruptedException();
             }
+            return true;
         } catch (InterruptedException e) {
             throw BusErrors.NO_SEATS.toException();
         }

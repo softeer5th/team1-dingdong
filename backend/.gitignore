@@ -50,5 +50,9 @@ ding-dong-firebase.json
 
 ### For Simulate ###
 .simulate/.env.test
+.simulate/gatling-maven-plugin-demo-java-main
+.simulate/stress-loader
+
 .monitor/grafana/data/
 .monitor/grafana/provisioning/
+

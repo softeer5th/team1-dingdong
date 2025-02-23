@@ -6,10 +6,10 @@ COPY gradlew gradlew.bat ./
 COPY gradle gradle
 COPY settings.gradle build.gradle ./
 RUN chmod +x ./gradlew
-RUN ./gradlew dependencies --no-daemon
+RUN /app/gradlew dependencies --no-daemon
 
 COPY src src
-RUN ./gradlew bootJar --no-daemon -x test
+RUN /app/gradlew bootJar --no-daemon -x test
 
 FROM openjdk:17-jdk-slim
 WORKDIR /app

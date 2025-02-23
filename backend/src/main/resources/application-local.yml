@@ -35,6 +35,9 @@ fcm:
   silent: ${FCM_SILENT}
   requireInteraction: ${FCM_REQUIRE_INTERACTION}
   link: ${FCM_TOUCH_LINK}
+  image: ${FCM_IMAGE}
+  icon: ${FCM_ICON}
+  badge: ${FCM_BADGE}
 
   message:
     allocate:

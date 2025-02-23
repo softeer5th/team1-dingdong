@@ -19,6 +19,12 @@ public class MessageFactory {
     private boolean REQUIRE_INTERACTION;
     @Value("${fcm.link}")
     private String LINK_URL;
+    @Value("${fcm.image}")
+    private String IMAGE;
+    @Value("${fcm.icon}")
+    private String ICON;
+    @Value("{fcm.badge}")
+    private String BADGE;
 
     public MulticastMessage createMulticastMessage(String title, String content, List<String> tokens) {
         WebpushNotification webPushNotification = WebpushNotification.builder()
@@ -30,6 +36,9 @@ public class MessageFactory {
                 .setRequireInteraction(REQUIRE_INTERACTION)
                 .setRenotify(RENOTIFY)
                 .setSilent(SILENT)
+                .setImage(IMAGE)
+                .setIcon(ICON)
+                .setBadge(BADGE)
                 .build();
 
         return MulticastMessage.builder()

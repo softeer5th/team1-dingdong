@@ -35,9 +35,7 @@
 [프론트엔드 wiki]()
 [백엔드 wiki](https://github.com/softeer5th/team1-dingdong/wiki/Backend)
 
-
-# 깃 브랜치 
-# Commit Convention
+# GitHub & Commit Convention
 
 ### Issue
 

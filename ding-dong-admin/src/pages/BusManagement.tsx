@@ -197,9 +197,9 @@ function BusManagement() {
     try {
       setApiStatus(prev => ({ ...prev, bus: { status: 'pending' } }));
       const response = await httpClient.post(`/api/admin/bus/${scheduleId}`, {
-        'interval': 10,
+        'interval': 1,
         'delay': 0,
-        'timeUnit': 'MILLISECONDS',
+        'timeUnit': 'SECONDS',
       });
       setApiStatus(prev => ({ ...prev, bus: { status: 'success', code: response.status } }));
       console.log('Bus started successfully');

@@ -83,13 +83,17 @@ public class MakeTogetherReservationUseCase implements UseCase<MakeTogetherReser
         Long busStopId = param.reservationInfo.getBusStopId();
         Long busScheduleId = param.reservationInfo.getBusScheduleId();
 
-
         Long cacheBusScheduleId = reservationConcurrencyManager.getUserInCache(userId);
+
         if (cacheBusScheduleId == null) {
             reservationConcurrencyManager.releaseSemaphore(busScheduleId);
             throw ReservationErrors.EXCEEDED_RESERVATION_DEADLINE.toException();
         } else if (!cacheBusScheduleId.equals(busScheduleId)) {
             throw ReservationErrors.INVALID_ACCESS.toException();
+        }
+
+        if (!reservationConcurrencyManager.isSemaphoreAvailable(busScheduleId)) {
+            throw ReservationErrors.EXPIRED_RESERVATION_DATE.toException();
         }
 
         BusSchedule busSchedule = busScheduleRepository.findById(busScheduleId)
@@ -111,7 +115,6 @@ public class MakeTogetherReservationUseCase implements UseCase<MakeTogetherReser
         if (!busScheduleId.equals(queryBusScheduleId)) {
             throw ReservationErrors.INVALID_BUS_SCHEDULE.toException();
         }
-
 
         Reservation reservation = makeReservation(busSchedule, userId);
         Ticket ticket = new Ticket(null, busScheduleId, busStopId, reservation);

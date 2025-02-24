@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.Semaphore;
 
 @Slf4j
 @Component
@@ -58,7 +57,7 @@ public class ReservationConcurrencyManager {
 
         StoppableSemaphore semaphore = (StoppableSemaphore) cache.get(String.format(CACHE_ID_BUS_SCHEDULE + ":%d", busScheduleId));
         try {
-            if (semaphore == null) {
+            if (semaphore == null || semaphore.isStopped()) {
                 throw ReservationErrors.EXPIRED_RESERVATION_DATE.toException();
             } else if (!semaphore.tryAcquire()) {
                 throw new InterruptedException();
@@ -99,12 +98,17 @@ public class ReservationConcurrencyManager {
         lock.stop();
     }
 
+    public boolean isSemaphoreAvailable(Long busScheduleId) {
+        StoppableSemaphore semaphore = (StoppableSemaphore) cache.get(String.format(CACHE_ID_BUS_SCHEDULE + ":%d", busScheduleId));
+        return semaphore != null && !semaphore.isStopped();
+    }
+
     public void removeSemaphore(Long busScheduleId) {
         cache.remove(String.format(CACHE_ID_BUS_SCHEDULE + ":%d", busScheduleId));
     }
 
     public int getRemainingSeats(Long busScheduleId) {
-        Semaphore semaphore = (Semaphore) cache.get(String.format(CACHE_ID_BUS_SCHEDULE + ":%d", busScheduleId));
+        StoppableSemaphore semaphore = (StoppableSemaphore) cache.get(String.format(CACHE_ID_BUS_SCHEDULE + ":%d", busScheduleId));
         return semaphore.availablePermits();
     }
 

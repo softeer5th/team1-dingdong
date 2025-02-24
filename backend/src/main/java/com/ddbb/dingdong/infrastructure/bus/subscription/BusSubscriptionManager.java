@@ -103,6 +103,7 @@ public class BusSubscriptionManager {
         StoppableSemaphore lock = lockManager.getLock(busId)
                 .orElseThrow(() -> new DomainException(BusErrors.BUS_NOT_INITIATED));
         try {
+            log.info("before bus {} has been cleaned pub : {} sub :{}", busId, publishers.size(), subscribers.size());
             busScheduleManagement.updateBusSchedule(busId, OperationStatus.ENDED);
             lockManager.removeLock(busId);
             if (!lock.acquire(false)) {
@@ -112,7 +113,7 @@ public class BusSubscriptionManager {
             subscribers.remove(busId);
 
             publisher.close();
-            log.info("bus {} has been cleaned {} / {}", busId, publishers.size(), subscribers.size());
+            log.info("after bus {} has been cleaned pub : {} sub :{}", busId, publishers.size(), subscribers.size());
         } catch (Exception e) {
             log.info(e.getMessage());
             throw new DomainException(BusErrors.STOP_BUS_ERROR);
@@ -132,13 +133,14 @@ public class BusSubscriptionManager {
         StoppableSemaphore lock = lockManager.getLock(busId)
                 .orElseThrow(() -> new DomainException(BusErrors.BUS_NOT_INITIATED));
         try {
+            log.info("before bus {} has been cleaned pub : {} sub :{}", busId, publishers.size(), subscribers.size());
             busScheduleManagement.updateBusSchedule(busId, OperationStatus.ENDED);
             lockManager.removeLock(busId);
             lock.acquire(false);
             publishers.remove(busId);
             subscribers.remove(busId);
 
-            log.info("bus {} has been cleaned {} / {}", busId, publishers.size(), subscribers.size());
+            log.info("after bus {} has been cleaned pub : {} sub :{}", busId, publishers.size(), subscribers.size());
         } catch (Exception e) {
             log.info(e.getMessage());
             throw new DomainException(BusErrors.STOP_BUS_ERROR);

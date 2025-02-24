@@ -5,6 +5,7 @@ export function connectWebSocket(setWs: (ws: WebSocket | null) => void) {
     socket.onopen = () => {
         console.log("🔗 웹소켓 연결됨");
         setWs(socket);
+        socket.binaryType = 'arraybuffer';
     };
 
     socket.onclose = (event) => {

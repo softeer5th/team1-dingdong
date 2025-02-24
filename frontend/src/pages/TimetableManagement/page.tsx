@@ -10,7 +10,6 @@ import {
 } from "@/pages/TimetableManagement/styles.ts";
 // 컴포넌트
 import PopHeader from "@/components/Headers/PopHeader";
-import PlusIcon from "@/components/designSystem/Icons/TimeTableManagement/PlusIcon.tsx";
 import InfoIcon from "@/components/designSystem/Icons/TimeTableManagement/InfoIcon.tsx";
 import EasyTable, {ColumnInferface, RowInterace} from "@/pages/TimetableManagement/components/EasyTable";
 import {colors} from "@/styles/colors.ts";
@@ -99,7 +98,6 @@ export default function Page() {
                 <ImgRegistrationBox>
                     {/* 서버 이미지 없으면 */}
                     <ImgActionButton onClick={() => fetchTimetable(timetableRef.current, addToast)}>
-                        <PlusIcon />
                         <ImgActionText>
                             시간표 저장하기
                         </ImgActionText>

@@ -1,4 +1,5 @@
 import { createGlobalStyle } from "styled-components";
+import {colors} from "@/styles/colors.ts";
 
 const GlobalStyle = createGlobalStyle`
 @font-face {
@@ -65,6 +66,7 @@ const GlobalStyle = createGlobalStyle`
 
   html, body {
     font-family:'Pretendard', sans-serif;
+      color: ${colors.gray100}
   }
 
   #root {

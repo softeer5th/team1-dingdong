@@ -32,33 +32,30 @@ export default function BusOverlay({setLocation, isRunning}: BusOverlayProps) {
 
         const handleMessage = (message: MessageEvent) => {
             try {
-                const data = JSON.parse(message.data);
+                // ArrayBuffer로 변환
+                const arrayBuffer = message.data;
+                const dataView = new DataView(arrayBuffer);
 
-                // 데이터 구조 검증
-                if (typeof data !== "object" || data === null) {
-                    console.error("데이터가 객체가 아닙니다.");
-                    return;
-                }
-                if (typeof data.latitude !== "number" || typeof data.longitude !== "number") {
-                    console.error("latitude와 longitude가 숫자가 아닙니다.");
-                    return;
-                }
+                // 앞 8바이트는 경도(longitude), 뒤 8바이트는 위도(latitude)
+                const longitude = dataView.getFloat64(0, false); // true는 리틀 엔디안
+                const latitude = dataView.getFloat64(8, false);
+
 
                 setBusLocation({
-                    lat: data.latitude,
-                    lng: data.longitude,
+                    lat: latitude,
+                    lng: longitude,
                 });
 
                 if (isFirst.current) {
                     isFirst.current = false;
                     setLocation({
-                        center: {lat: data.latitude, lng: data.longitude},
+                        center: {lat: latitude, lng: longitude},
                         isPanto: true
                     })
                 }
 
 
-                console.log("버스 정보", data);
+                console.log(`버스 정보 {lat: ${latitude}, lng: ${longitude}}`);
             } catch (error) {
                 console.error("JSON 파싱 에러:", error);
             }

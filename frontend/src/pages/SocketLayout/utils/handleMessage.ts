@@ -67,8 +67,10 @@ const notificationHandlers: NotificationHandlers = {
 
 export const handleMessage = async (message: MessageEvent, addToast: (msg: string) => void, revalidate: ()=>Promise<void>) => {
     const data = message.data;
-    if (!data.startsWith('alarm')) return;
+    if (typeof data !== 'string' || !data.startsWith('alarm')) return;
     const dataList = data.split('_')
+    if (!(dataList[1] === 'ready' || dataList[1] === 'run')) return;
+
     const type: 'ready' | 'run' | 'failed' = dataList[1] ?? 'failed'
     const reservationId = parseInt(dataList[2] ?? '-1', 10)
 

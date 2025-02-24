@@ -25,5 +25,4 @@ public class TestFCMNotificationUseCase implements UseCase<TestFCMNotificationUs
     public static class Param implements Params {
         private Long userId;
     }
-
 }

@@ -9,7 +9,6 @@ public enum ReservationErrors implements ErrorInfo {
 
     EXPIRED_RESERVATION_DATE("해당 예약시간이 이미 마감되었습니다."),
     EXCEEDED_RESERVATION_DATE("예약 가능 기간을 초과하였습니다."),
-    BEFORE_RESERVATION_DATE("예약 가능 기간이 아닙니다."),
     NOT_SUPPORTED_RESERVATION_TIME("해당 예약 시간은 지원하지 않습니다"),
     EXCEEDED_RESERVATION_DEADLINE("예약 가능한 시간이 지났습니다.."),
 

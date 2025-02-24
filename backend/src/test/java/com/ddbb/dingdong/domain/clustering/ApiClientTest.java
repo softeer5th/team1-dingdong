@@ -1,6 +1,7 @@
 package com.ddbb.dingdong.domain.clustering;
 
 import com.ddbb.dingdong.infrastructure.routing.api.TmapApiKeyManager;
+import com.ddbb.dingdong.infrastructure.routing.api.TmapApiProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ public class ApiClientTest {
     @BeforeEach
     public void setUp() {
         httpClient = HttpClient.newHttpClient();
-        tmapApiKeyManager = new TmapApiKeyManager(List.of("a", "b", "c"));
+        tmapApiKeyManager = new TmapApiKeyManager(new TmapApiProperties(List.of("a", "b", "c")));
     }
 
     @Test

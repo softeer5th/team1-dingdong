@@ -1,8 +1,11 @@
 package com.ddbb.dingdong.reservation;
 
-import com.ddbb.dingdong.application.usecase.reservation.RequestReservationUseCase;
+import com.ddbb.dingdong.application.usecase.reservation.RequestGeneralReservationUseCase;
 import com.ddbb.dingdong.application.usecase.reservation.error.ReservationInvalidParamErrors;
-import com.ddbb.dingdong.infrastructure.auth.encrypt.TokenManager;
+
+import com.ddbb.dingdong.domain.reservation.entity.vo.Direction;
+import com.ddbb.dingdong.domain.reservation.service.error.ReservationErrors;
+import com.ddbb.dingdong.infrastructure.auth.encrypt.token.TokenManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,28 +22,28 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class RequestReservationUseCaseTest {
 
+
     @Mock
     private TokenManager tokenManager;
 
     @InjectMocks
-    private RequestReservationUseCase requestReservationUseCase;
+    private RequestGeneralReservationUseCase requestReservationUseCase;
 
     @Test
     @DisplayName("정상적인 결제 요청이 들어왔을 때, 토큰이 정상적으로 생성되는지 확인")
     void execute_ValidParam_GeneratesToken() {
         // Given
         Long userId = 1L;
-        String direction = "TO_SCHOOL";
         LocalDateTime validDate = LocalDateTime.now().plusDays(3).withMinute(0); // 48시간 이후
-        List<RequestReservationUseCase.Param.ReservationInfo> reservationInfos = List.of(new RequestReservationUseCase.Param.ReservationInfo(validDate));
-        RequestReservationUseCase.Param param = new RequestReservationUseCase.Param(userId, direction, reservationInfos);
+        List<RequestGeneralReservationUseCase.Param.ReservationInfo> reservationInfos = List.of(new RequestGeneralReservationUseCase.Param.ReservationInfo(validDate));
+        RequestGeneralReservationUseCase.Param param = new RequestGeneralReservationUseCase.Param(userId, Direction.TO_SCHOOL, reservationInfos);
 
         String expectedToken = "encryptedToken123";
 
         when(tokenManager.generateToken(anyString())).thenReturn(expectedToken);
 
         // When
-        RequestReservationUseCase.Result result = requestReservationUseCase.execute(param);
+        RequestGeneralReservationUseCase.Result result = requestReservationUseCase.execute(param);
 
         // Then
         assertNotNull(result);
@@ -48,37 +51,19 @@ class RequestReservationUseCaseTest {
         verify(tokenManager, times(1)).generateToken(anyString()); // TokenManager가 호출되었는지 확인
     }
 
-
-    @Test
-    @DisplayName("잘못된 방향(`direction`)이 주어졌을 때, 예외 발생 확인")
-    void validate_InvalidDirection_ThrowsException() {
-        // Given
-        Long userId = 1L;
-        String invalidDirection = "INVALID";
-        LocalDateTime validDate = LocalDateTime.now().plusDays(3).withMinute(0);
-        List<RequestReservationUseCase.Param.ReservationInfo> reservationInfos = List.of(new RequestReservationUseCase.Param.ReservationInfo(validDate));
-
-        RequestReservationUseCase.Param param = new RequestReservationUseCase.Param(userId, invalidDirection, reservationInfos);
-
-        // When & Then
-        Exception exception = assertThrows(RuntimeException.class, param::validate);
-        assertEquals(ReservationInvalidParamErrors.INVALID_DIRECTION.toException().getMessage(), exception.getMessage());
-    }
-
     @Test
     @DisplayName("48시간 이전 날짜가 포함된 경우 예외 발생")
     void validate_InvalidReservationDate_Before48Hours_ThrowsException() {
         // Given
         Long userId = 1L;
-        String direction = "TO_SCHOOL";
         LocalDateTime invalidDate = LocalDateTime.now().plusHours(24); // 48시간 이전
-        List<RequestReservationUseCase.Param.ReservationInfo> reservationInfos = List.of(new RequestReservationUseCase.Param.ReservationInfo(invalidDate));
+        List<RequestGeneralReservationUseCase.Param.ReservationInfo> reservationInfos = List.of(new RequestGeneralReservationUseCase.Param.ReservationInfo(invalidDate));
 
-        RequestReservationUseCase.Param param = new RequestReservationUseCase.Param(userId, direction, reservationInfos);
+        RequestGeneralReservationUseCase.Param param = new RequestGeneralReservationUseCase.Param(userId, Direction.TO_SCHOOL, reservationInfos);
 
         // When & Then
         Exception exception = assertThrows(RuntimeException.class, param::validate);
-        assertEquals(ReservationInvalidParamErrors.INVALID_DATE.toException().getMessage(), exception.getMessage());
+        assertEquals(ReservationErrors.EXPIRED_RESERVATION_DATE.toException().getMessage(), exception.getMessage());
     }
 
     @Test
@@ -86,15 +71,14 @@ class RequestReservationUseCaseTest {
     void validate_InvalidReservationDate_AfterTwoMonths_ThrowsException() {
         // Given
         Long userId = 1L;
-        String direction = "TO_SCHOOL";
         LocalDateTime invalidDate = LocalDateTime.now().plusMonths(3); // 2개월 이후
-        List<RequestReservationUseCase.Param.ReservationInfo> reservationInfos = List.of(new RequestReservationUseCase.Param.ReservationInfo(invalidDate));
+        List<RequestGeneralReservationUseCase.Param.ReservationInfo> reservationInfos = List.of(new RequestGeneralReservationUseCase.Param.ReservationInfo(invalidDate));
 
-        RequestReservationUseCase.Param param = new RequestReservationUseCase.Param(userId, direction, reservationInfos);
+        RequestGeneralReservationUseCase.Param param = new RequestGeneralReservationUseCase.Param(userId, Direction.TO_SCHOOL, reservationInfos);
 
         // When & Then
         Exception exception = assertThrows(RuntimeException.class, param::validate);
-        assertEquals(ReservationInvalidParamErrors.INVALID_DATE.toException().getMessage(), exception.getMessage());
+        assertEquals(ReservationErrors.EXCEEDED_RESERVATION_DATE.toException().getMessage(), exception.getMessage());
     }
 
     @Test
@@ -102,14 +86,13 @@ class RequestReservationUseCaseTest {
     void validate_InvalidMinute_ThrowsException() {
         // Given
         Long userId = 1L;
-        String direction = "TO_SCHOOL";
         LocalDateTime invalidDate = LocalDateTime.now().plusDays(3).withMinute(15); // 15분
-        List<RequestReservationUseCase.Param.ReservationInfo> reservationInfos = List.of(new RequestReservationUseCase.Param.ReservationInfo(invalidDate));
+        List<RequestGeneralReservationUseCase.Param.ReservationInfo> reservationInfos = List.of(new RequestGeneralReservationUseCase.Param.ReservationInfo(invalidDate));
 
-        RequestReservationUseCase.Param param = new RequestReservationUseCase.Param(userId, direction, reservationInfos);
+        RequestGeneralReservationUseCase.Param param = new RequestGeneralReservationUseCase.Param(userId, Direction.TO_SCHOOL, reservationInfos);
 
         // When & Then
         Exception exception = assertThrows(RuntimeException.class, param::validate);
-        assertEquals(ReservationInvalidParamErrors.INVALID_DATE.toException().getMessage(), exception.getMessage());
+        assertEquals(ReservationErrors.NOT_SUPPORTED_RESERVATION_TIME.toException().getMessage(), exception.getMessage());
     }
 }

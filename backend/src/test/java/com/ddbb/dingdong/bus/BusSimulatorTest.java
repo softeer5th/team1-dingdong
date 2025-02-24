@@ -1,29 +1,30 @@
 package com.ddbb.dingdong.bus;
 
-import com.ddbb.dingdong.infrastructure.bus.simulator.BusSubscriptionLockManager;
+import com.ddbb.dingdong.domain.transportation.service.BusPublishService;
+import com.ddbb.dingdong.infrastructure.bus.simulator.BusSimulatorFactory;
+import com.ddbb.dingdong.infrastructure.bus.simulator.segment.RouteSegmentProvider;
 import com.ddbb.dingdong.infrastructure.bus.subscription.BusSubscriptionManager;
 import com.ddbb.dingdong.infrastructure.bus.subscription.UserSubscription;
-import com.ddbb.dingdong.domain.transportation.service.BusPublishService;
-import com.ddbb.dingdong.infrastructure.bus.simulator.segment.RouteSegmentProvider;
-import com.ddbb.dingdong.infrastructure.bus.simulator.segment.impl.TMapStubRouteSegmentProvider;
-import com.ddbb.dingdong.infrastructure.bus.simulator.BusSimulatorFactory;
 import com.ddbb.dingdong.infrastructure.bus.subscription.subscriber.StubConsoleSubscriber;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
+@SpringBootTest
 class BusSimulatorTest {
+    @Autowired
     private BusSubscriptionManager manager;
+    @Autowired
     private BusPublishService publishService;
+    @Autowired
     private BusSimulatorFactory factory;
+    @Autowired
     private RouteSegmentProvider segmentProvider;
-
-    public BusSimulatorTest() {
-        this.segmentProvider = new TMapStubRouteSegmentProvider();
-        this.manager = new BusSubscriptionManager(new BusSubscriptionLockManager());
-        this.factory = new BusSimulatorFactory(segmentProvider);
-        this.publishService = new BusPublishService(this.factory, manager);
-    }
 
     @Test()
     void test() throws InterruptedException {

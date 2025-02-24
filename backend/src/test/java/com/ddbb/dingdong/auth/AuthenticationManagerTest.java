@@ -1,5 +1,6 @@
 package com.ddbb.dingdong.auth;
 
+import com.ddbb.dingdong.domain.user.entity.vo.Role;
 import com.ddbb.dingdong.infrastructure.auth.security.AuthUser;
 import com.ddbb.dingdong.infrastructure.auth.security.AuthenticationManager;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +37,7 @@ public class AuthenticationManagerTest {
     @Test
     @DisplayName("로그인 시 세션에 AuthUser 저장 되었는지 테스트")
     void testSetAuthenticationAndGetAuthentication() {
-        AuthUser user = new AuthUser(1L);
+        AuthUser user = new AuthUser(1L, 1L, Role.USER);
 
         authenticationManager.setAuthentication(user);
 
@@ -51,7 +52,7 @@ public class AuthenticationManagerTest {
     @Test
     @DisplayName("로그아웃시 세션이 무효화 되었는지 테스트")
     void testRemoveAuthentication() {
-        AuthUser user = new AuthUser(1L);
+        AuthUser user = new AuthUser(1L, 1L, Role.USER);
         authenticationManager.setAuthentication(user);
 
         authenticationManager.removeAuthentication();

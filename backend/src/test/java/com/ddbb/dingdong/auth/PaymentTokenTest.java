@@ -1,7 +1,8 @@
 package com.ddbb.dingdong.auth;
 
 import com.ddbb.dingdong.application.usecase.reservation.RequestGeneralReservationUseCase;
-import com.ddbb.dingdong.infrastructure.auth.encrypt.TokenManager;
+import com.ddbb.dingdong.domain.reservation.entity.vo.Direction;
+import com.ddbb.dingdong.infrastructure.auth.encrypt.token.TokenManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
@@ -23,14 +24,14 @@ public class PaymentTokenTest {
     public void testPaymentTokenIsValid() throws JsonProcessingException {
         RequestGeneralReservationUseCase.Param param = new RequestGeneralReservationUseCase.Param(
                 1L,
-                "TO_SCHOOL",
+                Direction.TO_SCHOOL,
                 List.of(new RequestGeneralReservationUseCase.Param.ReservationInfo(
                         LocalDateTime.now()
                 ))
         );
         RequestGeneralReservationUseCase.Param param2 = new RequestGeneralReservationUseCase.Param(
                 1L,
-                "TO_SCHOOL",
+                Direction.TO_SCHOOL,
                 List.of(new RequestGeneralReservationUseCase.Param.ReservationInfo(
                         LocalDateTime.now().plusHours(1)
                 ))

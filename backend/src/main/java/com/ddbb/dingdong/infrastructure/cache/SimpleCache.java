@@ -24,7 +24,7 @@ public class SimpleCache  {
     private final Map<Object, CacheEntry> map = new HashMap<>();
     public record CacheEntry(Object value, long expiryTimeMillis, Runnable afterExpiryTask) {}
     private int RANDOM_SELECT_SIZE;
-    @Value("${cache.cleanupIntervalMinutes:60}")
+    @Value("${cache.cleanupIntervalMinutes:1}")
     private long cleanupIntervalMinutes;
 
     @PostConstruct

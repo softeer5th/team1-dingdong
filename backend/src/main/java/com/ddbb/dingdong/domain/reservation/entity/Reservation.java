@@ -3,7 +3,7 @@ package com.ddbb.dingdong.domain.reservation.entity;
 import com.ddbb.dingdong.domain.reservation.entity.vo.Direction;
 import com.ddbb.dingdong.domain.reservation.entity.vo.ReservationStatus;
 import com.ddbb.dingdong.domain.reservation.entity.vo.ReservationType;
-import com.ddbb.dingdong.domain.reservation.service.ReservationErrors;
+import com.ddbb.dingdong.domain.reservation.service.error.ReservationErrors;
 import jakarta.persistence.*;
 import lombok.*;
 

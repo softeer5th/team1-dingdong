@@ -1,4 +1,4 @@
-package com.ddbb.dingdong.domain.reservation.service;
+package com.ddbb.dingdong.domain.reservation.service.error;
 
 import com.ddbb.dingdong.domain.common.exception.ErrorInfo;
 

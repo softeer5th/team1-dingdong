@@ -6,7 +6,7 @@ import com.ddbb.dingdong.application.usecase.reservation.error.ReservationInvali
 import com.ddbb.dingdong.domain.reservation.entity.vo.Direction;
 import com.ddbb.dingdong.domain.reservation.repository.BusStopRepository;
 import com.ddbb.dingdong.domain.reservation.service.ReservationConcurrencyManager;
-import com.ddbb.dingdong.domain.reservation.service.ReservationErrors;
+import com.ddbb.dingdong.domain.reservation.service.error.ReservationErrors;
 import com.ddbb.dingdong.domain.reservation.service.ReservationManagement;
 import com.ddbb.dingdong.domain.transportation.entity.BusSchedule;
 import com.ddbb.dingdong.domain.transportation.entity.BusStop;

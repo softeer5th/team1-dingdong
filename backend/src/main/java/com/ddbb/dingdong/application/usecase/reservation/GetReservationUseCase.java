@@ -6,7 +6,7 @@ import com.ddbb.dingdong.domain.reservation.entity.vo.Direction;
 import com.ddbb.dingdong.domain.reservation.entity.vo.ReservationStatus;
 import com.ddbb.dingdong.domain.reservation.repository.ReservationQueryRepository;
 import com.ddbb.dingdong.domain.reservation.repository.projection.UserReservationProjection;
-import com.ddbb.dingdong.domain.reservation.service.ReservationErrors;
+import com.ddbb.dingdong.domain.reservation.service.error.ReservationErrors;
 import com.ddbb.dingdong.domain.transportation.entity.vo.OperationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

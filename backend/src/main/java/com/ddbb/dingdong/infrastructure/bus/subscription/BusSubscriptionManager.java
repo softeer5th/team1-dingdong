@@ -103,12 +103,13 @@ public class BusSubscriptionManager {
         StoppableSemaphore lock = lockManager.getLock(busId)
                 .orElseThrow(() -> new DomainException(BusErrors.BUS_NOT_INITIATED));
         try {
+            busScheduleManagement.updateBusSchedule(busId, OperationStatus.ENDED);
+            lockManager.removeLock(busId);
             if (!lock.acquire(false)) {
                 return;
             }
             SubmissionPublisher<Point> publisher = publishers.remove(busId);
             subscribers.remove(busId);
-            busScheduleManagement.updateBusSchedule(busId, OperationStatus.ENDED);
 
             publisher.close();
             log.info("bus {} has been cleaned {} / {}", busId, publishers.size(), subscribers.size());
@@ -131,11 +132,11 @@ public class BusSubscriptionManager {
         StoppableSemaphore lock = lockManager.getLock(busId)
                 .orElseThrow(() -> new DomainException(BusErrors.BUS_NOT_INITIATED));
         try {
+            busScheduleManagement.updateBusSchedule(busId, OperationStatus.ENDED);
             lockManager.removeLock(busId);
             lock.acquire(false);
             publishers.remove(busId);
             subscribers.remove(busId);
-            busScheduleManagement.updateBusSchedule(busId, OperationStatus.ENDED);
 
             log.info("bus {} has been cleaned {} / {}", busId, publishers.size(), subscribers.size());
         } catch (Exception e) {

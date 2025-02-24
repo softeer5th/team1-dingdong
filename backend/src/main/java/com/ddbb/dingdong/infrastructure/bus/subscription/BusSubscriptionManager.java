@@ -6,7 +6,7 @@ import com.ddbb.dingdong.domain.transportation.service.BusErrors;
 import com.ddbb.dingdong.domain.transportation.service.BusScheduleManagement;
 import com.ddbb.dingdong.infrastructure.bus.simulator.BusSubscriptionLockManager;
 import com.ddbb.dingdong.infrastructure.bus.subscription.subscriber.CancelableSubscriber;
-import com.ddbb.dingdong.infrastructure.lock.ChannelLock;
+import com.ddbb.dingdong.infrastructure.lock.StoppableSemaphore;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.Point;
@@ -26,10 +26,10 @@ public class BusSubscriptionManager {
 
 
     public void subscribe(long busId, UserSubscription subscription) {
-        ChannelLock lock = lockManager.getLock(busId)
+        StoppableSemaphore lock = lockManager.getLock(busId)
                 .orElseThrow(() -> new DomainException(BusErrors.BUS_NOT_INITIATED));
         try {
-            if (!lock.entryLock()) {
+            if (!lock.acquire(true)) {
                 throw new DomainException(BusErrors.BUS_ALREADY_STOPPED);
             }
             Map<Long, CancelableSubscriber<Point>> busChannel = subscribers.computeIfAbsent(busId, id -> new TreeMap<>());
@@ -45,15 +45,15 @@ public class BusSubscriptionManager {
             log.info(e.getMessage());
             throw new DomainException(BusErrors.BUS_SUBSCRIBE_ERROR);
         } finally {
-            lock.unlock();
+            lock.release();
         }
     }
 
     public void addPublishers(Long busId, SubmissionPublisher<Point> publisher) {
-        ChannelLock lock = lockManager.getLock(busId)
+        StoppableSemaphore lock = lockManager.getLock(busId)
                 .orElseThrow(() -> new DomainException(BusErrors.BUS_NOT_INITIATED));
         try {
-            if (!lock.entryLock()) {
+            if (!lock.acquire(true)) {
                 throw new DomainException(BusErrors.BUS_ALREADY_STOPPED);
             }
             if (!publishers.containsKey(busId)) {
@@ -63,21 +63,22 @@ public class BusSubscriptionManager {
                 }
                 publishers.put(busId, publisher);
             }
-            lock.unlock();
         }  catch (Exception e) {
             log.debug(e.getMessage());
             throw new DomainException(BusErrors.BUS_START_ERROR);
         } finally {
-            lock.unlock();
+            lock.release();
         }
     }
 
     public void unsubscribe(Long busId, Long userId) {
         log.info("unsubscribe: busId={}, userId={}", busId, userId);
-        ChannelLock lock = lockManager.getLock(busId)
+        StoppableSemaphore lock = lockManager.getLock(busId)
                 .orElseThrow(() -> new DomainException(BusErrors.BUS_NOT_INITIATED));
         try {
-            lock.exitLock();
+            if (!lock.acquire(false)) {
+                return;
+            }
             subscribers.computeIfPresent(busId, (id, busChannel) -> {
                 busChannel.computeIfPresent(userId, (key, subscriber) -> {
                     subscriber.cancel();
@@ -89,7 +90,7 @@ public class BusSubscriptionManager {
             log.info(e.getMessage());
             throw new DomainException(BusErrors.BUS_UNSUBSCRIBE_ERROR);
         } finally {
-            lock.unlock();
+            lock.release();
         }
     }
 
@@ -99,20 +100,23 @@ public class BusSubscriptionManager {
      * 자동으로 publisher의 close를 호출하므로 동일한 publisher에 대해서 close 메서드를 재호출하지 않아야 합니다.
      * **/
     public void cleanPublisher(Long busId) {
-        ChannelLock lock = lockManager.getLock(busId)
+        StoppableSemaphore lock = lockManager.getLock(busId)
                 .orElseThrow(() -> new DomainException(BusErrors.BUS_NOT_INITIATED));
         try {
-            lock.exitLock();
+            if (!lock.acquire(false)) {
+                return;
+            }
             SubmissionPublisher<Point> publisher = publishers.remove(busId);
             subscribers.remove(busId);
             busScheduleManagement.updateBusSchedule(busId, OperationStatus.ENDED);
+
             publisher.close();
             log.info("bus {} has been cleaned {} / {}", busId, publishers.size(), subscribers.size());
         } catch (Exception e) {
             log.info(e.getMessage());
             throw new DomainException(BusErrors.STOP_BUS_ERROR);
         } finally {
-            lock.unlock();
+            lock.release();
         }
     }
 
@@ -124,21 +128,21 @@ public class BusSubscriptionManager {
      * 예외적으로 lock 제거 로직을 추가함.
      **/
     public void removeRefOnly(Long busId) {
-        ChannelLock lock = lockManager.getLock(busId)
+        StoppableSemaphore lock = lockManager.getLock(busId)
                 .orElseThrow(() -> new DomainException(BusErrors.BUS_NOT_INITIATED));
         try {
-            lock.exitLock();
+            lockManager.removeLock(busId);
+            lock.acquire(false);
             publishers.remove(busId);
             subscribers.remove(busId);
             busScheduleManagement.updateBusSchedule(busId, OperationStatus.ENDED);
-            lock.unlock();
-            lockManager.removeLock(busId);
+
             log.info("bus {} has been cleaned {} / {}", busId, publishers.size(), subscribers.size());
         } catch (Exception e) {
             log.info(e.getMessage());
             throw new DomainException(BusErrors.STOP_BUS_ERROR);
         } finally {
-            lock.unlock();
+            lock.release();
         }
     }
 }

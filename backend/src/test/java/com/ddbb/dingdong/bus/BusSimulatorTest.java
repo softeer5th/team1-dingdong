@@ -7,23 +7,16 @@ import com.ddbb.dingdong.infrastructure.bus.subscription.BusSubscriptionManager;
 import com.ddbb.dingdong.infrastructure.bus.subscription.UserSubscription;
 import com.ddbb.dingdong.infrastructure.bus.subscription.subscriber.StubConsoleSubscriber;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-@SpringBootTest
 class BusSimulatorTest {
-    @Autowired
     private BusSubscriptionManager manager;
-    @Autowired
     private BusPublishService publishService;
-    @Autowired
     private BusSimulatorFactory factory;
-    @Autowired
     private RouteSegmentProvider segmentProvider;
 
     @Test()

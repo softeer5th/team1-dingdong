@@ -6,7 +6,7 @@ import com.ddbb.dingdong.application.usecase.auth.errors.AuthInvalidParamErrors;
 import com.ddbb.dingdong.domain.user.entity.User;
 import com.ddbb.dingdong.infrastructure.auth.security.AuthUser;
 import com.ddbb.dingdong.infrastructure.auth.security.AuthenticationManager;
-import com.ddbb.dingdong.util.ParamValidator;
+import com.ddbb.dingdong.infrastructure.util.ParamValidator;
 import com.ddbb.dingdong.domain.auth.service.AuthManagement;
 import com.ddbb.dingdong.domain.common.exception.DomainException;
 import com.ddbb.dingdong.presentation.endpoint.auth.exchanges.SignUpRequestDto;

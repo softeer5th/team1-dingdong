@@ -1,4 +1,4 @@
-package com.ddbb.dingdong.util;
+package com.ddbb.dingdong.infrastructure.util;
 
 
 import java.text.DecimalFormat;

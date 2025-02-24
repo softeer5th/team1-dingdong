@@ -2,11 +2,13 @@ package com.ddbb.dingdong.domain.user.repository.userRepository;
 
 import com.ddbb.dingdong.domain.user.entity.Home;
 import com.ddbb.dingdong.domain.user.entity.School;
+import com.ddbb.dingdong.domain.user.entity.Timetable;
 import com.ddbb.dingdong.domain.user.entity.User;
+import com.ddbb.dingdong.domain.user.entity.vo.Role;
 import com.ddbb.dingdong.domain.user.repository.UserQueryRepository;
 import com.ddbb.dingdong.domain.user.repository.projection.UserStaticOnly;
+import com.ddbb.dingdong.infrastructure.auth.encrypt.password.PasswordEncoder;
 import com.ddbb.dingdong.infrastructure.auth.encrypt.utils.SHA512Encoder;
-import com.ddbb.dingdong.infrastructure.auth.encrypt.PasswordEncoder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +26,9 @@ class GetStaticInfoTest {
     private PasswordEncoder encoder = new PasswordEncoder(sha512Encoder);
     private String password = encoder.encode("123456");
     private School school = new School(null, "seoul", "seoul", 1.0, 1.0);
-
-    private Home home = new Home(null, 1.0, 1.0, 1.0, null,"address", new User());
-    private User user = new User(null, "test", "test@test.com", password, LocalDateTime.now(), school,home);
+    private Timetable timetable = new Timetable();
+    private Home home = new Home(null, 1.0, 1.0, 1.0, 1.0,"seoul","address");
+    private User user = new User(null, "test", "test@test.com", password, Role.USER, LocalDateTime.now(), school,home,timetable);
 
 
     @Test

@@ -4,18 +4,18 @@ import com.ddbb.dingdong.infrastructure.lock.ChannelLock;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+@SpringBootTest
 class BusSubscriptionLockManagerTest {
     private static final Logger log = LoggerFactory.getLogger(BusSubscriptionLockManagerTest.class);
+    @Autowired
     private BusSubscriptionLockManager busSubscriptionLockManager;
-
-    public BusSubscriptionLockManagerTest() {
-        this.busSubscriptionLockManager = new BusSubscriptionLockManager();
-    }
 
     @Test
     void testStopLocking() throws InterruptedException {

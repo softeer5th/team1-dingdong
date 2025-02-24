@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { GoogleMap, Circle } from '@react-google-maps/api';
 import httpClient from '../utils/httpClient';
 import { ClusterData } from '../types/ClusterData';
-import { useLogin } from '../hooks/useLogin';
 import { format } from 'date-fns';
 
 const Container = styled.div`
@@ -129,7 +128,6 @@ function getClusterColor(clusterLabel: string): string {
 }
 
 function MapWithInputs() {
-  const {loading, error } = useLogin();
   const [direction, setDirection] = useState('TO_SCHOOL');
   const [clusters, setClusters] = useState<ClusterData[]>([]);
   const [selectedClusterLabels, setSelectedClusterLabels] = useState<string[]>([]);
@@ -287,7 +285,6 @@ function MapWithInputs() {
   };
 
   const handleClusterRowClick = (clusterLabel: string) => {
-    // 해당 클러스터의 모든 위치의 중심점 찾기
     const clusterPoints = clusters.filter(c => c.clusterLabel === clusterLabel);
     if (clusterPoints.length > 0 && map) {
       const bounds = new google.maps.LatLngBounds();
@@ -296,12 +293,11 @@ function MapWithInputs() {
       });
       map.fitBounds(bounds);
       
-      // 줌 레벨이 너무 높아지는 것 방지
-      if (map?.getZoom() > 17) {
+      const zoom = map?.getZoom();
+      if (zoom && zoom > 17) {
         map.setZoom(17);
       }
       
-      // 중심점으로 이동
       const center = bounds.getCenter();
       map.panTo(center);
     }
@@ -312,14 +308,6 @@ function MapWithInputs() {
     const labels = new Set(clusters.map(c => c.clusterLabel).filter(Boolean));
     return Array.from(labels).sort();
   }, [clusters]);
-
-  if (loading) {
-    return <Container>로그인 중...</Container>;
-  }
-
-  if (error) {
-    return <Container>{error}</Container>;
-  }
 
   return (
     <Container>

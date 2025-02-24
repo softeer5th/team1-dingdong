@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { GoogleMap, Polyline, Marker } from '@react-google-maps/api';
 import httpClient from '../utils/httpClient';
 import { useWebSocket } from '../contexts/WebSocketContext';
-import { useLogin } from '../hooks/useLogin';
 
 const Container = styled.div`
   display: flex;
@@ -147,7 +146,6 @@ const ResponsiveInputContainer = styled(InputContainer)`
 `;
 
 function BusManagement() {
-  const { isLoggedIn, loading, error } = useLogin();
   const { webSocket, connect } = useWebSocket();
   const [scheduleId, setScheduleId] = useState('');
   const [map, setMap] = useState<google.maps.Map | null>(null);
@@ -376,14 +374,6 @@ function BusManagement() {
       map.panTo(busLocation);
     }
   }, [busLocation, map]);
-
-  if (loading) {
-    return <Container>로그인 중...</Container>;
-  }
-
-  if (error) {
-    return <Container>{error}</Container>;
-  }
 
   return (
     <Container>

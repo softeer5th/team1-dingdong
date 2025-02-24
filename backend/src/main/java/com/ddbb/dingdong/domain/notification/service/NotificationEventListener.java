@@ -7,6 +7,7 @@ import com.ddbb.dingdong.domain.reservation.service.event.AllocationSuccessEvent
 import com.ddbb.dingdong.domain.transportation.repository.BusStopQueryRepository;
 import com.ddbb.dingdong.domain.transportation.repository.projection.UserIdAndReservationIdProjection;
 import com.ddbb.dingdong.domain.transportation.service.event.BusDepartureEvent;
+import com.ddbb.dingdong.infrastructure.webSocket.SocketMessageSender;
 import com.ddbb.dingdong.infrastructure.webSocket.repository.SocketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -25,7 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationEventListener {
     private final NotificationManagement notificationManagement;
-    private final SocketRepository socketRepository;
+    private final SocketMessageSender socketMessageSender;
     private static final int TICKET_PRICE = 1000;
     private static final int WELCOME_MONEY = 30000;
     private static final String ALARM_SOCKET_MSG = "alarm";
@@ -36,15 +37,18 @@ public class NotificationEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     protected void sendAllocationSuccessNotification(AllocationSuccessEvent event) {
         notificationManagement.sendNotification(NotificationType.ALLOCATION_SUCCESS, event.getUserId(), event.getReservationId(), null);
-        sendAlarm(event.getUserId());
-    }
+        socketMessageSender.sendMessage(
+                event.getUserId(), String.format(ALARM_SOCKET_MSG + "_ready_%d", event.getReservationId()), 3
+        );    }
 
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     protected void sendAllocationFailNotification(AllocationFailedEvent event) {
         notificationManagement.sendNotification(NotificationType.ALLOCATION_FAILED, event.getUserId(), event.getReservationId(), TICKET_PRICE);
-        sendAlarm(event.getUserId());
+        socketMessageSender.sendMessage(
+                event.getUserId(), String.format(ALARM_SOCKET_MSG + "_fail_%d", event.getReservationId()), 3
+        );
     }
 
     @Async
@@ -52,7 +56,7 @@ public class NotificationEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     protected void sendWelcomeNotification(SignUpSuccessEvent event) {
         notificationManagement.sendNotification(NotificationType.WELCOME, event.getUserId(), null, WELCOME_MONEY);
-        sendAlarm(event.getUserId());
+        socketMessageSender.sendMessage(event.getUserId(), ALARM_SOCKET_MSG);
     }
 
     @Async
@@ -62,23 +66,9 @@ public class NotificationEventListener {
         List<UserIdAndReservationIdProjection> projections = busStopQueryRepository.queryUserIdByBusStops(event.getBusStopIds());
         for(UserIdAndReservationIdProjection projection : projections) {
             notificationManagement.sendNotification(NotificationType.BUS_START, projection.getUserId(), projection.getReservationId(), null);
-            sendAlarm(projection.getUserId());
-        }
-    }
-
-    private void sendAlarm(Long userId) {
-        WebSocketSession socket = socketRepository.get(userId);
-
-        if(socket != null && socket.isOpen()) {
-            int retryTimes = 0;
-            while (retryTimes < 3) {
-                try {
-                    socket.sendMessage(new TextMessage(ALARM_SOCKET_MSG));
-                    break;
-                } catch (IOException e) {
-                    retryTimes++;
-                }
-            }
+            socketMessageSender.sendMessage(
+                    projection.getUserId(), String.format(ALARM_SOCKET_MSG + "_run_%d", projection.getReservationId()), 3
+            );
         }
     }
 }

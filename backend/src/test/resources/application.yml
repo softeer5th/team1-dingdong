@@ -1,0 +1,72 @@
+spring:
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/dingdong?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+        username: root
+        password: 1234
+        hikari:
+            maximum-pool-size: 100 # 최대 DB Connection Pool 크기
+            minimum-idle: 100  # 최소 유휴 커넥션
+            idle-timeout: 30000  # 커넥션이 유휴 상태로 유지될 최대 시간(ms)
+            max-lifetime: 1800000  # 커넥션의 최대 생명주기(ms)
+            connection-timeout: 30000  # 커넥션을 얻기 위한 최대 대기 시간(ms)
+            keepalive-time: 150000
+    jpa:
+        database-platform: org.hibernate.dialect.MySQL8Dialect
+        hibernate:
+            ddl-auto: update
+        show-sql: false
+
+server:
+    servlet:
+        session:
+            cookie:
+                domain: ${CLIENT_ADDRESS}
+                same-site: strict
+                path: /
+
+cache:
+    cleanupIntervalMinutes: 5
+
+client:
+    schema: ${CLIENT_SCHEMA}
+    ip: ${CLIENT_ADDRESS}
+    port: ${CLIENT_PORT}
+
+api:
+    tmap:
+        base-url: https://apis.openapi.sk.com/tmap
+        endpoint:
+            route-optimization-20: /routes/routeOptimization20
+        apikeys:
+            - ${API_KEY_1}
+            - ${API_KEY_2}
+            - ${API_KEY_3}
+
+fcm:
+    renotify: ${FCM_RENOTIFIY}
+    silent: ${FCM_SILENT}
+    requireInteraction: ${FCM_REQUIRE_INTERACTION}
+    link: ${FCM_TOUCH_LINK}
+    image: ${FCM_IMAGE}
+    icon: ${FCM_ICON}
+    badge: ${FCM_BADGE}
+
+    message:
+        allocate:
+            success:
+                title: ${ALLOCATE_SUCCESS_TITLE}
+                content: ${ALLOCATE_SUCCESS_CONTENT}
+            fail:
+                title: ${ALLOCATE_FAIL_TITLE}
+                content: ${ALLOCATE_FAIL_CONTENT}
+        bus:
+            start:
+                title: ${BUS_START_TITLE}
+
+logging:
+    level:
+        org.hibernate.resource.transaction: OFF
+        org.hibernate.engine.transaction: OFF
+        org.springframework.transaction: OFF
+        org.springframework.orm.jpa: OFF

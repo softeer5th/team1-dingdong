@@ -10,7 +10,7 @@ import com.ddbb.dingdong.domain.reservation.entity.vo.Direction;
 import com.ddbb.dingdong.domain.transportation.repository.BusStopQueryRepository;
 import com.ddbb.dingdong.domain.transportation.repository.projection.AllAvailableBusStopProjection;
 import com.ddbb.dingdong.domain.transportation.repository.projection.AvailableBusStopProjection;
-import com.ddbb.dingdong.util.GeoUtil;
+import com.ddbb.dingdong.infrastructure.util.GeoUtil;
 
 import lombok.RequiredArgsConstructor;
 

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -26,8 +27,8 @@ public class BusPublishService {
             Long initialDelay,
             TimeUnit timeUnit
     ) {
-        Supplier<Point> supplier =  busSimulatorFactory.create(busScheduleId);
-        SubmissionPublisher<Point> publisher = new PeriodicBusPublisher<>(manager, busScheduleId, supplier, interval, initialDelay, timeUnit);
+        Supplier<ByteBuffer> supplier =  busSimulatorFactory.create(busScheduleId);
+        SubmissionPublisher<ByteBuffer> publisher = new PeriodicBusPublisher<>(manager, busScheduleId, supplier, interval, initialDelay, timeUnit);
         manager.addPublishers(busScheduleId, publisher);
     }
 }

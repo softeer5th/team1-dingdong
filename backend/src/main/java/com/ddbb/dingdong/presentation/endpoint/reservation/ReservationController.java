@@ -4,7 +4,7 @@ import com.ddbb.dingdong.application.exception.APIException;
 import com.ddbb.dingdong.application.usecase.reservation.*;
 import com.ddbb.dingdong.domain.common.exception.DomainException;
 import com.ddbb.dingdong.domain.reservation.entity.vo.Direction;
-import com.ddbb.dingdong.domain.reservation.service.ReservationErrors;
+import com.ddbb.dingdong.domain.reservation.service.error.ReservationErrors;
 import com.ddbb.dingdong.infrastructure.auth.security.AuthUser;
 import com.ddbb.dingdong.infrastructure.auth.security.annotation.LoginUser;
 import com.ddbb.dingdong.presentation.endpoint.reservation.exchanges.*;
@@ -31,6 +31,7 @@ public class ReservationController {
     private final CancelReservationUseCase cancelReservationUseCase;
     private final SuggestReservationUseCase suggestReservationUseCase;
     private final GetUserBusScheduleInfoUseCase getUserBusScheduleInfoUseCase;
+    private final GetReservationUseCase getReservationUseCase;
 
     @GetMapping
     public ResponseEntity<GetReservationsUseCase.Result> getReservations(
@@ -219,6 +220,23 @@ public class ReservationController {
         GetUserBusScheduleInfoUseCase.Result result;
         try {
             result = getUserBusScheduleInfoUseCase.execute(param);
+        } catch (DomainException ex) {
+            throw new APIException(ex, HttpStatus.NOT_FOUND);
+        }
+
+        return ResponseEntity.ok().body(result);
+    }
+
+    @GetMapping("/{reservationId}")
+    public ResponseEntity<GetReservationUseCase.Result> getReservationInfo(
+            @LoginUser AuthUser user,
+            @PathVariable Long reservationId
+    ) {
+        Long userId = user.id();
+        GetReservationUseCase.Param param = new GetReservationUseCase.Param(userId, reservationId);
+        GetReservationUseCase.Result result;
+        try {
+            result = getReservationUseCase.execute(param);
         } catch (DomainException ex) {
             throw new APIException(ex, HttpStatus.NOT_FOUND);
         }

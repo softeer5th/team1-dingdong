@@ -1,5 +1,7 @@
 package com.ddbb.dingdong.infrastructure.notification;
 
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -7,12 +9,33 @@ import java.time.LocalDateTime;
 
 @Component
 public class NotificationMessageFormatter {
+    @Value("${fcm.message.allocate.success.title}")
+    private String ALLOCATE_SUCCESS_TITLE;
+    @Value("${fcm.message.allocate.success.content}")
+    private String ALLOCATE_SUCCESS_CONTENT;
+    @Value("${fcm.message.allocate.fail.title}")
+    private String ALLOCATE_FAIL_TITLE;
+    @Value("${fcm.message.allocate.fail.content}")
+    private String ALLOCATE_FAIL_CONTENT;
+    @Value("${fcm.message.bus.start.title}")
+    private String BUS_START_TITLE;
+
+    private NotificationMessage ALLOCATE_SUCCESS;
+    private NotificationMessage ALLOCATE_FAIL;
+
+    @PostConstruct
+    public void init() {
+        this.ALLOCATE_SUCCESS = new NotificationMessage(ALLOCATE_SUCCESS_TITLE, ALLOCATE_SUCCESS_CONTENT);
+        this.ALLOCATE_FAIL = new NotificationMessage(ALLOCATE_FAIL_TITLE, ALLOCATE_FAIL_CONTENT);
+    }
+
     public NotificationMessage allocateSuccess() {
-        return NotificationMessage.ALLOCATE_SUCCESS;
+        return ALLOCATE_SUCCESS;
     }
     public NotificationMessage allocateFail() {
-        return NotificationMessage.ALLOCATE_FAIL;
+        return ALLOCATE_FAIL;
     }
+
     public NotificationMessage busDeparture(LocalDateTime arrivalTime, LocalDateTime now) {
         long totalSecond = Duration.between(now, arrivalTime).toSeconds();
         long totalMinute = totalSecond / 60;
@@ -35,6 +58,6 @@ public class NotificationMessageFormatter {
         } else {
             content.append("곧 도착할 예정입니다.");
         }
-        return new NotificationMessage("버스 출발 알림", content.toString());
+        return new NotificationMessage(BUS_START_TITLE, content.toString());
     }
 }

@@ -3,7 +3,7 @@ services:
     image: shortboy710/dingdong:latest
     container_name: dingdong
     build:
-      context: .
+      context: ..
       dockerfile: Dockerfile
     ports:
       - "8080:8080"

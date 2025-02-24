@@ -9,12 +9,14 @@ import com.ddbb.dingdong.domain.reservation.entity.vo.Direction;
 import com.ddbb.dingdong.domain.reservation.entity.vo.ReservationStatus;
 import com.ddbb.dingdong.domain.reservation.entity.vo.ReservationType;
 import com.ddbb.dingdong.domain.reservation.repository.BusStopRepository;
-import com.ddbb.dingdong.domain.reservation.service.ReservationErrors;
+import com.ddbb.dingdong.domain.reservation.service.ReservationConcurrencyManager;
 import com.ddbb.dingdong.domain.reservation.service.ReservationManagement;
+import com.ddbb.dingdong.domain.reservation.service.error.ReservationErrors;
 import com.ddbb.dingdong.domain.transportation.entity.BusSchedule;
 import com.ddbb.dingdong.domain.transportation.entity.BusStop;
 import com.ddbb.dingdong.domain.transportation.entity.vo.OperationStatus;
 import com.ddbb.dingdong.domain.transportation.repository.BusScheduleRepository;
+import com.ddbb.dingdong.domain.transportation.service.BusErrors;
 import com.ddbb.dingdong.infrastructure.auth.encrypt.token.TokenManager;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -28,6 +30,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class MakeTogetherReservationUseCase implements UseCase<MakeTogetherReservationUseCase.Param, Void> {
     private final ReservationManagement reservationManagement;
+    private final ReservationConcurrencyManager reservationConcurrencyManager;
     private final PaymentManagement paymentManagement;
     private final BusStopRepository busStopRepository;
     private final TokenManager tokenManager;
@@ -52,7 +55,7 @@ public class MakeTogetherReservationUseCase implements UseCase<MakeTogetherReser
     private void checkHasDuplicatedReservation(Param param) {
         Long userId = param.getReservationInfo().userId;
         LocalDateTime hopeTime = extractTimeFromBusSchedule(param);
-        if(hopeTime.isBefore(LocalDateTime.now())) {
+        if (hopeTime.isBefore(LocalDateTime.now())) {
             throw ReservationErrors.EXPIRED_RESERVATION_DATE.toException();
         }
         reservationManagement.checkHasDuplicatedReservation(userId, hopeTime);
@@ -80,6 +83,19 @@ public class MakeTogetherReservationUseCase implements UseCase<MakeTogetherReser
         Long busStopId = param.reservationInfo.getBusStopId();
         Long busScheduleId = param.reservationInfo.getBusScheduleId();
 
+        Long cacheBusScheduleId = reservationConcurrencyManager.getUserInCache(userId);
+
+        if (cacheBusScheduleId == null) {
+            reservationConcurrencyManager.releaseSemaphore(busScheduleId);
+            throw ReservationErrors.EXCEEDED_RESERVATION_DEADLINE.toException();
+        } else if (!cacheBusScheduleId.equals(busScheduleId)) {
+            throw ReservationErrors.INVALID_ACCESS.toException();
+        }
+
+        if (!reservationConcurrencyManager.isSemaphoreAvailable(busScheduleId)) {
+            throw ReservationErrors.EXPIRED_RESERVATION_DATE.toException();
+        }
+
         BusSchedule busSchedule = busScheduleRepository.findById(busScheduleId)
                 .orElseThrow(ReservationErrors.BUS_SCHEDULE_NOT_FOUND::toException);
 
@@ -90,7 +106,7 @@ public class MakeTogetherReservationUseCase implements UseCase<MakeTogetherReser
         BusStop busStop = busStopRepository.findById(busStopId)
                 .orElseThrow(ReservationErrors.BUS_STOP_NOT_FOUND::toException);
 
-        if(busStop.getLocationId() == null) {
+        if (busStop.getLocationId() == null) {
             throw ReservationErrors.INVALID_BUS_STOP.toException();
         }
 
@@ -100,14 +116,16 @@ public class MakeTogetherReservationUseCase implements UseCase<MakeTogetherReser
             throw ReservationErrors.INVALID_BUS_SCHEDULE.toException();
         }
 
-
         Reservation reservation = makeReservation(busSchedule, userId);
         Ticket ticket = new Ticket(null, busScheduleId, busStopId, reservation);
 
         reservation.issueTicket(ticket);
-        busSchedule.issue();
+        if (busScheduleRepository.issueTicket(busScheduleId) == 0) {
+            throw BusErrors.NO_SEATS.toException();
+        }
 
         reservationManagement.reserve(reservation);
+        reservationConcurrencyManager.removeUser(userId);
     }
 
     private Reservation makeReservation(BusSchedule busSchedule, Long userId) {
@@ -117,7 +135,7 @@ public class MakeTogetherReservationUseCase implements UseCase<MakeTogetherReser
                 .direction(busSchedule.getDirection())
                 .status(ReservationStatus.ALLOCATED)
                 .startDate(busSchedule.getStartDate());
-        if(busSchedule.getDirection().equals(Direction.TO_SCHOOL)) {
+        if (busSchedule.getDirection().equals(Direction.TO_SCHOOL)) {
             reservationBuilder.arrivalTime(busSchedule.getArrivalTime());
         } else {
             reservationBuilder.departureTime(busSchedule.getDepartureTime());

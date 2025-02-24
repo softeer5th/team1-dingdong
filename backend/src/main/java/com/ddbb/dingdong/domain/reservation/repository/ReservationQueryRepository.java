@@ -59,8 +59,10 @@ public interface ReservationQueryRepository extends JpaRepository<Reservation, L
     SELECT COUNT(DISTINCT r.id)
     FROM Reservation r
     LEFT JOIN Ticket t ON r.id = t.reservation.id
-    LEFT JOIN Location l ON l.reservationId = r.id
+    LEFT JOIN BusStop bs ON t.busStopId = bs.id
     LEFT JOIN BusSchedule bs_arrival ON bs_arrival.id = t.busScheduleId
+    LEFT JOIN Bus b ON bs_arrival.bus.id = b.id
+    LEFT JOIN Location l ON l.reservationId = r.id
     WHERE r.userId = :userId
         AND (
             (:category = 0)
@@ -71,14 +73,39 @@ public interface ReservationQueryRepository extends JpaRepository<Reservation, L
             OR
             (:category = 3 AND CAST(r.status AS STRING) = 'FAIL_ALLOCATED')
             OR
-            (:category = 4 AND CAST(r.status AS STRING) = 'ENDED')
+            (:category = 4 AND CAST(bs_arrival.status AS STRING) = 'ENDED')
             OR
             (:category = 5 AND CAST(r.status AS STRING) = 'CANCELED')
             OR
-            (:category = 6 AND (CAST(r.status AS STRING) = 'ALLOCATED' OR CAST(r.status AS STRING) = 'PENDING'))
+            (:category = 6 AND ((CAST(r.status AS STRING) = 'ALLOCATED' AND CAST(bs_arrival.status AS STRING) != 'ENDED')OR CAST(r.status AS STRING) = 'PENDING'))
         )
     """)
     Page<UserReservationProjection> queryReservationsByUserId(@Param("userId") Long userId, @Param("category") int category, @Param("sort") int sort, Pageable p);
+
+    @Query("""
+    SELECT DISTINCT l.stationName AS userHomeStationName,
+           r.id AS reservationId,
+           r.startDate AS startDate,
+           r.direction AS direction,
+           r.arrivalTime AS expectedArrivalTime,
+           r.departureTime AS expectedDepartureTime,
+           bs_arrival.departureTime AS realDepartureTime,
+           bs_arrival.arrivalTime AS realArrivalTime,
+           r.status AS reservationStatus,
+           bs_arrival.id AS busScheduleId,
+           b.id AS busId,
+           bs_arrival.status AS busStatus,
+           bs.roadNameAddress AS busStopRoadNameAddress,
+           bs.expectedArrivalTime AS busStopArrivalTime
+    FROM Reservation r
+    LEFT JOIN Ticket t ON r.id = t.reservation.id
+    LEFT JOIN BusStop bs ON t.busStopId = bs.id
+    LEFT JOIN BusSchedule bs_arrival ON bs_arrival.id = t.busScheduleId
+    LEFT JOIN Bus b ON bs_arrival.bus.id = b.id
+    LEFT JOIN Location l ON l.reservationId = r.id
+    WHERE r.id = :reservationId AND r.userId = :userId
+    """)
+    Optional<UserReservationProjection> queryReservationByReservationIdAndUserId(@Param("reservationId") Long reservationId, @Param("userId") Long userId);
 
     @Query("""
         SELECT DISTINCT null AS userHomeStationName,
@@ -127,4 +154,5 @@ public interface ReservationQueryRepository extends JpaRepository<Reservation, L
             (r.departureTime is not null and r.departureTime in :time))
     """)
     List<LocalDateTime> findDuplicatedReservationTime(@Param("userId") Long userId, @Param("time") List<LocalDateTime> times);
+
 }

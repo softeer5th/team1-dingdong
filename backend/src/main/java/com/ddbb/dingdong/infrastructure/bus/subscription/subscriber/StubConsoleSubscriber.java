@@ -3,10 +3,11 @@ package com.ddbb.dingdong.infrastructure.bus.subscription.subscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.Point;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.Flow;
 
 @Slf4j
-public class StubConsoleSubscriber extends CancelableSubscriber<Point> {
+public class StubConsoleSubscriber extends CancelableSubscriber<ByteBuffer> {
     @Override
     public void onSubscribe(Flow.Subscription subscription) {
         this.subscription = subscription;
@@ -14,7 +15,7 @@ public class StubConsoleSubscriber extends CancelableSubscriber<Point> {
     }
 
     @Override
-    public void onNext(Point item) {
+    public void onNext(ByteBuffer item) {
         System.out.println(item);
     }
 

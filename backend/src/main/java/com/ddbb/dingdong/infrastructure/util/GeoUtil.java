@@ -1,4 +1,4 @@
-package com.ddbb.dingdong.util;
+package com.ddbb.dingdong.infrastructure.util;
 
 public class GeoUtil {
     private static final double EARTH_RADIUS = 6378137.0; // 지구 반경 (m)

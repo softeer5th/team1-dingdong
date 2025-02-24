@@ -5,7 +5,7 @@ import com.ddbb.dingdong.application.common.UseCase;
 import com.ddbb.dingdong.application.usecase.user.error.UserInvalidParamErrors;
 import com.ddbb.dingdong.domain.user.entity.User;
 import com.ddbb.dingdong.domain.user.service.UserManagement;
-import com.ddbb.dingdong.util.ParamValidator;
+import com.ddbb.dingdong.infrastructure.util.ParamValidator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

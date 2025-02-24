@@ -15,13 +15,12 @@ import com.ddbb.dingdong.infrastructure.auth.encrypt.password.PasswordEncoder;
 import com.ddbb.dingdong.infrastructure.auth.security.AuthUser;
 import com.ddbb.dingdong.infrastructure.auth.security.AuthenticationManager;
 import com.ddbb.dingdong.presentation.endpoint.auth.exchanges.SignUpRequestDto;
-import com.ddbb.dingdong.util.ParamValidator;
+import com.ddbb.dingdong.infrastructure.util.ParamValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 @Component
 @RequiredArgsConstructor

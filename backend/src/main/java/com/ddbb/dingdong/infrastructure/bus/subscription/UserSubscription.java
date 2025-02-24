@@ -5,11 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.data.geo.Point;
 
+import java.nio.ByteBuffer;
+
 @Getter
 @AllArgsConstructor
 public class UserSubscription implements Comparable<UserSubscription> {
     private Long userId;
-    private CancelableSubscriber<Point> subscriber;
+    private CancelableSubscriber<ByteBuffer> subscriber;
 
     @Override
     public boolean equals(Object obj) {

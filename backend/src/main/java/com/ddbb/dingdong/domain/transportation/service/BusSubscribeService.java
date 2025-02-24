@@ -11,6 +11,8 @@ import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.nio.ByteBuffer;
+
 @Service
 @RequiredArgsConstructor
 public class BusSubscribeService {
@@ -22,7 +24,7 @@ public class BusSubscribeService {
         if (session == null) {
             throw new DomainException(BusErrors.NO_SOCKET_CONNECTION);
         }
-        CancelableSubscriber<Point> subscriber = new SocketSubscriber(busId, userId, session, busSubscriptionManager);
+        CancelableSubscriber<ByteBuffer> subscriber = new SocketSubscriber(busId, userId, session, busSubscriptionManager);
         busSubscriptionManager.subscribe(busId, new UserSubscription(userId, subscriber));
     }
 

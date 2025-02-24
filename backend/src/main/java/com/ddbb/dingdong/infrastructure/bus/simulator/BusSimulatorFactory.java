@@ -8,7 +8,7 @@ import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
 
 import com.ddbb.dingdong.infrastructure.bus.simulator.segment.RouteSegmentProvider;
-import com.ddbb.dingdong.util.GeoUtil;
+import com.ddbb.dingdong.infrastructure.util.GeoUtil;
 
 import lombok.RequiredArgsConstructor;
 

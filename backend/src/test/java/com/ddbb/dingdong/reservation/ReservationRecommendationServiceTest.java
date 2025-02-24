@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ReservationRecommendationServiceTest {
 
-    private final ReservationManagement reservationManagement = new ReservationManagement(null, null);
+    private final ReservationManagement reservationManagement = new ReservationManagement(null, null, null);
 
     @Test
     public void testRecommendReservationTimes_Mixed() {

@@ -2,7 +2,7 @@ package com.ddbb.dingdong.infrastructure.bus.simulator;
 
 
 import com.ddbb.dingdong.domain.transportation.repository.BusScheduleQueryRepository;
-import com.ddbb.dingdong.infrastructure.lock.StoppableLock;
+import com.ddbb.dingdong.infrastructure.lock.StoppableSemaphore;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,30 +16,30 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class BusSubscriptionLockManager {
     private final BusScheduleQueryRepository busScheduleQueryRepository;
-    private final Map<Long, StoppableLock> locks = new ConcurrentHashMap<>();
+    private Map<Long, StoppableSemaphore> locks = new ConcurrentHashMap<>();
 
     @PostConstruct
     private void init() {
         List<Long> busSchedules = busScheduleQueryRepository.findLiveBusSchedule();
         for (Long busScheduleId : busSchedules) {
-            locks.put(busScheduleId, new StoppableLock());
+            locks.put(busScheduleId, new StoppableSemaphore(1, false));
         }
     }
 
-
-    public Optional<StoppableLock> getLock(long busScheduleId) {
-        StoppableLock stampedLock = locks.get(busScheduleId);
-        return Optional.ofNullable(stampedLock);
+    public Optional<StoppableSemaphore> getLock(long busScheduleId) {
+        StoppableSemaphore semaphore = locks.get(busScheduleId);
+        return Optional.ofNullable(semaphore);
     }
 
     public void addLock(long busScheduleId) {
-        locks.computeIfAbsent(busScheduleId, id -> new StoppableLock());
+        locks.computeIfAbsent(busScheduleId, id -> new StoppableSemaphore(1, false));
     }
 
     public void removeLock(long busScheduleId) {
-        StoppableLock lock = locks.remove(busScheduleId);
+        StoppableSemaphore lock = locks.get(busScheduleId);
         if (lock != null) {
-            lock.stopAndWait();
+            lock.stop();
+            locks.remove(busScheduleId);
         }
     }
 }

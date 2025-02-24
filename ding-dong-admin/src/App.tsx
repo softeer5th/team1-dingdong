@@ -5,6 +5,7 @@ import BusManagement from './pages/BusManagement';
 import { WebSocketProvider } from './contexts/WebSocketContext';
 import PrivateRoute from './components/PrivateRoute';
 import httpClient from './utils/httpClient';
+import MapWithInputs from './pages/MapWithInputs';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -36,6 +37,11 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
+            <Route path="map" element={
+              <PrivateRoute>
+                <MapWithInputs />
+              </PrivateRoute>
+            } />
             <Route path="bus-management" element={
               <PrivateRoute>
                 <BusManagement />

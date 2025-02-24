@@ -122,7 +122,12 @@ public class SimpleCache  {
      */
     public Object remove(Object key) {
         CacheEntry entry = map.remove(key);
-        if (entry != null) return entry.value;
+        if (entry != null) {
+            if (entry.afterExpiryTask != null) {
+                entry.afterExpiryTask.run();
+            }
+            return entry.value;
+        }
         return null;
     }
 
@@ -134,10 +139,9 @@ public class SimpleCache  {
         long now = System.currentTimeMillis();
 
         for (Map.Entry<Object, CacheEntry> entry : getRandomEntries()) {
-            log.info(getRandomEntries().size() + " entries have been cleaned up in " + now + "ms");
+            log.info("{} entries have been cleaned up in {}ms", getRandomEntries().size(), now);
             if (now >= entry.getValue().expiryTimeMillis) {
                 log.info("clean up cache");
-                if (entry.getValue().afterExpiryTask != null) entry.getValue().afterExpiryTask.run();
                 map.remove(entry.getKey());
             }
         }

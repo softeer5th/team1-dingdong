@@ -47,7 +47,7 @@ public class NotificationEventListener {
     protected void sendAllocationFailNotification(AllocationFailedEvent event) {
         notificationManagement.sendNotification(NotificationType.ALLOCATION_FAILED, event.getUserId(), event.getReservationId(), TICKET_PRICE);
         socketMessageSender.sendMessage(
-                event.getUserId(), String.format(ALARM_SOCKET_MSG + "_%d", event.getReservationId()), 3
+                event.getUserId(), String.format(ALARM_SOCKET_MSG + "_fail_%d", event.getReservationId()), 3
         );
     }
 

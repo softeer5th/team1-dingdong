@@ -4,16 +4,18 @@ import com.ddbb.dingdong.infrastructure.bus.subscription.BusSubscriptionManager;
 import com.ddbb.dingdong.infrastructure.util.FormatUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.Point;
+import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.concurrent.Flow;
 
 @Slf4j
-public class SocketSubscriber extends CancelableSubscriber<Point> {
+public class SocketSubscriber extends CancelableSubscriber<ByteBuffer> {
     private final long busId;
     private final long userId;
     private final WeakReference<WebSocketSession> weakRef;
@@ -34,16 +36,16 @@ public class SocketSubscriber extends CancelableSubscriber<Point> {
     }
 
     @Override
-    public void onNext(Point item) {
+    public void onNext(ByteBuffer item) {
         WebSocketSession webSocketSession = weakRef.get();
         if (webSocketSession == null || !webSocketSession.isOpen()) {
             this.busSubscriptionManager.unsubscribe(busId, userId);
             return ;
         }
-        String message = FormatUtil.format(busId, item.getY(), item.getX());
         try {
-            webSocketSession.sendMessage(new TextMessage(message));
+            webSocketSession.sendMessage(new BinaryMessage(item));
         } catch (IOException e) {
+            log.info(e.getMessage());
             this.busSubscriptionManager.unsubscribe(busId, userId);
             return;
         }

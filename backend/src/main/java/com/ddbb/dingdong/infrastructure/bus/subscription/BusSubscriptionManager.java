@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
 
+import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.SubmissionPublisher;
 
@@ -21,8 +22,8 @@ import java.util.concurrent.SubmissionPublisher;
 public class BusSubscriptionManager {
     private final BusSubscriptionLockManager lockManager;
     private final BusScheduleManagement busScheduleManagement;
-    private final Map<Long, SubmissionPublisher<Point>> publishers = new HashMap<>();
-    private final Map<Long, Map<Long, CancelableSubscriber<Point>>> subscribers = new HashMap<>();
+    private final Map<Long, SubmissionPublisher<ByteBuffer>> publishers = new HashMap<>();
+    private final Map<Long, Map<Long, CancelableSubscriber<ByteBuffer>>> subscribers = new HashMap<>();
 
 
     public void subscribe(long busId, UserSubscription subscription) {
@@ -32,8 +33,8 @@ public class BusSubscriptionManager {
             if (!lock.acquire(true)) {
                 throw new DomainException(BusErrors.BUS_ALREADY_STOPPED);
             }
-            Map<Long, CancelableSubscriber<Point>> busChannel = subscribers.computeIfAbsent(busId, id -> new TreeMap<>());
-            CancelableSubscriber<Point> oldSub = busChannel.put(subscription.getUserId(), subscription.getSubscriber());
+            Map<Long, CancelableSubscriber<ByteBuffer>> busChannel = subscribers.computeIfAbsent(busId, id -> new TreeMap<>());
+            CancelableSubscriber<ByteBuffer> oldSub = busChannel.put(subscription.getUserId(), subscription.getSubscriber());
             if (oldSub != null) {
                 oldSub.cancel();
             }
@@ -49,7 +50,7 @@ public class BusSubscriptionManager {
         }
     }
 
-    public void addPublishers(Long busId, SubmissionPublisher<Point> publisher) {
+    public void addPublishers(Long busId, SubmissionPublisher<ByteBuffer> publisher) {
         StoppableSemaphore lock = lockManager.getLock(busId)
                 .orElseThrow(() -> new DomainException(BusErrors.BUS_NOT_INITIATED));
         try {
@@ -57,8 +58,8 @@ public class BusSubscriptionManager {
                 throw new DomainException(BusErrors.BUS_ALREADY_STOPPED);
             }
             if (!publishers.containsKey(busId)) {
-                Map<Long, CancelableSubscriber<Point>> subscriberSet = subscribers.computeIfAbsent(busId, (id) -> new TreeMap<>());
-                for (CancelableSubscriber<Point> subscriber : subscriberSet.values()) {
+                Map<Long, CancelableSubscriber<ByteBuffer>> subscriberSet = subscribers.computeIfAbsent(busId, (id) -> new TreeMap<>());
+                for (CancelableSubscriber<ByteBuffer> subscriber : subscriberSet.values()) {
                     publisher.subscribe(subscriber);
                 }
                 publishers.put(busId, publisher);
@@ -109,7 +110,7 @@ public class BusSubscriptionManager {
             if (!lock.acquire(false)) {
                 return;
             }
-            SubmissionPublisher<Point> publisher = publishers.remove(busId);
+            SubmissionPublisher<ByteBuffer> publisher = publishers.remove(busId);
             subscribers.remove(busId);
 
             publisher.close();

@@ -18,24 +18,12 @@ services:
     networks:
       - test_network
 
-  mysqld_exporter:
-    image: prom/mysqld-exporter
-    environment:
-      DATA_SOURCE_NAME: "root:4313@(testDB:3306)/"
-    depends_on:
-      mysql:
-        condition: service_healthy
-    ports:
-      - "9104:9104"
-    networks:
-      - test_network
-
   app:
     image: shortboy710/dingdong:latest
     container_name: ding-dong-test
     build:
       context: ..
-      dockerfile: Dockerfile
+      dockerfile: .simulate/Dockerfile
     env_file:
       - .env.test
     ports:

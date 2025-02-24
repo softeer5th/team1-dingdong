@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class BusStopQueryService {
-    private static final int THRESHOLD_METER = 1000;
+    private static final int THRESHOLD_METER = 5000;
 
     public record AvailableBusStopDistance(AvailableBusStopProjection busStop, double distance)
     implements Comparable<AvailableBusStopDistance> {

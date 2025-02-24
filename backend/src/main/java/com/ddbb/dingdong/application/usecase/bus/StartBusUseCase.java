@@ -13,7 +13,6 @@ import com.ddbb.dingdong.domain.transportation.service.BusErrors;
 import com.ddbb.dingdong.domain.transportation.service.BusPublishService;
 import com.ddbb.dingdong.domain.transportation.service.BusScheduleManagement;
 import com.ddbb.dingdong.domain.transportation.service.dto.UserBusStopTime;
-import com.ddbb.dingdong.infrastructure.cache.SimpleCache;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +32,6 @@ public class StartBusUseCase implements UseCase<StartBusUseCase.Param, Void> {
     private final BusScheduleQueryRepository busScheduleQueryRepository;
     private final BusScheduleManagement busScheduleManagement;
     private final BusScheduleRepository busScheduleRepository;
-    private final SimpleCache simpleCache;
     private final ReservationConcurrencyManager reservationConcurrencyManager;
 
     @Override

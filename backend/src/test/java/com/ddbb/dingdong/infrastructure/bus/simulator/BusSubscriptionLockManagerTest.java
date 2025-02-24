@@ -1,21 +1,18 @@
 package com.ddbb.dingdong.infrastructure.bus.simulator;
 
-import com.ddbb.dingdong.infrastructure.lock.ChannelLock;
+import com.ddbb.dingdong.infrastructure.lock.StoppableSemaphore;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@SpringBootTest
+
 class BusSubscriptionLockManagerTest {
     private static final Logger log = LoggerFactory.getLogger(BusSubscriptionLockManagerTest.class);
-    @Autowired
-    private BusSubscriptionLockManager busSubscriptionLockManager;
+    private BusSubscriptionLockManager busSubscriptionLockManager = new BusSubscriptionLockManager(null);
 
     @Test
     void testStopLocking() throws InterruptedException {
@@ -30,22 +27,22 @@ class BusSubscriptionLockManagerTest {
                 try {
                     latch.await();
                     Thread.sleep(index * 10);
-                    ChannelLock lock = busSubscriptionLockManager.getLock(1L)
+                    StoppableSemaphore lock = busSubscriptionLockManager.getLock(1L)
                             .orElseThrow(() -> new IllegalStateException("No Lock "));
                     try {
                         log.info("{} lock waited {}", index, System.currentTimeMillis());
-                        if (!lock.entryLock()) {
+                        if (!lock.acquire(true)) {
                             log.info("{} Lock stopped", index);
                         } else {
                             log.info("{} Lock acquired", index);
                             log.info("{} Unlocked with acquired", index);
-                            lock.unlock();
+                            lock.release();
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
                         log.info("{} Unlocked", index);
-                        lock.unlock();
+                        lock.release();
                     }
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
@@ -84,22 +81,22 @@ class BusSubscriptionLockManagerTest {
                 try {
                     latch.await();
                     Thread.sleep(index * 5);
-                    ChannelLock lock = busSubscriptionLockManager.getLock(1L)
+                    StoppableSemaphore lock = busSubscriptionLockManager.getLock(1L)
                             .orElseThrow(() -> new IllegalStateException("No Lock "));
                     try {
                         log.info("{} lock waited", index);
-                        if (!lock.entryLock()) {
+                        if (!lock.acquire(true)) {
                             log.info("{} Lock stopped", index);
                         } else {
                             log.info("{} Lock acquired", index);
                             Thread.sleep(50L);
                             log.info("{} Unlocked with acquired", index);
-                            lock.unlock();
+                            lock.release();
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
-                        lock.unlock();
+                        lock.release();
                     }
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
@@ -146,22 +143,22 @@ class BusSubscriptionLockManagerTest {
                 try {
                     latch.await();
                     Thread.sleep(index * 10);
-                    ChannelLock lock = busSubscriptionLockManager.getLock(1L)
+                    StoppableSemaphore lock = busSubscriptionLockManager.getLock(1L)
                             .orElseThrow(() -> new IllegalStateException("No Lock "));
                     try {
                         log.info("{} lock waited {}", index, System.currentTimeMillis());
-                        if (!lock.entryLock()) {
+                        if (!lock.acquire(true)) {
                             log.info("{} Lock stopped", index);
                         } else {
                             log.info("{} Lock acquired", index);
                             Thread.sleep(50L);
                             log.info("{} Unlocked with acquired", index);
-                            lock.unlock();
+                            lock.release();
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
-                        lock.unlock();
+                        lock.release();
                     }
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);

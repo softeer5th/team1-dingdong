@@ -4,10 +4,10 @@ services:
     container_name: dingdong
     build:
       context: ..
-      dockerfile: Dockerfile
+      dockerfile: ./.deploy/Dockerfile
     ports:
       - "8080:8080"
     env_file:
-      - .env
+      - .env.example
     volumes:
       - ./key:/app/key

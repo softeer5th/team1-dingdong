@@ -31,7 +31,7 @@ function PrivateRoute({ children }: PrivateRouteProps) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/api-test" state={{ from: location }} replace />;
+    return <Navigate to="/map" state={{ from: location }} replace />;
   }
 
   return children;

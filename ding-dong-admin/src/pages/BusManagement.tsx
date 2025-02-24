@@ -288,11 +288,16 @@ function BusManagement() {
 
   useEffect(() => {
     if (webSocket instanceof WebSocket && scheduleId && isSubscribed) {
-      const handleMessage = (message: MessageEvent) => {
+        webSocket.binaryType = 'arraybuffer';
+        const handleMessage = (message: MessageEvent) => {
         try {
-          const data = JSON.parse(message.data);
-          setBusLocation({ lat: data.latitude, lng: data.longitude });
-          console.log("버스 정보", data);
+          const arrayBuffer = message.data;
+          const dataView = new DataView(arrayBuffer);
+
+          const longitude = dataView.getFloat64(0, false);
+          const latitude = dataView.getFloat64(8, false);
+
+          setBusLocation({ lat: latitude, lng: longitude });
         } catch (error) {
           console.error('Error parsing WebSocket message:', error);
         }
@@ -400,7 +405,6 @@ function BusManagement() {
               value={subscriptionId}
               onChange={(e) => setSubscriptionId(e.target.value)}
               placeholder="구독할 버스 ID 입력"
-              disabled={isSubscribed}
             />
             <Button 
               onClick={handleSubscribe}

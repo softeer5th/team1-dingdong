@@ -38,7 +38,7 @@ public class RequestTogetherReservationUseCase implements UseCase<RequestTogethe
         checkHasDuplicatedReservation(param.userId, hopeTime);
         boolean acquired = false;
         try {
-            acquired = acquireSemaphore(param.busScheduleId);
+            acquired = acquireSemaphore(param.userId, param.busScheduleId);
             String token = generateToken(param);
             addUserToTimeLimitCache(param.userId, param.busScheduleId);
             return new Result(token);
@@ -50,8 +50,8 @@ public class RequestTogetherReservationUseCase implements UseCase<RequestTogethe
         }
     }
 
-    private boolean acquireSemaphore(Long busScheduleId) {
-        return reservationConcurrencyManager.acquireSemaphore(busScheduleId);
+    private boolean acquireSemaphore(Long userId, Long busScheduleId) {
+        return reservationConcurrencyManager.acquireSemaphore(userId, busScheduleId);
     }
 
     private void releaseSemaphore(Long busScheduleId) {

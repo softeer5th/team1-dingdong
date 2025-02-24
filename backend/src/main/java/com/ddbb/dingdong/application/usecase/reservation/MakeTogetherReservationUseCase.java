@@ -10,8 +10,8 @@ import com.ddbb.dingdong.domain.reservation.entity.vo.ReservationStatus;
 import com.ddbb.dingdong.domain.reservation.entity.vo.ReservationType;
 import com.ddbb.dingdong.domain.reservation.repository.BusStopRepository;
 import com.ddbb.dingdong.domain.reservation.service.ReservationConcurrencyManager;
-import com.ddbb.dingdong.domain.reservation.service.error.ReservationErrors;
 import com.ddbb.dingdong.domain.reservation.service.ReservationManagement;
+import com.ddbb.dingdong.domain.reservation.service.error.ReservationErrors;
 import com.ddbb.dingdong.domain.transportation.entity.BusSchedule;
 import com.ddbb.dingdong.domain.transportation.entity.BusStop;
 import com.ddbb.dingdong.domain.transportation.entity.vo.OperationStatus;
@@ -46,6 +46,11 @@ public class MakeTogetherReservationUseCase implements UseCase<MakeTogetherReser
         saveToken(param);
 
         return null;
+    }
+
+    private void removeWaitingCache(Param param) {
+        Long userId = param.getReservationInfo().userId;
+        reservationConcurrencyManager.removeUser(userId);
     }
 
     private void saveToken(Param param) {
@@ -124,7 +129,7 @@ public class MakeTogetherReservationUseCase implements UseCase<MakeTogetherReser
 
             reservationManagement.reserve(reservation);
         } finally {
-            reservationConcurrencyManager.removeUserInCache(userId);
+            reservationConcurrencyManager.removeUser(userId);
             reservationConcurrencyManager.unlockBusSchedule(busScheduleId);
         }
     }

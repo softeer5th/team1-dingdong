@@ -37,10 +37,6 @@ const Sidebar = () => {
     <SidebarContainer>
       <NavItem to="/map">경로 생성</NavItem>
       <NavItem to="/bus-management">버스 관리</NavItem>
-      <NavItem to="/users">사용자 관리</NavItem>
-      <NavItem to="/routes">노선 관리</NavItem>
-      <NavItem to="/api-test">API 테스트</NavItem>
-      <NavItem to="/bus-schedule-test">버스 시간 테스트</NavItem>
     </SidebarContainer>
   );
 };

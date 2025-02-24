@@ -16,7 +16,6 @@ import com.ddbb.dingdong.domain.transportation.entity.BusSchedule;
 import com.ddbb.dingdong.domain.transportation.entity.BusStop;
 import com.ddbb.dingdong.domain.transportation.entity.vo.OperationStatus;
 import com.ddbb.dingdong.domain.transportation.repository.BusScheduleRepository;
-import com.ddbb.dingdong.domain.transportation.service.BusErrors;
 import com.ddbb.dingdong.infrastructure.auth.encrypt.token.TokenManager;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -120,9 +119,6 @@ public class MakeTogetherReservationUseCase implements UseCase<MakeTogetherReser
         Ticket ticket = new Ticket(null, busScheduleId, busStopId, reservation);
 
         reservation.issueTicket(ticket);
-        if (busScheduleRepository.issueTicket(busScheduleId) == 0) {
-            throw BusErrors.NO_SEATS.toException();
-        }
 
         reservationManagement.reserve(reservation);
         reservationConcurrencyManager.removeUser(userId);

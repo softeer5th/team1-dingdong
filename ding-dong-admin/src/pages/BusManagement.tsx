@@ -287,12 +287,20 @@ function BusManagement() {
 
     try {
       setApiStatus(prev => ({ ...prev, subscription: { status: 'pending' } }));
+
+      // 기존 구독 해제
+      if (currentSubscribedId && currentSubscribedId !== subscribeId) {
+        await httpClient.delete(`/api/bus/subscription/${currentSubscribedId}`);
+        console.log(`기존 구독 해제: ${currentSubscribedId}`);
+      }
+
+      // 새로운 구독
       const response = await httpClient.post(`/api/bus/subscription/${subscribeId}`);
       setApiStatus(prev => ({ 
         ...prev, 
         subscription: { status: 'success', code: response.status } 
       }));
-      setCurrentSubscribedId(subscribeId);
+      setCurrentSubscribedId(subscribeId); // 최근 구독 ID로 설정
     } catch (error: any) {
       setApiStatus(prev => ({ 
         ...prev, 

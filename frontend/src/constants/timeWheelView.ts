@@ -1,0 +1,3 @@
+export const TIME_WHEEL_ITEM_BOX_HEIGHT = 46;
+export const GOING_TO_SCHOOL_BUS_START_TIME = 8;
+export const GOING_TO_HOME_BUS_START_TIME = 11;

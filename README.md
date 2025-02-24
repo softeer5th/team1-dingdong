@@ -49,7 +49,7 @@
 # 🤔 고민했던 사항
 > **저희 팀이 마주했던 고민은 GitHub Wiki에서 확인할 수 있어요!**  
 🔗 [백엔드 Wiki](https://github.com/softeer5th/team1-dingdong/wiki/Backend)  
-🔗 [프론트엔드 Wiki]()
+🔗 [프론트엔드 Wiki](https://github.com/softeer5th/team1-dingdong/wiki/Frontend)
 
 ---
 
@@ -85,6 +85,6 @@
 ---
 
 # 🏗 코드 컨벤션
-### **우리 팀의 코드 스타일이 궁금하다면 아래 컨벤션을 참고 해 주세요!**  
-- 📌 [백엔드 코드 컨벤션](https://github.com/softeer5th/team1-dingdong/wiki/%EB%B0%B1%EC%97%94%EB%93%9C-%EC%BD%94%EB%93%9C-%EC%BB%A8%EB%B2%A4%EC%85%98)  
-- 📌 [프론트엔드 코드 컨벤션]()  
+### **우리 팀의 코드 스타일이 궁금하다면 아래 컨벤션을 참고 해 주세요!**
+- 📌 [백엔드 코드 컨벤션](https://github.com/softeer5th/team1-dingdong/wiki/%EB%B0%B1%EC%97%94%EB%93%9C-%EC%BD%94%EB%93%9C-%EC%BB%A8%EB%B2%A4%EC%85%98)
+- 📌 [프론트엔드 코드 컨벤션](https://github.com/softeer5th/team1-dingdong/wiki/%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C-%EC%BD%94%EB%93%9C-%EC%BB%A8%EB%B2%A4%EC%85%98)  

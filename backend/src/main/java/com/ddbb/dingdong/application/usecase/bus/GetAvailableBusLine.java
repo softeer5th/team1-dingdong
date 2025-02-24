@@ -2,20 +2,17 @@ package com.ddbb.dingdong.application.usecase.bus;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import com.ddbb.dingdong.domain.reservation.repository.ReservationQueryRepository;
+import com.ddbb.dingdong.domain.reservation.service.ReservationConcurrencyManager;
 import org.springframework.stereotype.Service;
 
 import com.ddbb.dingdong.application.common.Params;
 import com.ddbb.dingdong.application.common.UseCase;
 import com.ddbb.dingdong.domain.reservation.entity.vo.Direction;
-import com.ddbb.dingdong.domain.transportation.repository.BusScheduleQueryRepository;
 import com.ddbb.dingdong.domain.transportation.repository.projection.AvailableBusStopProjection;
-import com.ddbb.dingdong.domain.transportation.repository.projection.BusReservedSeatProjection;
 import com.ddbb.dingdong.domain.transportation.service.BusStopQueryService;
 import com.ddbb.dingdong.domain.user.repository.UserQueryRepository;
 import com.ddbb.dingdong.domain.user.repository.projection.HomeStationProjection;
@@ -29,11 +26,10 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class GetAvailableBusLine implements UseCase<GetAvailableBusLine.Param, GetAvailableBusLine.Response> {
-    private final BusScheduleQueryRepository busScheduleQueryRepository;
     private final UserQueryRepository userQueryRepository;
     private final BusStopQueryService busStopQueryService;
     private final ReservationQueryRepository reservationQueryRepository;
-
+    private final ReservationConcurrencyManager reservationConcurrencyManager;
     @Override
     public Response execute(Param param) {
         HomeStationProjection homeStation = userQueryRepository.findHomeStationLocationWithSchoolId(param.userId)
@@ -47,13 +43,10 @@ public class GetAvailableBusLine implements UseCase<GetAvailableBusLine.Param, G
                 homeStation.getStationLatitude(),
                 times
         );
-        List<Long> busIds = busStops.stream().map(AvailableBusStopProjection::getBusScheduleId).toList();
-        Map<Long, Long> reservedCount = busScheduleQueryRepository.findReservedSeatCount(busIds)
-                .stream()
-                .collect(Collectors.toMap(BusReservedSeatProjection::getBusScheduleId, BusReservedSeatProjection::getReservedSeatCount));
 
         List<Response.Item> items = busStops.stream().map(busStop -> {
-            int count = Math.toIntExact(reservedCount.get(busStop.getBusScheduleId()));
+
+            int count = reservationConcurrencyManager.getRemainingSeats(busStop.getBusScheduleId());
             Response.BusStopInfo busStopInfo = Response.BusStopInfo.builder()
                     .name(busStop.getBusStopName())
                     .time(busStop.getBusStopTime())
@@ -62,7 +55,7 @@ public class GetAvailableBusLine implements UseCase<GetAvailableBusLine.Param, G
                     .build();
             Response.BusInfo busInfo = Response.BusInfo.builder()
                     .name(String.format("버스 %02d", busStop.getBusId()))
-                    .reservedSeat(count)
+                    .reservedSeat(15 - count)
                     .totalSeat(15)
                     .build();
             return new Response.Item(busStop.getBusScheduleId(), busStop.getBusStopId(), busStopInfo, busInfo);

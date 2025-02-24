@@ -1,7 +1,7 @@
 package com.ddbb.dingdong.domain.transportation.repository;
 
+import com.ddbb.dingdong.domain.transportation.repository.projection.BusScheduleIdAndReservedSeatsProjection;
 import com.ddbb.dingdong.domain.transportation.entity.BusSchedule;
-import com.ddbb.dingdong.domain.transportation.entity.vo.OperationStatus;
 import com.ddbb.dingdong.domain.transportation.repository.projection.*;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -69,4 +69,15 @@ public interface BusScheduleQueryRepository extends JpaRepository<BusSchedule, L
 
     @Query("SELECT bs.id FROM BusSchedule bs WHERE bs.status = 'RUNNING' OR bs.status = 'READY'")
     List<Long> findLiveBusSchedule();
+
+    @Query("""
+        SELECT 
+            bs.id AS busScheduleId,
+            COUNT(t) AS reservedSeats
+        FROM BusSchedule bs
+        LEFT JOIN Ticket t ON t.busScheduleId = bs.id
+        WHERE bs.status = 'READY'
+        GROUP BY bs.id
+    """)
+    List<BusScheduleIdAndReservedSeatsProjection> queryReadyBusSchedules();
 }

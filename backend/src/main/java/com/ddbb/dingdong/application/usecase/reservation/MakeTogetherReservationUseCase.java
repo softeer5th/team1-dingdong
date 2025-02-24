@@ -48,11 +48,6 @@ public class MakeTogetherReservationUseCase implements UseCase<MakeTogetherReser
         return null;
     }
 
-    private void removeWaitingCache(Param param) {
-        Long userId = param.getReservationInfo().userId;
-        reservationConcurrencyManager.removeUser(userId);
-    }
-
     private void saveToken(Param param) {
         tokenManager.saveToken(param.token);
     }
@@ -60,7 +55,7 @@ public class MakeTogetherReservationUseCase implements UseCase<MakeTogetherReser
     private void checkHasDuplicatedReservation(Param param) {
         Long userId = param.getReservationInfo().userId;
         LocalDateTime hopeTime = extractTimeFromBusSchedule(param);
-        if(hopeTime.isBefore(LocalDateTime.now())) {
+        if (hopeTime.isBefore(LocalDateTime.now())) {
             throw ReservationErrors.EXPIRED_RESERVATION_DATE.toException();
         }
         reservationManagement.checkHasDuplicatedReservation(userId, hopeTime);
@@ -88,50 +83,46 @@ public class MakeTogetherReservationUseCase implements UseCase<MakeTogetherReser
         Long busStopId = param.reservationInfo.getBusStopId();
         Long busScheduleId = param.reservationInfo.getBusScheduleId();
 
-        reservationConcurrencyManager.lockBusSchedule(busScheduleId);
-        try {
-            Long cacheBusScheduleId = reservationConcurrencyManager.getUserInCache(userId);
-            if (cacheBusScheduleId == null) {
-                reservationConcurrencyManager.releaseSemaphore(busScheduleId);
-                throw ReservationErrors.EXCEEDED_RESERVATION_DEADLINE.toException();
-            } else if (!cacheBusScheduleId.equals(busScheduleId)) {
-                throw ReservationErrors.INVALID_ACCESS.toException();
-            }
 
-            BusSchedule busSchedule = busScheduleRepository.findById(busScheduleId)
-                    .orElseThrow(ReservationErrors.BUS_SCHEDULE_NOT_FOUND::toException);
-
-            if (!busSchedule.getStatus().equals(OperationStatus.READY)) {
-                throw ReservationErrors.EXCEEDED_RESERVATION_DATE.toException();
-            }
-
-            BusStop busStop = busStopRepository.findById(busStopId)
-                    .orElseThrow(ReservationErrors.BUS_STOP_NOT_FOUND::toException);
-
-            if (busStop.getLocationId() == null) {
-                throw ReservationErrors.INVALID_BUS_STOP.toException();
-            }
-
-            Long queryBusScheduleId = busStop.getPath().getBusSchedule().getId();
-
-            if (!busScheduleId.equals(queryBusScheduleId)) {
-                throw ReservationErrors.INVALID_BUS_SCHEDULE.toException();
-            }
-
-
-            Reservation reservation = makeReservation(busSchedule, userId);
-            Ticket ticket = new Ticket(null, busScheduleId, busStopId, reservation);
-
-            reservation.issueTicket(ticket);
-            if (busScheduleRepository.issueTicket(busScheduleId) == 0) {
-                throw BusErrors.NO_SEATS.toException();
-            }
-
-            reservationManagement.reserve(reservation);
-        } finally {
-            reservationConcurrencyManager.removeUser(userId);
-            reservationConcurrencyManager.unlockBusSchedule(busScheduleId);
+        Long cacheBusScheduleId = reservationConcurrencyManager.getUserInCache(userId);
+        if (cacheBusScheduleId == null) {
+            reservationConcurrencyManager.releaseSemaphore(busScheduleId);
+            throw ReservationErrors.EXCEEDED_RESERVATION_DEADLINE.toException();
+        } else if (!cacheBusScheduleId.equals(busScheduleId)) {
+            throw ReservationErrors.INVALID_ACCESS.toException();
         }
+
+        BusSchedule busSchedule = busScheduleRepository.findById(busScheduleId)
+                .orElseThrow(ReservationErrors.BUS_SCHEDULE_NOT_FOUND::toException);
+
+        if (!busSchedule.getStatus().equals(OperationStatus.READY)) {
+            throw ReservationErrors.EXCEEDED_RESERVATION_DATE.toException();
+        }
+
+        BusStop busStop = busStopRepository.findById(busStopId)
+                .orElseThrow(ReservationErrors.BUS_STOP_NOT_FOUND::toException);
+
+        if (busStop.getLocationId() == null) {
+            throw ReservationErrors.INVALID_BUS_STOP.toException();
+        }
+
+        Long queryBusScheduleId = busStop.getPath().getBusSchedule().getId();
+
+        if (!busScheduleId.equals(queryBusScheduleId)) {
+            throw ReservationErrors.INVALID_BUS_SCHEDULE.toException();
+        }
+
+
+        Reservation reservation = makeReservation(busSchedule, userId);
+        Ticket ticket = new Ticket(null, busScheduleId, busStopId, reservation);
+
+        reservation.issueTicket(ticket);
+        if (busScheduleRepository.issueTicket(busScheduleId) == 0) {
+            throw BusErrors.NO_SEATS.toException();
+        }
+
+        reservationManagement.reserve(reservation);
+        reservationConcurrencyManager.removeUser(userId);
     }
 
     private Reservation makeReservation(BusSchedule busSchedule, Long userId) {
@@ -141,7 +132,7 @@ public class MakeTogetherReservationUseCase implements UseCase<MakeTogetherReser
                 .direction(busSchedule.getDirection())
                 .status(ReservationStatus.ALLOCATED)
                 .startDate(busSchedule.getStartDate());
-        if(busSchedule.getDirection().equals(Direction.TO_SCHOOL)) {
+        if (busSchedule.getDirection().equals(Direction.TO_SCHOOL)) {
             reservationBuilder.arrivalTime(busSchedule.getArrivalTime());
         } else {
             reservationBuilder.departureTime(busSchedule.getDepartureTime());

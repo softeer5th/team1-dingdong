@@ -3,6 +3,7 @@ package com.ddbb.dingdong.application.usecase.bus;
 import com.ddbb.dingdong.application.common.Params;
 import com.ddbb.dingdong.application.common.UseCase;
 import com.ddbb.dingdong.domain.reservation.entity.vo.Direction;
+import com.ddbb.dingdong.domain.reservation.service.ReservationConcurrencyManager;
 import com.ddbb.dingdong.domain.transportation.entity.BusSchedule;
 import com.ddbb.dingdong.domain.transportation.entity.vo.OperationStatus;
 import com.ddbb.dingdong.domain.transportation.repository.BusScheduleQueryRepository;
@@ -31,6 +32,7 @@ public class StartBusUseCase implements UseCase<StartBusUseCase.Param, Void> {
     private final BusScheduleQueryRepository busScheduleQueryRepository;
     private final BusScheduleManagement busScheduleManagement;
     private final BusScheduleRepository busScheduleRepository;
+    private final ReservationConcurrencyManager reservationConcurrencyManager;
 
     @Override
     @Transactional
@@ -63,9 +65,12 @@ public class StartBusUseCase implements UseCase<StartBusUseCase.Param, Void> {
         if(busSchedule.getDirection().equals(Direction.TO_SCHOOL)) {
             busSchedule.setArrivalTime(newUserBusStopTimes.get(newUserBusStopTimes.size() - 1).getTime());
             busScheduleManagement.publishDepartureEvent(newUserBusStopTimes);
-        }else {
+        } else {
             busSchedule.setDepartureTime(now);
         }
+
+        reservationConcurrencyManager.lockBusSchedule(param.busScheduleId);
+        reservationConcurrencyManager.removeSemaphore(param.busScheduleId);
 
         return null;
     }

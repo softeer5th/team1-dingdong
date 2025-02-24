@@ -36,6 +36,7 @@ public class RequestTogetherReservationUseCase implements UseCase<RequestTogethe
         param.validate();
         LocalDateTime hopeTime = extractTimeFromBusSchedule(param);
         checkHasDuplicatedReservation(param.userId, hopeTime);
+
         boolean acquired = false;
         try {
             acquired = acquireSemaphore(param.userId, param.busScheduleId);

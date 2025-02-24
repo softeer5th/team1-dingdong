@@ -48,7 +48,15 @@ public class ReservationConcurrencyManager {
         }, Duration.ofMinutes(EXPIRATION_TIME_MINUTES));
     }
 
-    public boolean acquireSemaphore(Long busScheduleId) {
+    public boolean acquireSemaphore(Long userId, Long busScheduleId) {
+        Long cachedBusScheduleId = getUserInCache(userId);
+
+        if(busScheduleId.equals(cachedBusScheduleId)) {
+            return true;
+        } else if (cachedBusScheduleId != null) {
+            removeUserInCache(userId);
+        }
+
         Semaphore semaphore = (Semaphore) cache.get(Map.entry(busScheduleId, Type.SEMAPHORE));
         try {
             if (!semaphore.tryAcquire(0, TimeUnit.SECONDS)) {

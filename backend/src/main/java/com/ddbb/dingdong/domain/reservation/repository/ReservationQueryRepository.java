@@ -56,6 +56,7 @@ public interface ReservationQueryRepository extends JpaRepository<Reservation, L
        CASE WHEN :sort = 1 THEN r.startDate END ASC
     """,
     countQuery = """
+    SELECT COUNT(DISTINCT r.id)
     FROM Reservation r
     LEFT JOIN Ticket t ON r.id = t.reservation.id
     LEFT JOIN BusStop bs ON t.busStopId = bs.id

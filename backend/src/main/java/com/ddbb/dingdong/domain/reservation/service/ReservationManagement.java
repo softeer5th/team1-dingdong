@@ -6,6 +6,8 @@ import com.ddbb.dingdong.domain.reservation.entity.vo.Direction;
 import com.ddbb.dingdong.domain.reservation.entity.vo.ReservationType;
 import com.ddbb.dingdong.domain.reservation.repository.ReservationQueryRepository;
 import com.ddbb.dingdong.domain.reservation.repository.ReservationRepository;
+import com.ddbb.dingdong.domain.reservation.service.error.DuplicatedReservationErrorInfo;
+import com.ddbb.dingdong.domain.reservation.service.error.ReservationErrors;
 import com.ddbb.dingdong.domain.reservation.service.event.AllocationFailedEvent;
 import com.ddbb.dingdong.domain.reservation.service.event.AllocationSuccessEvent;
 import com.ddbb.dingdong.domain.user.entity.Timetable;
@@ -107,7 +109,7 @@ public class ReservationManagement {
     public void checkHasDuplicatedReservations(Long userId, List<LocalDateTime> localDateTimes) {
         List<LocalDateTime> duplicated = reservationQueryRepository.findDuplicatedReservationTime(userId, localDateTimes);
         if (!duplicated.isEmpty()) {
-            throw new DuplicatedReservationError(duplicated).toException();
+            throw new DuplicatedReservationErrorInfo(duplicated).toException();
         }
     }
 

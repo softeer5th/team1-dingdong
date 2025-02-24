@@ -1,4 +1,4 @@
-package com.ddbb.dingdong.domain.reservation.service;
+package com.ddbb.dingdong.domain.reservation.service.error;
 
 import com.ddbb.dingdong.domain.common.exception.ErrorInfo;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class DuplicatedReservationError implements ErrorInfo {
+public class DuplicatedReservationErrorInfo implements ErrorInfo {
     private List<LocalDateTime> times;
 
     @Override

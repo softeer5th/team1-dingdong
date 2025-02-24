@@ -1,13 +1,5 @@
 # 🚌 [DingDong - 대학생을 위한 맞춤형 통학 버스 예매 서비스](https://www.ding-dong-bus.shop)
 
-## 서비스 의도
-
-<img width="700" alt="스크린샷 2025-02-24 오후 6 37 54" src="https://github.com/user-attachments/assets/0b05c816-4cfc-4598-be8a-b87faf76051a" />
-
-<img width="851" alt="스크린샷 2025-02-24 오후 6 38 51" src="https://github.com/user-attachments/assets/8fd2bb0b-68ce-455a-9068-ee7d7e68c376" />
-
----
-
 ## 서비스 기능
 
 ### 🚏 **내 집 앞 까지 찾아오는 버스를 예매할 수 있어요!** <br>
@@ -21,6 +13,14 @@
 ### 📍 **원하는 탑승지를 선택하면, 반경 3km 내에 다른 예매자가 있을 경우 최대 15명까지 함께 배차받을 수 있어요!<br>(tmap api를 이용하고 있어요)**
 
 <img src="https://github.com/user-attachments/assets/18500b9d-1ca5-4b35-8558-3db8751e7d18" width="600"> <br>
+
+---
+
+## 서비스 의도
+
+<img width="700" alt="스크린샷 2025-02-24 오후 6 37 54" src="https://github.com/user-attachments/assets/0b05c816-4cfc-4598-be8a-b87faf76051a" />
+
+<img width="851" alt="스크린샷 2025-02-24 오후 6 38 51" src="https://github.com/user-attachments/assets/8fd2bb0b-68ce-455a-9068-ee7d7e68c376" />
 
 ---
 

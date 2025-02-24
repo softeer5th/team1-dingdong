@@ -1,27 +1,26 @@
 package com.ddbb.dingdong.auth;
 
 import com.ddbb.dingdong.application.usecase.reservation.RequestGeneralReservationUseCase;
+import com.ddbb.dingdong.domain.common.exception.DomainException;
 import com.ddbb.dingdong.domain.reservation.entity.vo.Direction;
+import com.ddbb.dingdong.infrastructure.auth.encrypt.token.CachedTokenProvider;
 import com.ddbb.dingdong.infrastructure.auth.encrypt.token.TokenManager;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ddbb.dingdong.infrastructure.auth.encrypt.utils.AESEncoder;
+import com.ddbb.dingdong.infrastructure.auth.encrypt.utils.SHA512Encoder;
+import com.ddbb.dingdong.infrastructure.cache.SimpleCache;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@SpringBootTest
 public class PaymentTokenTest {
-    @Autowired
-    private TokenManager tokenManager;
+    private TokenManager tokenManager = new TokenManager(new SHA512Encoder(), new AESEncoder(), new CachedTokenProvider(new SimpleCache()));
 
     @Test
     @DisplayName("결제 정보가 유효한지 확인")
-    public void testPaymentTokenIsValid() throws JsonProcessingException {
+    public void testPaymentTokenIsValid() {
         RequestGeneralReservationUseCase.Param param = new RequestGeneralReservationUseCase.Param(
                 1L,
                 Direction.TO_SCHOOL,
@@ -29,23 +28,20 @@ public class PaymentTokenTest {
                         LocalDateTime.now()
                 ))
         );
-        RequestGeneralReservationUseCase.Param param2 = new RequestGeneralReservationUseCase.Param(
+        RequestGeneralReservationUseCase.Param differentParam = new RequestGeneralReservationUseCase.Param(
                 1L,
                 Direction.TO_SCHOOL,
                 List.of(new RequestGeneralReservationUseCase.Param.ReservationInfo(
                         LocalDateTime.now().plusHours(1)
                 ))
         );
-        ObjectMapper objectMapper = new ObjectMapper();
 
-        String data = objectMapper.writeValueAsString(param);
-        String differentData = objectMapper.writeValueAsString(param2);
-
-        String token = tokenManager.generateToken(data);
+        String token = tokenManager.generateToken(param);
 
         Assertions.assertThat(token).isNotNull();
-        Assertions.assertThat(tokenManager.validateToken(token,data)).isTrue();
-        Assertions.assertThat(tokenManager.validateToken(token,data)).isTrue();
-        Assertions.assertThat(tokenManager.validateToken(token,differentData)).isFalse();
+        Assertions.assertThat(tokenManager.validateToken(token,param)).isTrue();
+        Assertions.assertThatThrownBy(() -> tokenManager.validateToken(token, differentParam))
+                .isInstanceOf(DomainException.class)
+                .hasMessageContaining("[INCORRECT_SIGNATURE]");
     }
 }

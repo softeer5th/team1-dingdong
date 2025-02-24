@@ -1,8 +1,6 @@
 package com.ddbb.dingdong.reservation;
 
 import com.ddbb.dingdong.application.usecase.reservation.RequestGeneralReservationUseCase;
-import com.ddbb.dingdong.application.usecase.reservation.error.ReservationInvalidParamErrors;
-
 import com.ddbb.dingdong.domain.reservation.entity.vo.Direction;
 import com.ddbb.dingdong.domain.reservation.service.error.ReservationErrors;
 import com.ddbb.dingdong.infrastructure.auth.encrypt.token.TokenManager;

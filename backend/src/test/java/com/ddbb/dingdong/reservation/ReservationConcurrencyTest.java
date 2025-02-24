@@ -23,26 +23,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
 public class ReservationConcurrencyTest {
 
     private static final Logger log = LoggerFactory.getLogger(ReservationConcurrencyTest.class);
-    @Autowired
-    RequestTogetherReservationUseCase requestTogetherReservationUseCase;
-
-    @Autowired
-    MakeTogetherReservationUseCase makeTogetherReservationUseCase;
-
-    @Autowired
-    BusScheduleRepository busScheduleRepository;
-
-    @Autowired
-    SimpleCache simpleCache;
+    private RequestTogetherReservationUseCase requestTogetherReservationUseCase;
+    private MakeTogetherReservationUseCase makeTogetherReservationUseCase;
+    private BusScheduleRepository busScheduleRepository ;
+    private SimpleCache simpleCache = new SimpleCache();
 
     private static final int MAX_USERS = 99;
     private static final int MAX_SUCCESS = 15;
     private final ExecutorService executor = Executors.newFixedThreadPool(MAX_USERS);
-    @Autowired
     private ReservationConcurrencyManager reservationConcurrencyManager;
 
     @BeforeEach

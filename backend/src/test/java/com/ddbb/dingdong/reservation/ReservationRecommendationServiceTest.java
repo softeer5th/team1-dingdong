@@ -16,7 +16,7 @@ public class ReservationRecommendationServiceTest {
 
     @Test
     public void testRecommendReservationTimes_Mixed() {
-        YearMonth ym = YearMonth.of(2025, 2);
+        YearMonth ym = YearMonth.of(2025, 3);
 
         Timetable timetable = new Timetable();
         timetable.setMonStartTime(LocalTime.of(8, 30));

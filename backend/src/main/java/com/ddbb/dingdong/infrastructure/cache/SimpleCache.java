@@ -29,7 +29,6 @@ public class SimpleCache  {
 
     @PostConstruct
     public void init() {
-        System.out.println(cleanupIntervalMinutes);
         Duration cleanupInterval = Duration.ofMinutes(cleanupIntervalMinutes);
         this.RANDOM_SELECT_SIZE = 100;
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();

@@ -148,7 +148,7 @@ public class ReservationManagement {
                 .filter(reservationDate -> {
                     LocalDateTime now = LocalDateTime.now();
                     LocalDateTime deadLine = reservationDate.minusHours(48).minusMinutes(5);
-                    LocalDateTime maxDate = now.plusMonths(2);
+                    LocalDateTime maxDate = deadLine.plusMonths(2);
                     if(now.isAfter(deadLine)){
                         return false;
                     }

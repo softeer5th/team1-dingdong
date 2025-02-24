@@ -36,7 +36,9 @@ public class SuggestReservationUseCase implements UseCase<SuggestReservationUseC
         Direction direction = param.getDirection();
         YearMonth yearMonth = param.getYearMonth();
         List<LocalDateTime> suggestedDates = reservationManagement.recommendReservationDates(yearMonth, direction, timetable);
-
+        if(!user.isTimeTableRegistered()) {
+            suggestedDates = null;
+        }
         return new Result(suggestedDates);
     }
 

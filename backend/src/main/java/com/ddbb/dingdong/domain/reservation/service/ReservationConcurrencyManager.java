@@ -1,14 +1,19 @@
 package com.ddbb.dingdong.domain.reservation.service;
 
 import com.ddbb.dingdong.domain.transportation.entity.BusSchedule;
+import com.ddbb.dingdong.domain.transportation.repository.BusScheduleQueryRepository;
+import com.ddbb.dingdong.domain.transportation.repository.projection.BusScheduleIdAndReservedSeatsProjection;
 import com.ddbb.dingdong.domain.transportation.service.BusErrors;
 import com.ddbb.dingdong.infrastructure.cache.SimpleCache;
 import com.ddbb.dingdong.infrastructure.lock.ChannelLock;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -18,10 +23,19 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class ReservationConcurrencyManager {
     private final SimpleCache cache;
-
+    private final BusScheduleQueryRepository busScheduleQueryRepository;
     public enum Type { SEMAPHORE, LOCK };
     private static final int EXPIRATION_TIME_MINUTES = 5;
     private static final int EXPIRATION_TIME_DAYS = 2;
+
+    @EventListener(ApplicationReadyEvent.class)
+    protected void init() {
+        List<BusScheduleIdAndReservedSeatsProjection> projections = busScheduleQueryRepository.queryReadyBusSchedules();
+        for (BusScheduleIdAndReservedSeatsProjection projection : projections) {
+            cache.put(Map.entry(projection.getBusScheduleId(), Type.SEMAPHORE), new Semaphore(15 - projection.getReservedSeats(), true), Duration.ofDays(EXPIRATION_TIME_DAYS));
+            cache.put(Map.entry(projection.getBusScheduleId(), Type.LOCK), new ChannelLock(), Duration.ofDays(EXPIRATION_TIME_DAYS));
+        }
+    }
 
     public void initReservationData(BusSchedule busSchedule) {
         cache.put(Map.entry(busSchedule.getId(), Type.SEMAPHORE), new Semaphore(busSchedule.getRemainingSeats(), true), Duration.ofDays(EXPIRATION_TIME_DAYS));
@@ -71,5 +85,10 @@ public class ReservationConcurrencyManager {
     public void unlockBusSchedule(Long busScheduleId) {
         ChannelLock lock = (ChannelLock) cache.get(Map.entry(busScheduleId, Type.LOCK));
         lock.unlock();
+    }
+
+    public int getRemainingSeats(Long busScheduleId) {
+        Semaphore semaphore = (Semaphore) cache.get(Map.entry(busScheduleId, Type.SEMAPHORE));
+        return semaphore.availablePermits();
     }
 }

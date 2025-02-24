@@ -68,4 +68,12 @@ public class User {
         this.timetable.setFriStartTime(timetable.getFriStartTime());
         this.timetable.setFriEndTime(timetable.getFriEndTime());
     }
+
+    public boolean isTimeTableRegistered() {
+        return !(this.timetable.getMonEndTime() == null && this.timetable.getMonStartTime() == null
+                && this.timetable.getTueEndTime() == null && this.timetable.getTueStartTime() == null
+                && this.timetable.getWedEndTime() == null && this.timetable.getWedStartTime() == null
+                && this.timetable.getThuEndTime() == null && this.timetable.getThuStartTime() == null
+                && this.timetable.getFriEndTime() == null && this.timetable.getFriStartTime() == null);
+    }
 }

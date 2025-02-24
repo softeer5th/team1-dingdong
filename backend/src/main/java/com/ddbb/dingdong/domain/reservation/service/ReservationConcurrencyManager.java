@@ -54,7 +54,7 @@ public class ReservationConcurrencyManager {
         if(busScheduleId.equals(cachedBusScheduleId)) {
             return true;
         } else if (cachedBusScheduleId != null) {
-            removeUserInCache(userId);
+            removeUserWithReleaseSemaphore(userId);
         }
 
         Semaphore semaphore = (Semaphore) cache.get(Map.entry(busScheduleId, Type.SEMAPHORE));
@@ -79,7 +79,13 @@ public class ReservationConcurrencyManager {
         return null;
     }
 
-    public Long removeUserInCache(Long userId) {
+    public Long removeUserWithReleaseSemaphore(Long userId) {
+        Object value = cache.removeWithTask(userId);
+        if (value != null) return (Long) value;
+        return null;
+    }
+
+    public Long removeUser(Long userId) {
         Object value = cache.remove(userId);
         if (value != null) return (Long) value;
         return null;

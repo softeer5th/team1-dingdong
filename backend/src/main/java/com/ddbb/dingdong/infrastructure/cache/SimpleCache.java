@@ -139,7 +139,9 @@ public class SimpleCache  {
      */
     public Object remove(Object key) {
         CacheEntry entry = map.remove(key);
-
+        if (entry != null && System.currentTimeMillis() > entry.expiryTimeMillis) {
+            return null;
+        }
         return entry != null ? entry.value : null;
     }
 

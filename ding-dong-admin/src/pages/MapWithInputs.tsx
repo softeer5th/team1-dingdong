@@ -129,7 +129,7 @@ function getClusterColor(clusterLabel: string): string {
 }
 
 function MapWithInputs() {
-  const { isLoggedIn, loading, error } = useLogin();
+  const {loading, error } = useLogin();
   const [direction, setDirection] = useState('TO_SCHOOL');
   const [clusters, setClusters] = useState<ClusterData[]>([]);
   const [selectedClusterLabels, setSelectedClusterLabels] = useState<string[]>([]);
@@ -258,7 +258,8 @@ function MapWithInputs() {
       await httpClient.post('/api/admin/clusters/routes', {
         clusters: clusterLabels,
       });
-      handleSearch();  // 라우팅 후에는 결과를 보여주기 위해 조회 필요
+      // 경로 생성 후 자동으로 조회 실행
+      await handleSearch();
     } catch (error) {
       console.error('Error sending routing data:', error);
     }
@@ -296,7 +297,7 @@ function MapWithInputs() {
       map.fitBounds(bounds);
       
       // 줌 레벨이 너무 높아지는 것 방지
-      if (map.getZoom() > 17) {
+      if (map?.getZoom() > 17) {
         map.setZoom(17);
       }
       

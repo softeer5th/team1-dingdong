@@ -5,6 +5,7 @@ import {
   DropdownContainer,
   DropdownItem,
   DropdownList,
+  SchoolName,
 } from "./styles";
 import ChevronRightIcon from "@/components/designSystem/Icons/ChevronRightIcon";
 type SchoolType = {
@@ -25,7 +26,7 @@ export default function SchoolDropdown({
   return (
     <DropdownContainer>
       <DropdownButton onClick={() => setIsOpen(!isOpen)}>
-        <div>{selected}</div>
+        <SchoolName>{selected}</SchoolName>
         <ChevronIconWrapper>
           <ChevronRightIcon />
         </ChevronIconWrapper>

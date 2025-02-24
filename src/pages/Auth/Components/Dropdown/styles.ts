@@ -1,10 +1,13 @@
+import { colors } from "@/styles/colors";
 import styled from "styled-components";
 
 export const DropdownContainer = styled.div`
   position: relative;
   width: 100%;
 `;
-
+export const SchoolName = styled.div`
+  color: ${colors.gray100};
+`;
 export const DropdownButton = styled.button`
   width: 100%;
   padding: 12px;

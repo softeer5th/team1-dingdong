@@ -2,42 +2,40 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import BusManagement from './pages/BusManagement';
+import MapWithInputs from './pages/MapWithInputs';
 import { WebSocketProvider } from './contexts/WebSocketContext';
 import PrivateRoute from './components/PrivateRoute';
-import httpClient from './utils/httpClient';
-import MapWithInputs from './pages/MapWithInputs';
+import LoginPage from './pages/LoginPage';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const autoLogin = async () => {
+    const checkAuth = async () => {
       try {
-        await httpClient.post('/api/auth/login', {
-          email: 'admin@admin.com',
-          password: 'Abcd1234!@',
-        });
-        console.log('관리자 로그인 성공');
+        // 인증 상태 확인 로직
+        setIsLoading(false);
       } catch (error) {
-        console.error('관리자 로그인 실패:', error);
-      } finally {
+        console.error('인증 상태 확인 실패:', error);
         setIsLoading(false);
       }
     };
 
-    autoLogin();
+    checkAuth();
   }, []);
 
   if (isLoading) {
-    return <div>로그인 중...</div>;
+    return <div>로딩 중...</div>;
   }
 
   return (
     <WebSocketProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/" element={<Layout />}>
-            <Route path="map" element={
+            <Route path="main" element={
               <PrivateRoute>
                 <MapWithInputs />
               </PrivateRoute>
@@ -48,6 +46,7 @@ function App() {
               </PrivateRoute>
             } />
           </Route>
+          <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </BrowserRouter>
     </WebSocketProvider>

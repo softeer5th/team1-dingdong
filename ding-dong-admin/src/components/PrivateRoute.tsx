@@ -11,19 +11,17 @@ function PrivateRoute({ children }: PrivateRouteProps) {
   const location = useLocation();
 
   useEffect(() => {
-    const autoLogin = async () => {
+    const checkAuth = async () => {
       try {
-        await httpClient.post('/api/auth/login', {
-          email: 'admin@admin.com',
-          password: 'Abcd1234!@',
-        });
+        // 세션 체크 API 호출
+        await httpClient.get('/api/auth/status');
         setIsAuthenticated(true);
-      } catch (loginError) {
-        console.error('자동 로그인 실패:', loginError);
+      } catch (error) {
+        console.error('인증 확인 실패:', error);
         setIsAuthenticated(false);
       }
     };
-    autoLogin();
+    checkAuth();
   }, []);
 
   if (isAuthenticated === null) {
@@ -31,7 +29,7 @@ function PrivateRoute({ children }: PrivateRouteProps) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/map" state={{ from: location }} replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return children;

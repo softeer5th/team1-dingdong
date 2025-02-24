@@ -24,11 +24,11 @@ public class StoppableSemaphore extends Semaphore {
             return false;
         }
         boolean isAcquired = super.tryAcquire();
-        if (!isAcquired || isStopped) {
+        if (isAcquired && isStopped) {
             super.release();
             return false;
         }
-        return true;
+        return isAcquired;
     }
 
     public boolean acquire(boolean useStop) throws InterruptedException {

@@ -1,0 +1,46 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: testDB
+    hostname: testDB
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+    environment:
+      MYSQL_ROOT_PASSWORD: 4313
+    volumes:
+      - ./dump/test:/docker-entrypoint-initdb.d  # dump 또는 DDL 파일을 이 디렉토리에 두면 초기화 시 적용됨
+    ports:
+      - "3307:3306"
+    networks:
+      - test_network
+
+  app:
+    image: shortboy710/dingdong:latest
+    container_name: ding-dong-test
+    build:
+      context: ..
+      dockerfile: .simulate/Dockerfile
+    env_file:
+      - .env.test
+    ports:
+      - "8082:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - test_network
+    volumes:
+      - ../key:/app/key
+
+networks:
+  test_network:
+    external: true
+    name: test_network
+
+
+volumes:
+  grafana_data:

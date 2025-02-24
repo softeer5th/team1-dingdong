@@ -43,18 +43,13 @@ public class ApplicationInitializer {
 
         school = schoolRepository.findByName("서울대학교").orElse(null);
 
-        if(school == null) {
+        if (school == null) {
             school = new School(null, "서울대학교", "서울대학교", 37.4602, 126.9527);
             school = schoolRepository.save(school);
             adminSignUp();
-        }
-
-        if (userRepository.findByEmail("test@test.com").isEmpty()) {
-            String password = passwordEncoder.encode("abcd1234!@");
-            school = schoolRepository.save(school);
 
             for (int i = 0 ; i < 30; i++) {
-                autoSignUp(i, password);
+                autoSignUp(i);
                 Notification notification = new Notification();
                 notification.setUserId((long)(i + 1));
                 notification.setReservationId(null);
@@ -69,14 +64,14 @@ public class ApplicationInitializer {
     private void adminSignUp() {
         Home home = new Home(null, 37.5143, 127.0294, 37.513716, 127.029790, "에티버스" ,"학동로 180");
         Timetable timetable = new Timetable();
-        User user = new User(null, "admin", "admin@admin.com", passwordEncoder.encode("abcd1234!@"), Role.ADMIN, LocalDateTime.now(), school, null, timetable);
+        User user = new User(null, "admin", "admin@admin.com", passwordEncoder.encode("Abcd1234!@"), Role.ADMIN, LocalDateTime.now(), school, null, timetable);
         user.associateHome(home);
         user = userRepository.save(user);
         Wallet wallet = new Wallet(null, user.getId(), 1000000, LocalDateTime.now(), new ArrayList<>());
         walletRepository.save(wallet);
     }
 
-    public void autoSignUp(int testId, String password) {
+    public void autoSignUp(int testId) {
 
 //        Home home = new Home(null, 37.5143, 127.0294, 37.513716, 127.029790, "에티버스" ,"학동로 180");
         String email = testId == 0 ? "test@test.com" : "test" +testId + "@test.com";
@@ -93,11 +88,5 @@ public class ApplicationInitializer {
                         1L
                 )
         );
-//        Timetable timetable = new Timetable();
-//        User user = new User(null, "test", email, password, Role.USER, LocalDateTime.now(), school, null,timetable);
-//        user.associateHome(home);
-//        user = userRepository.save(user);
-//        Wallet wallet = new Wallet(null, user.getId(), 50000, LocalDateTime.now(), new ArrayList<>());
-//        walletRepository.save(wallet);
     }
 }

@@ -53,3 +53,14 @@ fcm:
     bus:
       start:
         title: ${BUS_START_TITLE}
+
+# prometheus endpoint expose
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true

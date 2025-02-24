@@ -11,7 +11,7 @@ RUN /app/gradlew dependencies --no-daemon
 COPY src src
 RUN /app/gradlew bootJar --no-daemon -x test
 
-FROM openjdk:17-jdk-slim
+FROM openjdk:19-jdk-slim
 WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar
 EXPOSE 8080

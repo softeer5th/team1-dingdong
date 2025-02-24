@@ -1,4 +1,18 @@
-# 멤버 구성
+# 🚌 [DingDong - 대학생을 위한 맞춤형 통학 버스 예매 서비스](https://www.ding-dong-bus.shop)
+### 🚏 **내 집 앞 까지 찾아오는 버스를 예매할 수 있어요!** <br>
+<img src="https://github.com/user-attachments/assets/a3d2d786-4cda-4a7d-be57-2fcdcc1ec445" width="600">  <br>
+
+### 📅 **시간표를 기반으로, 버스 예매 시간을 추천 받을 수 있어요!**
+<img src="https://github.com/user-attachments/assets/630f7f08-3574-4eb6-b524-f5d0d1310b9d" width="600"> <br>
+
+### 📍 **원하는 탑승지를 선택하면, 반경 3km 내에 다른 예매자가 있을 경우 최대 15명까지 함께 배차받을 수 있어요!<br>(tmap api를 이용하고 있어요)**
+<img src="https://github.com/user-attachments/assets/18500b9d-1ca5-4b35-8558-3db8751e7d18" width="600"> <br>
+
+---
+
+# 📌 프로젝트 관리
+
+## 멤버 구성
 <table>
 <tr>
 <h3>백엔드</h3>
@@ -12,25 +26,11 @@
 <td align="center"><a href="https://github.com/vavoya"><img src="https://avatars.githubusercontent.com/u/128780530?v=4" width="75px;" alt=""/><br /><sub><b>허동영</b></sub></a><br />
 <td align="center"><a href="https://github.com/somm12"><img src="https://avatars.githubusercontent.com/u/63543733?v=4" width="75px;" alt=""/><br /><sub><b>안소민</b></sub></a><br />
 </table>
-</table>
+</table>  
 
-## ⚖️ 그라운드 룰
+### ⚖️ 그라운드 룰
 
-🔗 **우리 팀의 자세한 그라운드 룰은 [여기](https://github.com/softeer5th/team1-dingdong/wiki/Ground-Rule)에서 확인할 수 있어요!**  
-
-# 🚌 대학생을 위한 맞춤형 통학 버스 예매 서비스
-### 🚏 **내 집 앞 까지 찾아오는 버스를 예매할 수 있어요!** <br>
-<img src="https://github.com/user-attachments/assets/a3d2d786-4cda-4a7d-be57-2fcdcc1ec445" width="600">  <br>
-
-### 📅 **시간표를 기반으로, 버스 예매 시간을 추천 받을 수 있어요!**
-<img src="https://github.com/user-attachments/assets/630f7f08-3574-4eb6-b524-f5d0d1310b9d" width="600"> <br>
-
-### 📍 **원하는 탑승지를 선택하면, 반경 3km 내에 다른 예매자가 있을 경우 최대 15명까지 함께 배차받을 수 있어요!<br>(tmap api를 이용하고 있어요)**
-<img src="https://github.com/user-attachments/assets/18500b9d-1ca5-4b35-8558-3db8751e7d18" width="600"> <br>
-
----
-
-# 📌 프로젝트 관리
+🔗 **우리 팀의 자세한 그라운드 룰은 [여기](https://github.com/softeer5th/team1-dingdong/wiki/Ground-Rule)에서 확인할 수 있어요!**
 
 ### 📂 백로그 관리
 - 🔗 [백엔드 백로그](https://github.com/orgs/softeer5th/projects/4)

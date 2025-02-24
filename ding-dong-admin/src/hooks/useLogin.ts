@@ -12,6 +12,7 @@ export const useLogin = () => {
           email: 'admin@admin.com',
           password: 'Abcd1234!@',
         });
+        setError(null); // 로그인 성공 시 에러 초기화
       } catch (err) {
         setError('로그인에 실패했습니다.');
       } finally {

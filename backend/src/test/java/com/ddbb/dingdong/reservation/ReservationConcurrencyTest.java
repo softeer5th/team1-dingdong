@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -96,6 +95,46 @@ public class ReservationConcurrencyTest {
     }
 
     @Test
+    @DisplayName("버스 출발 후 예매 막히는 지 확인")
+    public void testBusStart() throws InterruptedException {
+        AtomicInteger success = new AtomicInteger(1);
+        AtomicInteger fail = new AtomicInteger(0);
+
+        for (int i = 2; i <= MAX_USERS; i++) {
+            try {
+                RequestTogetherReservationUseCase.Result result = requestTogetherReservationUseCase.execute(new RequestTogetherReservationUseCase.Param((long) i, 1L, 1L));
+                Thread.sleep(100);
+                if (i == 11) {
+                    reservationConcurrencyManager.lockBusSchedule(1L);
+                    reservationConcurrencyManager.removeSemaphore(1L);
+                }
+                makeTogetherReservationUseCase.execute(new MakeTogetherReservationUseCase.Param(
+                                result.getToken(),
+                                new MakeTogetherReservationUseCase.Param.ReservationInfo(
+                                        (long) i, 1L, 1L)
+                        )
+                );
+                success.incrementAndGet();
+                makeTogetherReservationUseCase.execute(new MakeTogetherReservationUseCase.Param(
+                                result.getToken(),
+                                new MakeTogetherReservationUseCase.Param.ReservationInfo(
+                                        (long) i, 1L, 1L)
+                        )
+                );
+                success.incrementAndGet();
+            } catch (Exception e) {
+                log.error("User ID: {} | {}", i, e.getMessage());
+                fail.incrementAndGet();
+            }
+        }
+
+        Thread.sleep(3000);
+
+        assertEquals(10, success.get());
+        assertEquals(MAX_USERS - 1, fail.get());
+    }
+
+    @Test
     @DisplayName("자동 Clean Up 시, 세마포어가 만료되는지 확인")
     void testCleanUp() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -115,6 +154,6 @@ public class ReservationConcurrencyTest {
         countDownLatch.countDown();
         Thread.sleep(15000);
 
-        assertEquals(14, ((Semaphore) simpleCache.get(Map.entry(1L, ReservationConcurrencyManager.Type.SEMAPHORE))).availablePermits());
+        assertEquals(14, ((Semaphore) simpleCache.get("busSchedule:1")).availablePermits());
     }
 }

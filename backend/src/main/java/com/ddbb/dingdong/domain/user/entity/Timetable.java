@@ -32,4 +32,12 @@ public class Timetable {
 
     private LocalTime friStartTime;
     private LocalTime friEndTime;
+
+    public boolean isRegistered() {
+        return (monEndTime == null && monStartTime == null
+                && tueEndTime == null && tueStartTime == null
+                && wedEndTime == null && wedStartTime == null
+                && thuEndTime == null && thuStartTime == null
+                && friEndTime == null && friStartTime == null);
+    }
 }

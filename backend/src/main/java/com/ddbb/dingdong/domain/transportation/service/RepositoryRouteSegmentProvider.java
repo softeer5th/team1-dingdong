@@ -10,6 +10,8 @@ import org.springframework.data.geo.Point;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,15 +23,19 @@ public class RepositoryRouteSegmentProvider implements RouteSegmentProvider {
     @Override
     public List<RouteSegment> getRouteSegments(Long busScheduleId) {
         List<PathSegmentProjection> projections = pathQueryRepository.findSegmentByBusScheduleId(busScheduleId);
+
         return projections.stream()
-                .collect(Collectors.groupingBy(PathSegmentProjection::getLineId, Collectors.toList()))
+                .collect(Collectors.groupingBy(
+                        PathSegmentProjection::getLineId,
+                        TreeMap::new,
+                        Collectors.toList()
+                ))
                 .values()
                 .stream()
-                .map(pathSegmentProjections -> {
-                    PathSegmentProjection head = pathSegmentProjections.get(0);
-                    List<Point> points = pathSegmentProjections
-                            .stream()
-                            .map((item) -> new Point(item.getLongitude(), item.getLatitude()))
+                .map(segmentList -> {
+                    PathSegmentProjection head = segmentList.get(0);
+                    List<Point> points = segmentList.stream()
+                            .map(item -> new Point(item.getLongitude(), item.getLatitude()))
                             .toList();
                     return new RouteSegment(points, head.getMeter(), head.getSecond());
                 })

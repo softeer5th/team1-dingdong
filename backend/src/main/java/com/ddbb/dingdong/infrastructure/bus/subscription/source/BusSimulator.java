@@ -2,10 +2,12 @@ package com.ddbb.dingdong.infrastructure.bus.subscription.source;
 
 import org.springframework.data.geo.Point;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class BusSimulator implements Supplier<Point> {
+public class BusSimulator implements Supplier<ByteBuffer> {
     private final List<Point> simulatedPoints;
     private int currentPosition = 0;
 
@@ -14,10 +16,15 @@ public class BusSimulator implements Supplier<Point> {
     }
 
     @Override
-    public Point get() {
+    public ByteBuffer get() {
         if (currentPosition >= simulatedPoints.size()) {
             return null;
         }
-        return simulatedPoints.get(currentPosition++);
+        Point point = simulatedPoints.get(currentPosition++);
+        ByteBuffer buffer = ByteBuffer.allocate(16);
+        buffer.order(ByteOrder.BIG_ENDIAN);
+        buffer.putDouble(point.getX());
+        buffer.putDouble(point.getY());
+        return buffer.flip();
     }
 }

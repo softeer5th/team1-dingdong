@@ -93,7 +93,7 @@ public class SimpleCache  {
     public Object get(Object key) {
         CacheEntry entry = map.get(key);
         if (entry != null && System.currentTimeMillis() > entry.expiryTimeMillis) {
-            map.remove(key);
+            remove(key);
             return null;
         }
         return entry != null ? entry.value : null;
@@ -109,7 +109,7 @@ public class SimpleCache  {
     public boolean containsKey(Object key) {
         CacheEntry entry = map.get(key);
         if (entry != null && System.currentTimeMillis() > entry.expiryTimeMillis) {
-            map.remove(key);
+            remove(key);
         }
         return entry != null;
     }
@@ -142,7 +142,7 @@ public class SimpleCache  {
             log.info("{} entries have been cleaned up in {}ms", getRandomEntries().size(), now);
             if (now >= entry.getValue().expiryTimeMillis) {
                 log.info("clean up cache");
-                map.remove(entry.getKey());
+                remove(entry.getKey());
             }
         }
     }

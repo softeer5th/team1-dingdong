@@ -119,6 +119,33 @@ const ApiStatus = styled.span<{ status: 'success' | 'error' | 'pending' | 'idle'
   color: white;
 `;
 
+const ResponsiveFormSection = styled(FormSection)`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+
+const ResponsiveButtonContainer = styled(ButtonContainer)`
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
+
+const ResponsiveInputContainer = styled(InputContainer)`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+
 function BusManagement() {
   const { isLoggedIn, loading, error } = useLogin();
   const { webSocket, connect } = useWebSocket();
@@ -128,7 +155,9 @@ function BusManagement() {
   const [routePath, setRoutePath] = useState<google.maps.LatLng[]>([]);
   const [busLocation, setBusLocation] = useState<google.maps.LatLngLiteral | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const [subscriptionId, setSubscriptionId] = useState('');
+  const [subscribeId, setSubscribeId] = useState('');
+  const [unsubscribeId, setUnsubscribeId] = useState('');
+  const [currentSubscribedId, setCurrentSubscribedId] = useState<string | null>(null);
   const [showRoute, setShowRoute] = useState(false);
   const [polyline, setPolyline] = useState<google.maps.Polyline | null>(null);
 
@@ -254,26 +283,16 @@ function BusManagement() {
   };
 
   const handleSubscribe = async () => {
-    if (!subscriptionId) return;
+    if (!subscribeId) return;
 
     try {
       setApiStatus(prev => ({ ...prev, subscription: { status: 'pending' } }));
-      if (!isSubscribed) {
-        const response = await httpClient.post(`/api/bus/subscription/${subscriptionId}`);
-        setApiStatus(prev => ({ 
-          ...prev, 
-          subscription: { status: 'success', code: response.status } 
-        }));
-        setIsSubscribed(true);
-      } else {
-        const response = await httpClient.delete(`/api/bus/subscription/${subscriptionId}`);
-        setApiStatus(prev => ({ 
-          ...prev, 
-          subscription: { status: 'success', code: response.status } 
-        }));
-        setIsSubscribed(false);
-        setSubscriptionId('');
-      }
+      const response = await httpClient.post(`/api/bus/subscription/${subscribeId}`);
+      setApiStatus(prev => ({ 
+        ...prev, 
+        subscription: { status: 'success', code: response.status } 
+      }));
+      setCurrentSubscribedId(subscribeId);
     } catch (error: any) {
       setApiStatus(prev => ({ 
         ...prev, 
@@ -286,10 +305,36 @@ function BusManagement() {
     }
   };
 
+  const handleUnsubscribe = async () => {
+    if (!unsubscribeId) return;
+
+    try {
+      setApiStatus(prev => ({ ...prev, subscription: { status: 'pending' } }));
+      const response = await httpClient.delete(`/api/bus/subscription/${unsubscribeId}`);
+      setApiStatus(prev => ({ 
+        ...prev, 
+        subscription: { status: 'success', code: response.status } 
+      }));
+      if (unsubscribeId === currentSubscribedId) {
+        setCurrentSubscribedId(null);
+      }
+      setUnsubscribeId('');
+    } catch (error: any) {
+      setApiStatus(prev => ({ 
+        ...prev, 
+        subscription: { 
+          status: 'error', 
+          code: error.response?.status || 500 
+        } 
+      }));
+      console.error('버스 구독 해제 중 오류:', error);
+    }
+  };
+
   useEffect(() => {
     if (webSocket instanceof WebSocket && scheduleId && isSubscribed) {
-        webSocket.binaryType = 'arraybuffer';
-        const handleMessage = (message: MessageEvent) => {
+      webSocket.binaryType = 'arraybuffer';
+      const handleMessage = (message: MessageEvent) => {
         try {
           const arrayBuffer = message.data;
           const dataView = new DataView(arrayBuffer);
@@ -305,8 +350,15 @@ function BusManagement() {
 
       webSocket.addEventListener("message", handleMessage);
 
+      webSocket.addEventListener("close", () => {
+        if (isSubscribed) {
+          handleSubscribe(); // 소켓이 끊겼을 때 다시 구독
+        }
+      });
+
       return () => {
         webSocket.removeEventListener("message", handleMessage);
+        webSocket.removeEventListener("close", handleSubscribe);
       };
     }
   }, [webSocket, scheduleId, isSubscribed]);
@@ -363,7 +415,7 @@ function BusManagement() {
         </StatusGroup>
       </StatusContainer>
 
-      <FormSection>
+      <ResponsiveFormSection>
         <FormGroup>
           <FormTitle>버스 경로 관리</FormTitle>
           <InputContainer>
@@ -373,7 +425,7 @@ function BusManagement() {
               onChange={(e) => setScheduleId(e.target.value)}
               placeholder="버스 스케줄 ID 입력"
             />
-            <ButtonContainer>
+            <ResponsiveButtonContainer>
               <Button onClick={handleSearchRoute}>경로 조회</Button>
               <Button 
                 onClick={handleStartBus}
@@ -393,28 +445,40 @@ function BusManagement() {
               >
                 경로 초기화
               </Button>
-            </ButtonContainer>
+            </ResponsiveButtonContainer>
           </InputContainer>
         </FormGroup>
 
         <FormGroup>
           <FormTitle>버스 위치 구독</FormTitle>
-          <InputContainer>
+          <ResponsiveInputContainer>
             <Input
               type="text"
-              value={subscriptionId}
-              onChange={(e) => setSubscriptionId(e.target.value)}
+              value={subscribeId}
+              onChange={(e) => setSubscribeId(e.target.value)}
               placeholder="구독할 버스 ID 입력"
             />
             <Button 
               onClick={handleSubscribe}
-              disabled={!subscriptionId && !isSubscribed}
+              disabled={!subscribeId || subscribeId === currentSubscribedId}
             >
-              {isSubscribed ? '구독 해제' : '버스 구독'}
+              구독
             </Button>
-          </InputContainer>
+            <Input
+              type="text"
+              value={unsubscribeId}
+              onChange={(e) => setUnsubscribeId(e.target.value)}
+              placeholder="구독 해제할 버스 ID 입력"
+            />
+            <Button 
+              onClick={handleUnsubscribe}
+              disabled={!unsubscribeId}
+            >
+              구독 해제
+            </Button>
+          </ResponsiveInputContainer>
         </FormGroup>
-      </FormSection>
+      </ResponsiveFormSection>
 
       <MapContainer>
         <GoogleMap

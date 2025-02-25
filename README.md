@@ -11,9 +11,10 @@
 -|-
 <video src="https://github.com/user-attachments/assets/91c8b8ae-712e-4fd4-8192-18452ffcb2e3" /> | <video  src="https://github.com/user-attachments/assets/e9b3e4ba-2d19-4d3f-b39f-62004540c431" /> 
 
-📍 원하는 탑승지를 선택하면, 반경 3km 내에 다른 예매자가 있을 경우 최대 15명까지 함께 배차받을 수 있어요(tmap api를 이용하고 있어요) 
+ 📍 원하는 탑승지를 선택하면,<br/> 반경 3km 내에 다른 예매자가 있을 경우 <br/> 최대 15명까지 함께 배차받을 수 있어요(tmap api를 이용하고 있어요) | 📍 실시간으로 버스 위치를 확인할 수 있어요
 -|-
-<video src="https://github.com/user-attachments/assets/734b449f-4cb0-4566-a616-95b7d8e6ec9d" /> 
+<video src="https://github.com/user-attachments/assets/734b449f-4cb0-4566-a616-95b7d8e6ec9d" /> | <video  src="https://github.com/user-attachments/assets/899b05eb-a54b-4e4d-969f-f308c3e7af7b" /> 
+
 
 ---
 

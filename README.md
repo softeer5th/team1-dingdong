@@ -1,7 +1,10 @@
 # 🚌 DingDong - 대학생을 위한 맞춤형 통학 버스 예매 서비스
+
 동네 별 비슷한 등하교 노선을 가진 대학생들에게 집 앞까지 오는 쉐어 버스를 제공해요
 
-[이곳을 클릭해 서비스를 이용해보세요!](https://www.ding-dong-bus.shop)
+👉 [이곳을 클릭해 서비스를 이용해보세요!](https://www.ding-dong-bus.shop)
+
+![딩동표지](https://github.com/user-attachments/assets/b47b058d-de00-4e81-a3bc-363b0f9f1efb)
 
 # 🎥 서비스 기능 및 시연영상
  🚏 내 집 앞 까지 찾아오는 버스를 예매할 수 있어요 | 📅 시간표를 기반으로, 버스 예매 시간을 추천 받을 수 있어요

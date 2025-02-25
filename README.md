@@ -1,27 +1,16 @@
 # 🚌 DingDong - 대학생을 위한 맞춤형 통학 버스 예매 서비스
+동네 별 비슷한 등하교 노선을 가진 대학생들에게 집 앞까지 오는 쉐어 버스를 제공해요
+
 [이곳을 클릭해 서비스를 이용해보세요!](https://www.ding-dong-bus.shop)
 
-## 서비스 기능
+# 🎥 서비스 기능 및 시연영상
+ 🚏 내 집 앞 까지 찾아오는 버스를 예매할 수 있어요 | 📅 시간표를 기반으로, 버스 예매 시간을 추천 받을 수 있어요
+-|-
+<video src="https://github.com/user-attachments/assets/91c8b8ae-712e-4fd4-8192-18452ffcb2e3" /> | <video  src="https://github.com/user-attachments/assets/e9b3e4ba-2d19-4d3f-b39f-62004540c431" /> 
 
-### 🚏 **내 집 앞 까지 찾아오는 버스를 예매할 수 있어요!** <br>
-
-<img src="https://github.com/user-attachments/assets/a3d2d786-4cda-4a7d-be57-2fcdcc1ec445" width="600"> <br>
-
-### 📅 **시간표를 기반으로, 버스 예매 시간을 추천 받을 수 있어요!**
-
-<img src="https://github.com/user-attachments/assets/630f7f08-3574-4eb6-b524-f5d0d1310b9d" width="600"> <br>
-
-### 📍 **원하는 탑승지를 선택하면, 반경 3km 내에 다른 예매자가 있을 경우 최대 15명까지 함께 배차받을 수 있어요!<br>(tmap api를 이용하고 있어요)**
-
-<img src="https://github.com/user-attachments/assets/18500b9d-1ca5-4b35-8558-3db8751e7d18" width="600"> <br>
-
----
-
-## 서비스 의도
-
-<img width="700" alt="스크린샷 2025-02-24 오후 6 37 54" src="https://github.com/user-attachments/assets/0b05c816-4cfc-4598-be8a-b87faf76051a" />
-
-<img width="851" alt="스크린샷 2025-02-24 오후 6 38 51" src="https://github.com/user-attachments/assets/8fd2bb0b-68ce-455a-9068-ee7d7e68c376" />
+📍 원하는 탑승지를 선택하면, 반경 3km 내에 다른 예매자가 있을 경우 최대 15명까지 함께 배차받을 수 있어요(tmap api를 이용하고 있어요) 
+-|-
+<video src="https://github.com/user-attachments/assets/734b449f-4cb0-4566-a616-95b7d8e6ec9d" /> 
 
 ---
 
@@ -80,41 +69,15 @@
 
 # 📖 GitHub & Commit Convention
 
-## 📝 Issue 관리
+### **우리 팀의 깃허브 작업 관리 방식이 궁금하시다면 아래를 참고 해주세요!**
 
-- 작업 전 `Issue`를 생성하여 관리해요.
-- 기능 단위로 이슈를 등록하고, 진행 상황을 작성해요.
-- 생성된 `Issue Number`를 기반으로 브랜치 이름과 커밋 메시지를 작성해요.
-
-## 🔗 Commit 메시지 규칙
-
-```text
-[<Prefix>] : 커밋 내용 요약
-
-<Description?> (선택)
-
-#<Issue_Number>
-```
-
-### ✅ Prefix 규칙
-
-| Prefix     | 설명                 |
-| ---------- | -------------------- |
-| `Feat`     | 새로운 기능 추가 🛠   |
-| `Fix`      | 버그 수정 🐛         |
-| `Env`      | 개발 환경 설정 ⚙️    |
-| `Refactor` | 코드 리팩토링 ♻️     |
-| `Design`   | UI/UX 디자인 수정 🎨 |
-| `Comment`  | 주석 추가/수정 📝    |
-| `Docs`     | 문서 추가/수정 📄    |
-| `Test`     | 테스트 코드 추가 🧪  |
-| `Build`    | 빌드 관련 변경 🔧    |
+- [깃허브 & 커밋 컨벤션](https://github.com/softeer5th/team1-dingdong/wiki/%EC%BB%A4%EB%B0%8B-%EC%BB%A8%EB%B2%A4%EC%85%981%EC%A1%B0)
 
 ---
 
 # 🏗 코드 컨벤션
 
-### **우리 팀의 코드 스타일이 궁금하다면 아래 컨벤션을 참고 해 주세요!**
+### **우리 팀의 코드 스타일이 궁금하시다면 아래 컨벤션을 참고 해주세요!**
 
 - 📌 [백엔드 코드 컨벤션](https://github.com/softeer5th/team1-dingdong/wiki/%EB%B0%B1%EC%97%94%EB%93%9C-%EC%BD%94%EB%93%9C-%EC%BB%A8%EB%B2%A4%EC%85%98)
 - 📌 [프론트엔드 코드 컨벤션](https://github.com/softeer5th/team1-dingdong/wiki/%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C-%EC%BD%94%EB%93%9C-%EC%BB%A8%EB%B2%A4%EC%85%98)

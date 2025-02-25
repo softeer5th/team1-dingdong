@@ -53,3 +53,7 @@ fcm:
     bus:
       start:
         title: ${BUS_START_TITLE}
+
+security:
+  secret:
+    aes: ${AES_SECRET}

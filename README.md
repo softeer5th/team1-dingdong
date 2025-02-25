@@ -1,4 +1,5 @@
-# 🚌 [DingDong - 대학생을 위한 맞춤형 통학 버스 예매 서비스](https://www.ding-dong-bus.shop)
+# 🚌 DingDong - 대학생을 위한 맞춤형 통학 버스 예매 서비스
+[이곳을 클릭해 서비스를 이용해보세요!](https://www.ding-dong-bus.shop)
 
 ## 서비스 기능
 

@@ -26,7 +26,7 @@ public class SocketHandler extends TextWebSocketHandler {
      * **/
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        WebSocketSession concurrentSocket = new ConcurrentWebSocketSessionDecorator(session, 1000, 1024);
+        WebSocketSession concurrentSocket = new ConcurrentWebSocketSessionDecorator(session, 500, 64);
         AuthUser authUser = (AuthUser)session.getAttributes().get(SESSION_NAME);
 
         WebSocketSession webSocketSession = socketRepository.put(authUser.id(),  concurrentSocket);

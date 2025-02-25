@@ -17,7 +17,7 @@ public class PeriodicBusPublisher<T> extends SubmissionPublisher<T> {
             BusSubscriptionManager manager, long busId,
             Supplier<T> supplier, long period, long initialDelay, TimeUnit unit
     ) {
-        super(Executors.newSingleThreadExecutor(), 1);
+        super(Executors.newSingleThreadExecutor(), 32);
         this.manager = manager;
         this.busId = busId;
         this.scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -27,7 +27,9 @@ public class PeriodicBusPublisher<T> extends SubmissionPublisher<T> {
                 this.cleanRef();
                 return;
             }
-            submit(item);
+            long lag = submit(item);
+
+            log.info("maximum lag = {}", lag);
         }, initialDelay, period, unit);
     }
 

@@ -19,16 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class BusStopQueryService {
     private static final int THRESHOLD_METER = 5000;
 
-    public record AvailableBusStopDistance(AvailableBusStopProjection busStop, double distance)
-    implements Comparable<AvailableBusStopDistance> {
-        @Override
-        public int compareTo(AvailableBusStopDistance o) {
-            return Double.compare(distance, o.distance);
-        }
-    }
-
-    public record AvailableBusStopWithTimeDistance(AllAvailableBusStopProjection busStop, double distance) {
-    }
+    public record AvailableBusStopDistance(AvailableBusStopProjection busStop, double distance) { }
 
     private final BusStopQueryRepository busStopQueryRepository;
 

@@ -205,5 +205,5 @@ CREATE TABLE IF NOT EXISTS fcmtoken (
                            user_id BIGINT NOT NULL
 );
 
-ALTER TABLE fcmtoken ADD CONSTRAINT uq_fcm_token UNIQUE (token);
+ALTER TABLE fcmtoken ADD CONSTRAINT uq_fcm_token UNIQUE (token, user_id);
 ALTER TABLE fcmtoken ADD CONSTRAINT fk_fcm_token_user FOREIGN KEY (user_id) REFERENCES user(id);

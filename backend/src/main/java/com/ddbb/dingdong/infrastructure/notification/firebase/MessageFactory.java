@@ -27,8 +27,8 @@ public class MessageFactory {
     private String BADGE;
 
     public MulticastMessage createMulticastMessage(String title, String content, List<String> tokens) {
+
         WebpushNotification webPushNotification = WebpushNotification.builder()
-                .setVibrate(new int[]{0, 100, 0, 100})
                 .setBody(content)
                 .setTitle(title)
                 .setLanguage("ko")
@@ -40,13 +40,13 @@ public class MessageFactory {
                 .setIcon(ICON)
                 .setBadge(BADGE)
                 .build();
-
         return MulticastMessage.builder()
                 .addAllTokens(tokens)
                 .setWebpushConfig(
                         WebpushConfig.builder()
                                 .setNotification(webPushNotification)
                                 .setFcmOptions(WebpushFcmOptions.withLink(LINK_URL))
+                                .putData("url", LINK_URL)
                                 .build()
                 )
                 .build();

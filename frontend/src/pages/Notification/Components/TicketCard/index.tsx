@@ -34,7 +34,6 @@ export default function TicketCard({
           </>
         ) : type === "BUS_START" ? (
           <>
-            {/* <HighlightText>{reservationInfo.startDate}</HighlightText> */}
             <HighlightText>버스가 출발 했어요!</HighlightText>
           </>
         ) : (
@@ -48,17 +47,20 @@ export default function TicketCard({
       <Content>
         <StationInfo>
           <StationName>{reservationInfo!.startStationName}</StationName>
-
-          {type === "ALLOCATION_SUCCESS" || "BUS_START" ? (
-            <Time>{formatTime(reservationInfo!.expectedStartTime!)} 탑승</Time>
-          ) : (
-            <Time>-</Time>
-          )}
+          <Time>
+            {reservationInfo!.expectedStartTime === null
+              ? "-"
+              : `${formatTime(reservationInfo!.expectedStartTime)} 탑승`}
+          </Time>
         </StationInfo>
         <ChevronRightIcon size={32} fill={colors.gray30} />
         <StationInfo>
           <StationName>{reservationInfo!.endStationName}</StationName>
-          <Time>{formatTime(reservationInfo!.expectedEndTime)} 하차</Time>
+          <Time>
+            {reservationInfo!.expectedEndTime
+              ? `${formatTime(reservationInfo!.expectedEndTime)} 하차`
+              : "-"}
+          </Time>
         </StationInfo>
       </Content>
       <EmptyCircle

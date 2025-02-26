@@ -22,7 +22,6 @@ public class AuthHandShakeInterceptor implements HandshakeInterceptor {
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         AuthUser authUser = authenticationManager.getAuthentication();
         if (authUser == null) {
-            log.info("No session for socket");
             return false;
         }
         attributes.put(SocketHandler.SESSION_NAME, authUser);

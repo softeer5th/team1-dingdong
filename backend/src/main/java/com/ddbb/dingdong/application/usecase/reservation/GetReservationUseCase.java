@@ -37,7 +37,7 @@ public class GetReservationUseCase implements UseCase<GetReservationUseCase.Para
              operationInfo = new Result.ReservationInfo.OperationInfo(
                     projection.getBusScheduleId(),
                      projection.getBusStatus(),
-                    "버스 " + String.format("%02d", projection.getBusId()),
+                    "버스 " + String.format("%02d", projection.getBusScheduleId()),
                     projection.getBusStopArrivalTime()
             );
             expectedDepartureTime = projection.getRealDepartureTime();

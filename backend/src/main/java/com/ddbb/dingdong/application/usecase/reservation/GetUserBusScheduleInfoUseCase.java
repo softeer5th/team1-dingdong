@@ -38,7 +38,7 @@ public class GetUserBusScheduleInfoUseCase implements UseCase<GetUserBusSchedule
                 projection.getRealDepartureTime(),
                 new Result.OperationInfo(
                         projection.getBusStatus(),
-                        "버스 " + String.format("%02d", projection.getBusId()),
+                        "버스 " + String.format("%02d", projection.getBusScheduleId()),
                         projection.getBusStopArrivalTime()
                 )
         );

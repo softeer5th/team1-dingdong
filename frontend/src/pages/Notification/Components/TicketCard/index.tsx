@@ -48,9 +48,9 @@ export default function TicketCard({
         <StationInfo>
           <StationName>{reservationInfo!.startStationName}</StationName>
           <Time>
-            {reservationInfo!.expectedStartTime
-              ? `${formatTime(reservationInfo!.expectedStartTime)} 탑승`
-              : "-"}
+            {reservationInfo!.expectedStartTime === null
+              ? "-"
+              : `${formatTime(reservationInfo!.expectedStartTime)} 탑승`}
           </Time>
         </StationInfo>
         <ChevronRightIcon size={32} fill={colors.gray30} />

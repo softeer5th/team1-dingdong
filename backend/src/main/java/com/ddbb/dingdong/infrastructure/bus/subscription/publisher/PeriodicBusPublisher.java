@@ -27,9 +27,7 @@ public class PeriodicBusPublisher<T> extends SubmissionPublisher<T> {
                 this.cleanRef();
                 return;
             }
-            long lag = submit(item);
-
-            log.info("maximum lag = {}", lag);
+            submit(item);
         }, initialDelay, period, unit);
     }
 

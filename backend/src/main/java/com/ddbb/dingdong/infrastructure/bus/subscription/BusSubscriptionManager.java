@@ -85,6 +85,7 @@ public class BusSubscriptionManager {
                     subscriber.cancel();
                     return null;
                 });
+                log.info("after unsubscribe: {} size={}", busId, busChannel.size());
                 return busChannel;
             });
         } catch (Exception e) {

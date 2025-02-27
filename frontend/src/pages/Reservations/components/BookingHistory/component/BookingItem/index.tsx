@@ -10,6 +10,7 @@ import {useRevalidator} from "react-router-dom";
 import {deleteItem} from "@/pages/SocketLayout/utils/deleteItem.ts";
 import {changeItem} from "@/pages/SocketLayout/utils/changeItem.ts";
 import removeReservationCache from "@/api/queryCacheRemove/reservations/removeReservationCache.ts";
+import {addRefundHistory} from "@/pages/Wallet/utils/addRefundHistory.ts";
 
 
 interface RenderBookingItemList {
@@ -73,6 +74,8 @@ export default function RenderBookingItemList({reservationsObj, filterType, scho
 
                                         // 취소 위치를 모르니 캐시 지우기
                                         removeReservationCache('CANCELED')
+                                        // 잔고 갱신
+                                        addRefundHistory()
 
                                         revalidate()
                                         addToast("예매가 성공적으로 취소 되었습니다.")

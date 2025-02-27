@@ -33,7 +33,7 @@ public class SocketHandler extends TextWebSocketHandler {
         if (webSocketSession != null) {
             webSocketSession.close(CustomCloseStatus.DUPLICATE_WEBSOCKET);
         }
-        log.debug("user({}) connected is established", authUser.id());
+        log.info("user({}) connected is established", authUser.id());
     }
 
     @Override
@@ -44,7 +44,7 @@ public class SocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
         AuthUser authUser = (AuthUser)session.getAttributes().get(SESSION_NAME);
 
-        log.debug("user({}) disconnected", authUser.id());
+        log.info("user({}) disconnected", authUser.id());
         if (closeStatus != CustomCloseStatus.DUPLICATE_WEBSOCKET) {
             socketRepository.remove(authUser.id());
         }

@@ -5,30 +5,14 @@ export const formatMonthName = (month: number) => {
   return `${month}월`;
 };
 
-export const formatDate = ({
-  year,
-  month,
-  day,
-}: {
-  year: number;
-  month: number;
-  day: number;
-}): string => {
+export const formatDate = ({ year, month, day }: { year: number; month: number; day: number }): string => {
   const date = new Date(year, month, day); // JS에서 month는 0부터.
   const dayOfWeek = WEEKDAYS[date.getDay()];
 
   return `${month}월 ${day}일 ${dayOfWeek}`;
 };
 // 오후 2시 30분 => {hour:14, minute:30}
-export const parseTime = ({
-  amPm,
-  hour,
-  minute,
-}: {
-  amPm: string;
-  hour: string;
-  minute: string;
-}) => {
+export const parseTime = ({ amPm, hour, minute }: { amPm: string; hour: string; minute: string }) => {
   let parsedHour = parseInt(hour, 10);
   const parsedMinute = parseInt(minute, 10);
 
@@ -73,27 +57,16 @@ export const availableBookingMinDate = () => {
   const now = new Date();
 
   const TWO_DAYS_AND_FIVE_MINUTES_TO_SECONDS = 48 * 60 * 60;
-  const minDate = new Date(
-    now.getTime() + TWO_DAYS_AND_FIVE_MINUTES_TO_SECONDS * 1000
-  );
+  const minDate = new Date(now.getTime() + TWO_DAYS_AND_FIVE_MINUTES_TO_SECONDS * 1000);
   return minDate;
 };
 // 예매 가능한 기간에 해당하는지와 등교버스 하교버스 운영 시간이 지나도 비활성화여부를 체크.
-export const isDateDisabled = (
-  date: Date,
-  commuteType: CommuteType,
-  calendarType = "customBooking"
-) => {
+export const isDateDisabled = (date: Date, commuteType: CommuteType, calendarType = "customBooking") => {
   void commuteType;
   if (calendarType !== "customBooking") {
     const now = new Date();
     const compareDate = new Date(date);
-    compareDate.setHours(
-      now.getHours(),
-      now.getMinutes(),
-      now.getSeconds(),
-      now.getMilliseconds()
-    );
+    compareDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
 
     const TWO_DAYS = 48 * 60 * 60;
     const minDate = new Date(now.getTime());

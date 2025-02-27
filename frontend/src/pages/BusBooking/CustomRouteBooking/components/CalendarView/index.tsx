@@ -5,20 +5,13 @@ import { colors } from "@/styles/colors";
 import ChevronRightIcon from "@/components/designSystem/Icons/ChevronRightIcon";
 import TimeTableRecommendationButton from "@/components/Button/TimeTableRecommendationButton";
 import useCalendar from "@/pages/BusBooking/hooks/useCalendar";
-import {
-  formatMonthName,
-  getDaysInMonth,
-  isDateDisabled,
-} from "@/utils/calendar/calendarUtils";
+import { formatMonthName, getDaysInMonth, isDateDisabled } from "@/utils/calendar/calendarUtils";
 import * as constant from "@/constants/calendarConstants";
 import Polygon from "@/components/designSystem/Icons/PolygonIcon";
 import { CommuteType } from "@/pages/BusBooking/types/commuteType";
 import SelectTimeBottomModal from "../SelectTimeBottomModal";
 import { timeScheduleActions } from "@/pages/BusBooking/store/actions";
-import {
-  TimeSchedule,
-  TimeScheduleAction,
-} from "@/pages/BusBooking/store/types";
+import { TimeSchedule, TimeScheduleAction } from "@/pages/BusBooking/store/types";
 import { timeScheduleSelectors } from "@/pages/BusBooking/store/selectors";
 import { useGetTimeTableRecommendation } from "@/hooks/BusBooking/useCustomBooking";
 import { mountModal } from "@/components/Loading";
@@ -32,11 +25,7 @@ interface CalendarViewProps {
   dispatch: React.Dispatch<TimeScheduleAction>; // 선택시, 업데이트에 사용할 dispatch
   commuteType: CommuteType;
 }
-export default function CalendarView({
-  commuteType,
-  selectedTimeSchedule,
-  dispatch,
-}: CalendarViewProps) {
+export default function CalendarView({ commuteType, selectedTimeSchedule, dispatch }: CalendarViewProps) {
   // AI 버튼 관리
 
   const [AIBtnToggles, setAIBtnToggles] = useState([false, false, false]); // 3개의 month에서 각각 다루는 AI 적용 버튼 토글.
@@ -60,18 +49,13 @@ export default function CalendarView({
 
   const timeTableRecommendationArray: string[] | null =
     useGetTimeTableRecommendation({
-      yearMonth: `${currentDate.year}-${(currentDate.month + 1)
-        .toString()
-        .padStart(2, "0")}`,
+      yearMonth: `${currentDate.year}-${(currentDate.month + 1).toString().padStart(2, "0")}`,
       direction: commuteType === "등교" ? "TO_SCHOOL" : "TO_HOME",
     }).data?.data?.suggestionDates ?? null;
 
   const makingTimeTableSuggestion = (type: string) => {
     const { render, unmountModal } = mountModal();
-    const titleType =
-      type === "none"
-        ? "시간표가 등록되지 않았어요"
-        : "등록하신 시간표는\n예매 가능한 시간대가 없어요";
+    const titleType = type === "none" ? "시간표가 등록되지 않았어요" : "등록하신 시간표는\n예매 가능한 시간대가 없어요";
     render(
       <Modal
         title={[titleType]}
@@ -102,15 +86,10 @@ export default function CalendarView({
 
   useEffect(() => {
     const screenWidth = window.innerWidth;
-    const newScreenWidth =
-      screenWidth <= constant.MAX_MOBILE_WIDTH
-        ? screenWidth
-        : constant.LAYOUT_WIDTH;
+    const newScreenWidth = screenWidth <= constant.MAX_MOBILE_WIDTH ? screenWidth : constant.LAYOUT_WIDTH;
 
     const dayButtonWidth =
-      (newScreenWidth -
-        constant.TOTAL_LEFT_RIGHT_PADDING -
-        constant.TOTAL_CALENDAR_COLUMN_GAP) /
+      (newScreenWidth - constant.TOTAL_LEFT_RIGHT_PADDING - constant.TOTAL_CALENDAR_COLUMN_GAP) /
       constant.WEEKDAYS_COUNT;
 
     setDateButtonWidth(dayButtonWidth);
@@ -170,10 +149,7 @@ export default function CalendarView({
     });
 
     // 임시 선택 상태 확인
-    const isTempSelected =
-      selectedDate?.year === year &&
-      selectedDate?.month === month &&
-      selectedDate?.day === day;
+    const isTempSelected = selectedDate?.year === year && selectedDate?.month === month && selectedDate?.day === day;
 
     return hasScheduledTime || isTempSelected;
   };
@@ -213,9 +189,7 @@ export default function CalendarView({
             <ChevronLeftIcon size={24} fill={colors.gray50} />
           </S.IconWrapper>
 
-          <S.CurrentMonth>
-            {formatMonthName(currentDate.month + 1)}
-          </S.CurrentMonth>
+          <S.CurrentMonth>{formatMonthName(currentDate.month + 1)}</S.CurrentMonth>
           <S.IconWrapper
             onClick={() => {
               if (currentMonthIndex === 2) return;
@@ -243,11 +217,7 @@ export default function CalendarView({
           <S.GridContainer key={index} $visible={currentMonthIndex === index}>
             {array.map((day: number | string, dayIndex) => {
               if (typeof day === "number") {
-                const date = new Date(
-                  currentDate.year,
-                  currentDate.month,
-                  +day
-                );
+                const date = new Date(currentDate.year, currentDate.month, +day);
                 const disabledDate = isDateDisabled(date, commuteType);
                 return (
                   <S.DayButton
@@ -262,22 +232,14 @@ export default function CalendarView({
                     $width={dateButtonWidth}
                     disabled={disabledDate}
                     key={`${day}-${dayIndex}`}
-                    $isHighlighted={isDateHighlighted(
-                      currentDate.year,
-                      currentDate.month + 1,
-                      day
-                    )}
+                    $isHighlighted={isDateHighlighted(currentDate.year, currentDate.month + 1, day)}
                   >
                     {day}
                   </S.DayButton>
                 );
               } else {
                 return (
-                  <S.DayButton
-                    $width={dateButtonWidth}
-                    key={`${day}-${dayIndex}`}
-                    $isHighlighted={false}
-                  >
+                  <S.DayButton $width={dateButtonWidth} key={`${day}-${dayIndex}`} $isHighlighted={false}>
                     {day}
                   </S.DayButton>
                 );

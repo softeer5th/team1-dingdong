@@ -129,7 +129,6 @@ export default function FixedRouteBooking() {
     });
   };
   const [{ schoolName }] = useLoaderData();
-  console.log(busTimeSchedule, "스케줄");
   return (
     <>
       <ExitHeader text="함께타기" onClick={exitButtonHandler} />

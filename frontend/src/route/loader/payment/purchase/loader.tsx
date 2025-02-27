@@ -15,6 +15,8 @@ export default async function loader({ request, params }: LoaderFunctionArgs) {
     const schedule: ScheduleInterface = JSON.parse(sessionStorage.getItem("/fixed-bus-select-bus") as string);
 
     try {
+        queryClient.removeQueries({queryKey: ['/api/users/wallet/balances']})
+
         const response = await Promise.all([
             axiosInstance.post(`/api/users/reservations/token/together`, {
                 busStopId: schedule.busStopId,

@@ -24,7 +24,7 @@ export default function TimePicker({unmountModal, timeState, setTimeState}: Time
     const unmountModalTimer = (isSave: boolean) => {
         if (timeWheelRef.current && isSave) {
             const {amPm, hour, minute} = timeWheelRef.current.getSelectedTime()
-            const hour24 = (amPm === '오후' ? +hour + 12 : +hour).toString().padStart(2, '0');
+            const hour24 = (amPm === '오후' ? 12 + (+hour % 12) : (+hour % 12)).toString().padStart(2, '0');
             setTimeState(`${hour24}:${minute}`)
         }
         setIsMount(false);

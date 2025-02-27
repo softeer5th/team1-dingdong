@@ -78,10 +78,13 @@ export default function FixedBookingCalendarView({
 
     return result;
   };
-  const [prevDisabled, setPrevDisabled] = useState(true);
-  const [nextDisabled, setNextDisabled] = useState(true);
 
+  const hasAnySchedule = busTimeSchedule.length > 0;
   const lastDayCanBook = busTimeSchedule[busTimeSchedule.length - 1];
+
+  const isPrevActive = hasAnySchedule && goToPreviousMonth(commuteType, "fixedBusBooking");
+  const isNextActive = hasAnySchedule && goToNextMonth(commuteType, "fixedBusBooking", lastDayCanBook);
+
   return (
     <S.CalendarWrapper>
       <S.CalendarHeader>
@@ -93,28 +96,20 @@ export default function FixedBookingCalendarView({
           <S.IconBox>
             <S.IconWrapper
               onClick={() => {
-                if (!goToPreviousMonth(commuteType, "fixedBusBooking")) {
-                  setPrevDisabled(true);
-                  return;
-                }
-                setPrevDisabled(false);
+                if (!isPrevActive) return;
                 setCurrentMonthIndex(currentMonthIndex - 1);
               }}
             >
-              <ChevronLeftIcon size={24} fill={prevDisabled ? colors.gray40 : colors.gray50} />
+              <ChevronLeftIcon size={24} fill={isPrevActive ? colors.gray50 : colors.gray40} />
             </S.IconWrapper>
 
             <S.IconWrapper
               onClick={() => {
-                if (!goToNextMonth(commuteType, "fixedBusBooking", lastDayCanBook)) {
-                  setNextDisabled(true);
-                  return;
-                }
-                setNextDisabled(false);
+                if (!isNextActive) return;
                 setCurrentMonthIndex(currentMonthIndex + 1);
               }}
             >
-              <ChevronRightIcon size={24} fill={nextDisabled ? colors.gray40 : colors.gray50} />
+              <ChevronRightIcon size={24} fill={isNextActive ? colors.gray50 : colors.gray40} />
             </S.IconWrapper>
           </S.IconBox>
         </S.MonthNavigator>

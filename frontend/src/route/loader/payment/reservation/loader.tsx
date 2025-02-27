@@ -18,6 +18,7 @@ export default async function loader({ request, params }: LoaderFunctionArgs) {
 
 
     try {
+        queryClient.removeQueries({queryKey: ['/api/users/wallet/balances']})
 
         const response = await Promise.all([
             axiosInstance.post(`/api/users/reservations/token/general`, {

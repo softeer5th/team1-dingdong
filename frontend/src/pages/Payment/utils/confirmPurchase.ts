@@ -25,6 +25,7 @@ export async function confirmPurchase (
 
     if (!isPaymentAvailable) {
         navigate('/wallet')
+        return
     }
 
     try {

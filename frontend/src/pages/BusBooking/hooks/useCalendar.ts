@@ -5,7 +5,7 @@ import { getEarliestMonth } from "@/utils/fixedBusBooking/getEarliestMonthUtils"
 
 // busTimeSchedule 함께타기 버스 스케줄 변수.
 export default function useCalendar(calendarType: string = "customBooking", busTimeSchedule: string[] = []) {
-  const [currentDate, setCurrentDate] = useState(() => {
+  const dateInit = (() => {
     if (calendarType === "customBooking") {
       const minDateCanBooking = availableBookingMinDate();
       return {
@@ -15,13 +15,14 @@ export default function useCalendar(calendarType: string = "customBooking", busT
     } else {
       const now = new Date();
       const earliestMonthToBook = getEarliestMonth(busTimeSchedule);
-      console.log(earliestMonthToBook, "1!!!!!!");
+
       return {
         year: now.getFullYear(),
         month: earliestMonthToBook, //  (0: 1월, 1: 2월, ...)
       };
     }
-  });
+  })();
+  const [currentDate, setCurrentDate] = useState(dateInit);
 
   // busTimeSchedule이 업데이트될 때 currentDate를 갱신
   useEffect(() => {
@@ -38,19 +39,20 @@ export default function useCalendar(calendarType: string = "customBooking", busT
 
   // 이전 달로 이동
   const goToPreviousMonth = (commuteType: CommuteType, calendarType = "customBooking") => {
-    const daysInMonth = totalDaysInMonth(currentDate.year, currentDate.month);
-    const day = 1; // date 객체를 만들기 위함.
-    let [year, month] = [currentDate.year, currentDate.month - 1, daysInMonth];
+    const daysInPrevMonth = totalDaysInMonth(currentDate.year, currentDate.month - 1);
+    const lastDay = daysInPrevMonth; // date 객체를 만들기 위함.
+    let [year, month] = [currentDate.year, currentDate.month - 1, daysInPrevMonth];
 
     if (currentDate.month < 0) {
       year = currentDate.year - 1;
       month = 11;
     }
 
-    const date = new Date(year, month, day);
+    const date = new Date(year, month, lastDay);
 
+    // // eslint-disable-next-line
+    // debugger;
     if (isDateDisabled(date, commuteType, calendarType)) return false; // 이동 불가.
-
     setCurrentDate((prev) => {
       // 1월에서 이전 달로 가면 작년 12월로
       if (prev.month === 0) {

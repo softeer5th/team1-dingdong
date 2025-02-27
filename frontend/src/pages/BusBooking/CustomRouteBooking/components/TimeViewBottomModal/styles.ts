@@ -39,10 +39,10 @@ export const ArrivalTime = styled.p`
 
 export const SelectedScheduleWrapper = styled.div`
   margin-top: 4px;
-    display: flex
-    flex-direction: column;
-    gap: 10px;
-    padding: 0px 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0px 20px 20px 20px;
 `;
 
 export const ScheduleBoxWrapper = styled.div<{ $maxHeight: string }>`

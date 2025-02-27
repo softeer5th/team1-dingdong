@@ -7,13 +7,7 @@ import { CommuteType } from "../types/commuteType";
 import FixedBookingCommuteSwitcher from "./Components/FixedBookingCommuteSwitcher";
 import FixedBookingCalendarView from "./Components/FixedBookingCalendarView";
 import TimeSelectButtons from "./Components/TimeSelectButtons";
-import {
-  DescriptionText,
-  Info,
-  NextButtonContainer,
-  ShowSelectedSchedule,
-  Subtitle,
-} from "./styles";
+import { DescriptionText, Info, NextButtonContainer, ShowSelectedSchedule, Subtitle } from "./styles";
 import { convertInfoToText } from "@/utils/calendar/fixedBusBookingUtils";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import { useGetBusTimeSchedule } from "@/hooks/BusBooking/useFixedBooking";
@@ -50,24 +44,24 @@ export default function FixedRouteBooking() {
 
   const navigate = useNavigate();
 
-  const [selectedHourMinute, setSelectedHourMinute] = useState<timeType | null>(
-    null
-  );
-  const [selectedDate, setSelectedDate] = useState<SelectedDateType | null>(
-    null
-  );
+  const [selectedHourMinute, setSelectedHourMinute] = useState<timeType | null>(null);
+  const [selectedDate, setSelectedDate] = useState<SelectedDateType | null>(null);
 
   const [commuteType, setCommuteType] = useState<CommuteType>("등교");
 
-  // get 요청 정보
-  const busTimeResponse = useGetBusTimeSchedule(
-    commuteType === "등교" ? "TO_SCHOOL" : "TO_HOME"
-  );
+  const loaderData = useLoaderData()[2].schedules; // loader 는 처음에만 사용
 
-  const busTimeSchedule =
-    busTimeResponse?.data?.data?.schedules.length > 0
-      ? busTimeResponse?.data?.data?.schedules
-      : [];
+  const [busTimeSchedule, setBusTimeSchedule] = useState<string[]>(loaderData ?? []);
+
+  // get 요청 정보
+  const busTimeResponse = useGetBusTimeSchedule(commuteType === "등교" ? "TO_SCHOOL" : "TO_HOME");
+
+  // 서버에서 새로운 데이터가 들어오면 업데이트
+  useEffect(() => {
+    if (busTimeResponse?.data?.data?.schedules.length > 0) {
+      setBusTimeSchedule(busTimeResponse?.data?.data.schedules);
+    }
+  }, [busTimeResponse]);
 
   const sortedBusTimeSchedule = busTimeSchedule.sort(
     (a: string, b: string) => new Date(a).getTime() - new Date(b).getTime()
@@ -102,14 +96,12 @@ export default function FixedRouteBooking() {
 
   const [showInfo, setShowInfo] = useState("-");
 
-  const [timeArrayDependOnDate, setTimeArrayDependOnDate] = useState<
-    timeType[]
-  >(busTimeScheduleObjectArray[JSON.stringify(selectedDate)] ?? []);
+  const [timeArrayDependOnDate, setTimeArrayDependOnDate] = useState<timeType[]>(
+    busTimeScheduleObjectArray[JSON.stringify(selectedDate)] ?? []
+  );
 
   useEffect(() => {
-    setTimeArrayDependOnDate(
-      busTimeScheduleObjectArray[JSON.stringify(selectedDate)] ?? []
-    );
+    setTimeArrayDependOnDate(busTimeScheduleObjectArray[JSON.stringify(selectedDate)] ?? []);
   }, [selectedDate]);
 
   useEffect(() => {
@@ -137,7 +129,7 @@ export default function FixedRouteBooking() {
     });
   };
   const [{ schoolName }] = useLoaderData();
-
+  console.log(busTimeSchedule, "스케줄");
   return (
     <>
       <ExitHeader text="함께타기" onClick={exitButtonHandler} />
@@ -151,9 +143,7 @@ export default function FixedRouteBooking() {
       />
 
       {busTimeSchedule.length === 0 ? (
-        <DescriptionText $color={colors.orange900}>
-          ‼️ 현재 {commuteType}시 확정된 버스가 없습니다
-        </DescriptionText>
+        <DescriptionText $color={colors.orange900}>‼️ 현재 {commuteType}시 확정된 버스가 없습니다</DescriptionText>
       ) : (
         <DescriptionText>일자를 선택해 시각을 선택해주세요</DescriptionText>
       )}
@@ -176,10 +166,7 @@ export default function FixedRouteBooking() {
         <Info>{showInfo}</Info>
       </ShowSelectedSchedule>
       <NextButtonContainer onClick={nextButtonHandler}>
-        <SolidButton
-          text="다음"
-          active={selectedDate !== null && selectedHourMinute !== null}
-        />
+        <SolidButton text="다음" active={selectedDate !== null && selectedHourMinute !== null} />
       </NextButtonContainer>
     </>
   );

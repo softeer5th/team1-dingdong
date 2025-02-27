@@ -5,21 +5,16 @@ import { colors } from "@/styles/colors";
 import ChevronRightIcon from "@/components/designSystem/Icons/ChevronRightIcon";
 // import AIRecommendationButton from "@/components/Button/AIRecommendationButton";
 import useCalendar from "@/pages/BusBooking/hooks/useCalendar";
-import {
-  formatMonthName,
-  getDaysInMonth,
-  isDateDisabled,
-} from "@/utils/calendar/calendarUtils";
+import { formatMonthName, getDaysInMonth, isDateDisabled } from "@/utils/calendar/calendarUtils";
 import * as constant from "@/constants/calendarConstants";
 import { CommuteType } from "@/pages/BusBooking/types/commuteType";
 import { SelectedDateType } from "../../page";
+import { getEarliestMonth } from "@/utils/fixedBusBooking/getEarliestMonthUtils";
 
 interface FixedBookingCalendarViewProps {
   busTimeSchedule: string[];
   selectedDate: SelectedDateType | null;
-  setSelectedDate: React.Dispatch<
-    React.SetStateAction<SelectedDateType | null>
-  >; // 핀을 움직여서, 바텀 시트를 보여준다.
+  setSelectedDate: React.Dispatch<React.SetStateAction<SelectedDateType | null>>; // 핀을 움직여서, 바텀 시트를 보여준다.
   commuteType: CommuteType;
 }
 
@@ -32,9 +27,8 @@ export default function FixedBookingCalendarView({
   // AI 버튼 관리
 
   // 현재 화면 캘린저
-
-  const { currentDate, goToNextMonth, goToPreviousMonth } =
-    useCalendar("fixed-bus-booking");
+  console.log(getEarliestMonth(busTimeSchedule));
+  const { currentDate, goToNextMonth, goToPreviousMonth } = useCalendar("fixed-bus-booking", busTimeSchedule);
 
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
 
@@ -47,6 +41,8 @@ export default function FixedBookingCalendarView({
     daysArray.push(getDaysInMonth(currentDate.year, currentDate.month + 1));
   }
 
+  // 주는 월 중에 가장 빠른 월 찾아서 셋팅.
+
   const months = useRef([
     getDaysInMonth(currentDate.year, currentDate.month),
     getDaysInMonth(currentDate.year, currentDate.month + 1),
@@ -54,15 +50,10 @@ export default function FixedBookingCalendarView({
 
   useEffect(() => {
     const screenWidth = window.innerWidth;
-    const newScreenWidth =
-      screenWidth <= constant.MAX_MOBILE_WIDTH
-        ? screenWidth
-        : constant.LAYOUT_WIDTH;
+    const newScreenWidth = screenWidth <= constant.MAX_MOBILE_WIDTH ? screenWidth : constant.LAYOUT_WIDTH;
 
     const dayButtonWidth =
-      (newScreenWidth -
-        constant.TOTAL_LEFT_RIGHT_PADDING -
-        constant.TOTAL_CALENDAR_COLUMN_GAP) /
+      (newScreenWidth - constant.TOTAL_LEFT_RIGHT_PADDING - constant.TOTAL_CALENDAR_COLUMN_GAP) /
       constant.WEEKDAYS_COUNT;
 
     setDateButtonWidth(dayButtonWidth);
@@ -72,10 +63,7 @@ export default function FixedBookingCalendarView({
     // 실제 선택된 시간이 있는지 확인
 
     // 임시 선택 상태 확인
-    const isSelected =
-      selectedDate?.year === year &&
-      selectedDate?.month === month &&
-      selectedDate?.day === day;
+    const isSelected = selectedDate?.year === year && selectedDate?.month === month && selectedDate?.day === day;
 
     return isSelected;
   };
@@ -113,17 +101,12 @@ export default function FixedBookingCalendarView({
                 setCurrentMonthIndex(currentMonthIndex - 1);
               }}
             >
-              <ChevronLeftIcon
-                size={24}
-                fill={prevDisabled ? colors.gray40 : colors.gray50}
-              />
+              <ChevronLeftIcon size={24} fill={prevDisabled ? colors.gray40 : colors.gray50} />
             </S.IconWrapper>
 
             <S.IconWrapper
               onClick={() => {
-                if (
-                  !goToNextMonth(commuteType, "fixedBusBooking", lastDayCanBook)
-                ) {
+                if (!goToNextMonth(commuteType, "fixedBusBooking", lastDayCanBook)) {
                   setNextDisabled(true);
                   return;
                 }
@@ -131,10 +114,7 @@ export default function FixedBookingCalendarView({
                 setCurrentMonthIndex(currentMonthIndex + 1);
               }}
             >
-              <ChevronRightIcon
-                size={24}
-                fill={nextDisabled ? colors.gray40 : colors.gray50}
-              />
+              <ChevronRightIcon size={24} fill={nextDisabled ? colors.gray40 : colors.gray50} />
             </S.IconWrapper>
           </S.IconBox>
         </S.MonthNavigator>
@@ -151,17 +131,9 @@ export default function FixedBookingCalendarView({
           <S.GridContainer key={index} $visible={currentMonthIndex === index}>
             {array.map((day: number | string, dayIndex) => {
               if (typeof day === "number") {
-                const date = new Date(
-                  currentDate.year,
-                  currentDate.month,
-                  +day
-                );
-                const disabledDate = isDateDisabled(
-                  date,
-                  commuteType,
-                  "fixedBusBooking"
-                );
-                
+                const date = new Date(currentDate.year, currentDate.month, +day);
+                const disabledDate = isDateDisabled(date, commuteType, "fixedBusBooking");
+
                 return (
                   <S.DayButton
                     onClick={() => {
@@ -174,22 +146,14 @@ export default function FixedBookingCalendarView({
                     $width={dateButtonWidth}
                     disabled={disabledDate || !isHaveSchedule(date)}
                     key={`${day}-${dayIndex}`}
-                    $isHighlighted={isDateHighlighted(
-                      currentDate.year,
-                      currentDate.month + 1,
-                      day
-                    )}
+                    $isHighlighted={isDateHighlighted(currentDate.year, currentDate.month + 1, day)}
                   >
                     {day}
                   </S.DayButton>
                 );
               } else {
                 return (
-                  <S.DayButton
-                    $width={dateButtonWidth}
-                    key={`${day}-${dayIndex}`}
-                    $isHighlighted={false}
-                  >
+                  <S.DayButton $width={dateButtonWidth} key={`${day}-${dayIndex}`} $isHighlighted={false}>
                     {day}
                   </S.DayButton>
                 );

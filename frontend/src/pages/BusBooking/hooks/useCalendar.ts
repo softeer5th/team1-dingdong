@@ -1,11 +1,10 @@
-import {
-  availableBookingMinDate,
-  isDateDisabled,
-  totalDaysInMonth,
-} from "@/utils/calendar/calendarUtils";
-import { useState } from "react";
+import { availableBookingMinDate, isDateDisabled, totalDaysInMonth } from "@/utils/calendar/calendarUtils";
+import { useEffect, useState } from "react";
 import { CommuteType } from "../types/commuteType";
-export default function useCalendar(calendarType = "customBooking") {
+import { getEarliestMonth } from "@/utils/fixedBusBooking/getEarliestMonthUtils";
+
+// busTimeSchedule 함께타기 버스 스케줄 변수.
+export default function useCalendar(calendarType: string = "customBooking", busTimeSchedule: string[] = []) {
   const [currentDate, setCurrentDate] = useState(() => {
     if (calendarType === "customBooking") {
       const minDateCanBooking = availableBookingMinDate();
@@ -15,24 +14,33 @@ export default function useCalendar(calendarType = "customBooking") {
       };
     } else {
       const now = new Date();
+      const earliestMonthToBook = getEarliestMonth(busTimeSchedule);
+      console.log(earliestMonthToBook, "1!!!!!!");
       return {
         year: now.getFullYear(),
-        month: now.getMonth(), //  (0: 1월, 1: 2월, ...)
+        month: earliestMonthToBook, //  (0: 1월, 1: 2월, ...)
       };
     }
   });
 
+  // busTimeSchedule이 업데이트될 때 currentDate를 갱신
+  useEffect(() => {
+    if (calendarType === "fixed-bus-booking" && busTimeSchedule.length > 0) {
+      const now = new Date();
+      const earliestMonthToBook = getEarliestMonth(busTimeSchedule);
+
+      setCurrentDate({
+        year: now.getFullYear(),
+        month: earliestMonthToBook, // (0: 1월, 1: 2월, ...)
+      });
+    }
+  }, [busTimeSchedule, calendarType]); // busTimeSchedule 변경 감지
+
   // 이전 달로 이동
-  const goToPreviousMonth = (
-    commuteType: CommuteType,
-    calendarType = "customBooking"
-  ) => {
+  const goToPreviousMonth = (commuteType: CommuteType, calendarType = "customBooking") => {
     const daysInMonth = totalDaysInMonth(currentDate.year, currentDate.month);
-    let [year, month, day] = [
-      currentDate.year,
-      currentDate.month - 1,
-      daysInMonth,
-    ];
+    const day = 1; // date 객체를 만들기 위함.
+    let [year, month] = [currentDate.year, currentDate.month - 1, daysInMonth];
 
     if (currentDate.month < 0) {
       year = currentDate.year - 1;
@@ -60,12 +68,9 @@ export default function useCalendar(calendarType = "customBooking") {
     return true; // 이동 가능.
   };
 
-  const goToNextMonth = (
-    commuteType: CommuteType,
-    calendarType = "customBooking",
-    lastDayCanBook = ""
-  ) => {
-    let [year, month, day] = [currentDate.year, currentDate.month + 1, 1];
+  const goToNextMonth = (commuteType: CommuteType, calendarType = "customBooking", lastDayCanBook = "") => {
+    const day = 1;
+    let [year, month] = [currentDate.year, currentDate.month + 1, 1];
     if (currentDate.month > 11) {
       year = currentDate.year + 1;
       month = 0;
@@ -76,7 +81,7 @@ export default function useCalendar(calendarType = "customBooking") {
     if (calendarType === "fixedBusBooking") {
       // 예약 가능한 마지막 날짜가 다음 월보다 작으면 비활성화.
       // date가 마지막 날보다 크다면 false.
-      
+
       return !(new Date(lastDayCanBook) < date);
     }
 

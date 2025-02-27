@@ -2,9 +2,7 @@ import { axiosInstance } from "@/api";
 
 export async function getBusTimeScheduleArray(direction: string) {
   try {
-    const { data } = await axiosInstance.get(
-      `/api/bus/schedule/time?direction=${direction}`
-    );
+    const { data } = await axiosInstance.get(`/api/bus/schedule/time?direction=${direction}`);
     return { data };
   } catch (err: any) {
     console.error("함께 타기 예매 가능한 시간대 get 요청 실패", err);
@@ -12,14 +10,9 @@ export async function getBusTimeScheduleArray(direction: string) {
   }
 }
 
-export async function getAvailableBusInfoArray(
-  direction: string,
-  time: string
-) {
+export async function getAvailableBusInfoArray(direction: string, time: string) {
   try {
-    const { data } = await axiosInstance.get(
-      `/api/bus/available?direction=${direction}&time=${time}`
-    );
+    const { data } = await axiosInstance.get(`/api/bus/available?direction=${direction}&time=${time}`);
     return { data };
   } catch (err: any) {
     console.error("함께 타기 버스 정류장 정보 get 실패", err);

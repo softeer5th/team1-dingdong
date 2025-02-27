@@ -49,11 +49,10 @@ export const ScheduleBoxWrapper = styled.div<{ $maxHeight: string }>`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: ${(props) =>
-    props.$maxHeight === "editable" ? "430px" : "320px"};
+  max-height: ${(props) => (props.$maxHeight === "editable" ? "430px" : "320px")};
   overflow: scroll;
 `;
-export const ScheduleBox = styled.div`
+export const ScheduleBox = styled.button`
   display: flex;
   padding: 4px 0px;
   justify-content: space-between;

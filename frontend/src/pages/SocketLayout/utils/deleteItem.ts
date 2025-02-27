@@ -55,7 +55,9 @@ export async function deleteItem({deletedReservationId, category}: DeleteItemPro
             // 심각한 에러, 코딩 에러임
             if (oldData == null) return oldData;
 
-            const totalElements = lastContent == null ? oldData.reservationInfos.page.totalElements - 1 : oldData.reservationInfos.page.totalElements
+
+
+            const totalElements = category === 'HOME' ? oldData.reservationInfos.page.totalElements - 1 : lastContent == null ? oldData.reservationInfos.page.totalElements - 1 : oldData.reservationInfos.page.totalElements
 
             const newData: users_reservations_interface = {
                 reservationInfos: {
